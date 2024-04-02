@@ -1,0 +1,129 @@
+Package Installation: 
+-----------------------------
+composer require stripe/stripe-php
+
+
+Route:
+-----------------------------
+use App\Http\Controllers\StripeController;
+Route::post('stripe', [StripeController::class, 'stripe'])->name('stripe');
+Route::get('success', [StripeController::class, 'success'])->name('success');
+Route::get('cancel', [StripeController::class, 'cancel'])->name('cancel');
+
+
+Blade:
+-----------------------------
+<h2>Product: Laptop</h2>
+<h3>Price: $5</h3>
+<form action="{{ route('stripe') }}" method="post">
+    @csrf
+    <input type="hidden" name="price" value="5">
+    <input type="hidden" name="product_name" value="Laptop">
+    <input type="hidden" name="quantity" value="1">
+    <button type="submit">Pay with Stripe</button>
+</form>
+
+
+.env
+-----------------------------
+STRIPE_TEST_PK=pk_test_51OFZ3zI3hY1Jc4DzUtimeKqiANmmSvju1Rtkz2HxqY0pySZx3fVkpGUyB0r8w0OBI5jejmJPjoVGgrLhrO3tItnG00OhIjk4Dw
+STRIPE_TEST_SK=sk_test_51OFZ3zI3hY1Jc4Dzx4VMcmJkeEVqrXuL1ShIv5RgH7FD7JCeHiO8wUuKbwDfV2h2nZ36NcRT3oSHxvrKCZbs1Qzu00clvUfgOY
+
+
+config > stripe.php
+-----------------------------
+<?php
+return [
+    'stripe_pk' => env('STRIPE_TEST_PK'),
+    'stripe_sk' => env('STRIPE_TEST_SK'),
+];
+
+
+Migration: 
+-----------------------------
+$table->id();
+$table->string('payment_id');
+$table->string('product_name'); 
+$table->string('quantity');
+$table->string('amount');
+$table->string('currency');
+$table->string('customer_name');
+$table->string('customer_email');
+$table->string('payment_status');
+$table->string('payment_method');
+$table->timestamps();
+
+
+Controller 
+-----------------------------
+use App\Models\Payment;
+
+class StripeController extends Controller
+{
+    public function stripe(Request $request)
+    {
+        $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
+        $response = $stripe->checkout->sessions->create([
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $request->product_name,
+                        ],
+                        'unit_amount' => $request->price*100,
+                    ],
+                    'quantity' => $request->quantity,
+                ],
+            ],
+            'mode' => 'payment',
+            'success_url' => route('success').'?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('cancel'),
+        ]);
+        //dd($response);
+        if(isset($response->id) && $response->id != ''){
+            session()->put('product_name', $request->product_name);
+            session()->put('quantity', $request->quantity);
+            session()->put('price', $request->price);
+            return redirect($response->url);
+        } else {
+            return redirect()->route('cancel');
+        }
+    }
+
+    public function success(Request $request)
+    {
+        if(isset($request->session_id)) {
+
+            $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
+            $response = $stripe->checkout->sessions->retrieve($request->session_id);
+            //dd($response);
+
+            $payment = new Payment();
+            $payment->payment_id = $response->id;
+            $payment->product_name = session()->get('product_name');
+            $payment->quantity = session()->get('quantity');
+            $payment->amount = session()->get('price');
+            $payment->currency = $response->currency;
+            $payment->customer_name = $response->customer_details->name;
+            $payment->customer_email = $response->customer_details->email;
+            $payment->payment_status = $response->status;
+            $payment->payment_method = "Stripe";
+            $payment->save();
+
+            return "Payment is successful";
+
+            session()->forget('product_name');
+            session()->forget('quantity');
+            session()->forget('price');
+
+        } else {
+            return redirect()->route('cancel');
+        }
+    }
+
+    public function cancel()
+    {
+        return "Payment is canceled.";
+    }
+}
