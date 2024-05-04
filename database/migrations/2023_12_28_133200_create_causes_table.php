@@ -21,8 +21,12 @@ return new class extends Migration
             $table->integer('goal');
             $table->integer('raised')->nullable();
             $table->string('is_featured');
+            $table->enum('status', ['pending', 'approve', 'reject'])->default('pending')->nullable();
+            $table->foreignId('user_id')->constrained();
+            $table->integer('approved_by')->nullable();
             $table->timestamps();
         });
+        
     }
 
     /**

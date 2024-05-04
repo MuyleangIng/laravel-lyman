@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('main_content')
-<div class="page-top" style="background-image: url('uploads/banner.jpg')">
+<div class="page-top" style="background-image: url('uploads/banner_1714796993.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-md-12">

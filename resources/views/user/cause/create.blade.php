@@ -1,4 +1,4 @@
-@extends('admin.layouts.app')
+@extends('user.layouts.app')
 
 @section('main_content')
 <div class="main-content">
@@ -6,7 +6,7 @@
         <div class="section-header d-flex justify-content-between">
             <h1>Create Cause</h1>
             <div>
-                <a href="{{ route('admin_cause_index') }}" class="btn btn-primary"><i class="fas fa-plus"></i> View All</a>
+                <a href="{{ route('user_cause') }}" class="btn btn-primary"><i class="fas fa-plus"></i> View All</a>
             </div>
         </div>
         <div class="section-body">
@@ -14,7 +14,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('admin_cause_create_submit') }}" method="post" enctype="multipart/form-data">
+                            <form action="{{ route('user_cause_create_submit') }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group mb-3">
                                     <label>Featured Photo *</label>
@@ -60,16 +60,6 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group mb-3">
-                                            <label>User *</label>
-                                            <select name="user_id" class="form-select">
-                                                @foreach($users as $user)
-                                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
                                 </div>
                                 
                                 <div class="form-group">
@@ -83,4 +73,5 @@
         </div>
     </section>
 </div>
+
 @endsection

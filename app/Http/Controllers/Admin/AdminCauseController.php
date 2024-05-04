@@ -10,6 +10,7 @@ use App\Models\CauseVideo;
 use App\Models\CauseFaq;
 use App\Models\CauseDonation;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AdminCauseController extends Controller
 {
@@ -21,7 +22,8 @@ class AdminCauseController extends Controller
 
     public function create()
     {
-        return view('admin.cause.create');
+        $users = User::all();
+        return view('admin.cause.create', compact('users'));
     }
 
     public function create_submit(Request $request)
@@ -36,6 +38,12 @@ class AdminCauseController extends Controller
         ]);
 
         $obj = new Cause();
+        $obj->user_id = $request->user_id;
+        if (Auth::guard('admin')->check()) {
+            $adminId = Auth::guard('admin')->id();
+            $obj->approved_by = $adminId;
+            $obj->status = 'approve';
+        }    
         $obj->name = $request->name;
         $obj->slug = strtolower($request->slug);
         $obj->goal = $request->goal;
@@ -46,6 +54,9 @@ class AdminCauseController extends Controller
         $request->featured_photo->move(public_path('uploads'), $final_name);
         $obj->featured_photo = $final_name;
         $obj->is_featured = $request->is_featured;
+        // Assign the admin ID to the `user_id` column 
+        // $obj->user_id = $adminId;  
+
         $obj->save();
 
         return redirect()->route('admin_cause_index')->with('success','Cause created successfully');
@@ -225,4 +236,19 @@ class AdminCauseController extends Controller
         $user_data = User::findOrFail($donation_data->user_id);
         return view('admin.cause.invoice', compact('donation_data', 'user_data'));
     }
+
+    //Update proposal status
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approve,reject',
+        ]);
+
+        $cause = Cause::findOrFail($id);
+        $cause->status = $request->status;
+        $cause->save();
+
+        return redirect()->back()->with('success', 'Cause status updated successfully');
+    }
+
 }

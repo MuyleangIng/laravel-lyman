@@ -121,7 +121,7 @@
                             <div class="raised">Raised: ${{ $item->raised }}</div>
                         </div>
                         <div class="button-style-2">
-                            <a href="{{ route('cause', $item->slug) }}">Donate Now <i class="fas fa-long-arrow-alt-right"></i></a>
+                            <a href="{{ route('cause', $item->slug) }}">View Detail <i class="fas fa-long-arrow-alt-right"></i></a>
                         </div>
                     </div>
                 </div>
@@ -305,4 +305,4 @@
     </div>
 </div>
 @endif
-@endsection
+@endsection 

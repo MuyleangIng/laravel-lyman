@@ -104,6 +104,26 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::get('/event/tickets', [UserController::class, 'tickets'])->name('user_event_tickets');
     Route::get('/event/ticket/invoice/{id}', [UserController::class, 'ticket_invoice'])->name('user_event_ticket_invoice');
 
+
+
+    Route::get('/cause', [UserController::class, 'causes'])->name('user_cause');
+    Route::get('/cause/create', [UserController::class, 'create'])->name('user_cause_create');
+    Route::post('/cause/create', [UserController::class, 'createCauseSubmit'])->name('user_cause_create_submit');
+    Route::get('/user/cause/edit/{id}', [UserController::class, 'edit'])->name('user_cause_edit');
+    Route::get('/user/cause/delete/{id}', [UserController::class, 'delete'])->name('user_cause_delete');
+    Route::post('/user/cause/edit/{id}', [UserController::class, 'edit_submit'])->name('user_cause_edit_submit');
+    Route::post('/user/cause/edit/{id}', [UserController::class, 'edit_submit'])->name('user_cause_edit_submit');
+    Route::get('/user/cause/photo/{id}', [UserController::class, 'photo'])->name('user_cause_photo');
+    Route::post('/user/cause/photo/submit', [UserController::class, 'photo_submit'])->name('user_cause_photo_submit');
+    Route::get('/user/cause/photo/delete/{id}', [UserController::class, 'photo_delete'])->name('user_cause_photo_delete');
+    Route::get('/user/cause/video/{id}', [UserController::class, 'video'])->name('user_cause_video');
+    Route::post('/user/cause/video/submit', [UserController::class, 'video_submit'])->name('user_cause_video_submit');
+    Route::get('/user/cause/video/delete/{id}', [UserController::class, 'video_delete'])->name('user_cause_video_delete');
+    Route::get('/user/cause/faq/{id}', [UserController::class, 'faq'])->name('user_cause_faq');
+    Route::post('/user/cause/faq/submit', [UserController::class, 'faq_submit'])->name('user_cause_faq_submit');
+    Route::get('/user/cause/faq/delete/{id}', [UserController::class, 'faq_delete'])->name('user_cause_faq_delete');
+    Route::post('/user/cause/faq/update/{id}', [UserController::class, 'faq_update'])->name('user_cause_faq_update');    
+    Route::get('/user/cause/donations/{id}', [UserController::class, 'donations'])->name('user_cause_donations');
     Route::get('/cause/donations', [UserController::class, 'donations'])->name('user_cause_donations');
     Route::get('/cause/donation/invoice/{id}', [UserController::class, 'donation_invoice'])->name('user_cause_donation_invoice');
 });
@@ -238,6 +258,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/cause/edit/{id}', [AdminCauseController::class, 'edit'])->name('admin_cause_edit');
     Route::post('/cause/edit/submit/{id}', [AdminCauseController::class, 'edit_submit'])->name('admin_cause_edit_submit');
     Route::get('/cause/delete/{id}', [AdminCauseController::class, 'delete'])->name('admin_cause_delete');
+    // New route for updating cause status
+    Route::post('/cause/{id}/status', [AdminCauseController::class, 'updateStatus'])->name('update_cause_status');
 
     Route::get('/cause/photo/{id}', [AdminCauseController::class, 'photo'])->name('admin_cause_photo');
     Route::post('/cause/photo', [AdminCauseController::class, 'photo_submit'])->name('admin_cause_photo_submit');

@@ -23,7 +23,7 @@ class HomeController extends Controller
         $features = Feature::get();
         $home_page_item = HomePageItem::where('id',1)->first();
         $testimonials = Testimonial::get();
-        $featured_causes = Cause::where('is_featured','Yes')->get();
+        $featured_causes = Cause::where('is_featured', 'Yes')->where('status', 'approve')->get();
         $events = Event::take(3)->get();
         $posts = Post::orderBy('id', 'desc')->take(3)->get();
 

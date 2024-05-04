@@ -19,7 +19,7 @@ class CauseController extends Controller
 {
     public function index()
     {
-        $causes = Cause::get();
+        $causes = Cause::where('status', 'approve')->get();
         return view('front.causes', compact('causes'));
     }
 
@@ -132,7 +132,7 @@ class CauseController extends Controller
                 'success_url' => route('donation_stripe_success').'?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('donation_cancel'),
             ]);
-            //dd($response);
+            // dd($response);
             if(isset($response->id) && $response->id != ''){
                 session()->put('cause_id', $request->cause_id);
                 session()->put('price', $request->price);
@@ -150,7 +150,7 @@ class CauseController extends Controller
         $provider->setApiCredentials(config('paypal'));
         $paypalToken = $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request->token);
-        //dd($response);
+        // dd($response);
         if(isset($response['status']) && $response['status'] == 'COMPLETED') {
             
             // Insert data into database
@@ -185,7 +185,7 @@ class CauseController extends Controller
 
             $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
             $response = $stripe->checkout->sessions->retrieve($request->session_id);
-            //dd($response);
+            // dd($response);
 
             // Insert data into database
             $obj = new CauseDonation;
@@ -193,7 +193,7 @@ class CauseController extends Controller
             $obj->user_id = auth()->user()->id;
             $obj->price = session()->get('price');
             $obj->currency = $response->currency;
-            $obj->payment_id = $response->id;
+            $obj->payment_id = $response->payment_intent;
             $obj->payment_method = "Stripe";
             $obj->payment_status = "COMPLETED";
             $obj->save();
