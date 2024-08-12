@@ -13,6 +13,7 @@ use App\Models\Admin;
 use App\Mail\Websitemail;
 use App\Services\PayWayService;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Illuminate\Support\Facades\Mail;
 
 class CauseController extends Controller
 {
@@ -65,7 +66,7 @@ class CauseController extends Controller
         $message .= "<b>Cause Page URL: </b><br>";
         $message .= "<a href='".url('/cause/'.$cause_data->slug)."'>".url('/cause/'.$cause_data->slug)."</a>";
 
-        \Mail::to($admin_email)->send(new Websitemail($subject,$message));
+        Mail::to($admin_email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Message sent successfully');
     }

@@ -11,6 +11,7 @@ use App\Models\CauseFaq;
 use App\Models\CauseDonation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AdminCauseController extends Controller
 {
@@ -30,7 +31,7 @@ class AdminCauseController extends Controller
     {
         $request->validate([
             'name' => ['required', 'unique:causes'],
-            'slug' => ['required', 'alpha_dash', 'unique:causes'],
+            // 'slug' => ['required', 'alpha_dash', 'unique:causes'],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
             'description' => 'required',
@@ -45,7 +46,8 @@ class AdminCauseController extends Controller
             $obj->status = 'approve';
         }    
         $obj->name = $request->name;
-        $obj->slug = strtolower($request->slug);
+        $obj->slug = Str::slug($request->name);
+        // $obj->slug = strtolower($request->slug);
         $obj->goal = $request->goal;
         $obj->raised = 0;
         $obj->short_description = $request->short_description;
@@ -53,9 +55,7 @@ class AdminCauseController extends Controller
         $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
         $request->featured_photo->move(public_path('uploads'), $final_name);
         $obj->featured_photo = $final_name;
-        $obj->is_featured = $request->is_featured;
-        // Assign the admin ID to the `user_id` column 
-        // $obj->user_id = $adminId;  
+        $obj->is_featured = $request->is_featured;  
 
         $obj->save();
 

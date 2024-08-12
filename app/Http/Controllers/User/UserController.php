@@ -13,6 +13,7 @@ use App\Models\CausePhoto;
 use App\Models\CauseVideo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -120,7 +121,6 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'unique:causes'],
-            'slug' => ['required', 'alpha_dash', 'unique:causes'],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
             'description' => 'required',
@@ -129,7 +129,7 @@ class UserController extends Controller
 
         $obj = new Cause();
         $obj->name = $request->name;
-        $obj->slug = strtolower($request->slug);
+        $obj->slug = Str::slug($request->name);
         $obj->goal = $request->goal;
         $obj->raised = 0;
         $obj->short_description = $request->short_description;
