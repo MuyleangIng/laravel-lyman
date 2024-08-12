@@ -68,6 +68,8 @@
 
             <li class="{{ Request::is('admin/cause/*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin_cause_index') }}"><i class="fa-solid fa-hand-holding-hand"></i> <span>Causes</span></a></li>
 
+            <li class="{{ Request::is('admin/approval*') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin_cause_approval') }}"><i class="fa-solid fa-person-circle-check"></i> <span>Causes Approval</span></a></li>
+
             <li class="{{ Request::is('admin/other-pages/terms') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin_terms_page') }}"><i class="fa-solid fa-gears"></i> <span>Terms Page</span></a></li>
 
             <li class="{{ Request::is('admin/other-pages/privacy') ? 'active' : '' }}"><a class="nav-link" href="{{ route('admin_privacy_page') }}"><i class="fa-solid fa-shield-halved"></i> <span>Privacy Page</span></a></li>

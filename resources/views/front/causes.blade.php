@@ -8,20 +8,32 @@
                 <h2>Causes</h2>
                 <div class="breadcrumb-container">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                        <li class​="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                         <li class="breadcrumb-item active">Causes</li>
                     </ol>
+                    <form action="{{ route('causes') }}" method="GET">
+                        <div class="input-group rounded">
+                            <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" name="q" value="{{ request('q') }}" />
+                            <span class="input-group-text border-0" id="search-addon">
+                              <i class="fas fa-search"></i>
+                            </span>
+                          </div>
+                    </form>
                 </div>
             </div>
+
+                   
+            
         </div>
+        
     </div>
 </div>
 
+<div class="container">
+    
 
-<div class="cause pt_70">
-    <div class="container">
+    <div class="cause pt_70">
         <div class="row">
-
             @foreach($causes as $item)
             <div class="col-lg-4 col-md-6">
                 <div class="item pb_70">
@@ -33,9 +45,7 @@
                             <a href="{{ route('cause', $item->slug) }}">{{ $item->name }}</a>
                         </h2>
                         <div class="short-des">
-                            <p>
-                                {!! nl2br($item->short_description) !!}
-                            </p>
+                            <p>{!! nl2br($item->short_description) !!}</p>
                         </div>
                         @php
                             $perc = ($item->raised / $item->goal) * 100;
@@ -65,8 +75,6 @@
                 </div>
             </div>
             @endforeach
-            
-            
         </div>
     </div>
 </div>

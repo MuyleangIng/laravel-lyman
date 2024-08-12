@@ -11,17 +11,26 @@ use App\Models\CauseFaq;
 use App\Models\CauseDonation;
 use App\Models\Admin;
 use App\Mail\Websitemail;
-use App\Models\User;
-use Auth;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class CauseController extends Controller
 {
-    public function index()
-    {
+    public function index(Request $request)
+{
+    $query = $request->input('q');
+
+    // Check if there's a search query
+    if ($query) {
+        $causes = Cause::where('status', 'approve')
+                        ->where('name', 'like', "%$query%")
+                        ->get();
+    } else {
+        // If no search query, retrieve all approved causes
         $causes = Cause::where('status', 'approve')->get();
-        return view('front.causes', compact('causes'));
     }
+
+    return view('front.causes', compact('causes'));
+}
 
     public function detail($slug)
     {

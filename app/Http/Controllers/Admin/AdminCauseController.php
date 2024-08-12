@@ -251,4 +251,44 @@ class AdminCauseController extends Controller
         return redirect()->back()->with('success', 'Cause status updated successfully');
     }
 
+    public function approval()
+    {
+        $causes = Cause::all();
+        return view('admin.cause.approval', compact('causes'));
+    }
+
+    public function undoReject($id)
+{
+    $cause = Cause::findOrFail($id);
+
+    // Check if the current status is "Reject"
+    if ($cause->status === 'reject') {
+        // Store the current status as previous status
+        $cause->previous_status = $cause->status;
+        // Set the status to "Pending"
+        $cause->status = 'pending';
+        // Save the changes
+        $cause->save();
+
+        return redirect()->route('admin_cause_approval', $cause->id)->with('success', 'Reject status undone successfully');
+    } else {
+        // If the current status is not "Reject", redirect back with a warning message
+        return redirect()->back()->with('error', 'The cause status cannot be undone because it is not currently rejected');
+    }
+}
+
+
+    public function details($slug)
+    {
+        $cause = Cause::where('slug', $slug)->first();
+        $cause_photos = CausePhoto::where('cause_id',$cause->id)->get();
+        $cause_videos = CauseVideo::where('cause_id',$cause->id)->get();
+        $cause_faqs = CauseFaq::where('cause_id',$cause->id)->get();
+        $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
+        return view('admin.cause.details', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes'));
+    }
+
+
+    
+
 }

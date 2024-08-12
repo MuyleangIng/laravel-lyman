@@ -61,7 +61,7 @@ input {
 }
 
 .bg-website {
-    background: #00509d !important;
+    background: #47ae1b !important;
     border: 0;
 }
 .ml-auto {
@@ -84,10 +84,10 @@ p {
 
 .dropdown-item.active,
 .dropdown-item:active {
-    background-color: #00509d;
+    background-color: #47ae1b;
 }
 .primary-color {
-    color: #00509d;
+    color: #47ae1b;
 }
 .primary-color:hover {
     color: #333;
@@ -100,10 +100,10 @@ select {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
-    border: 1px solid #00509d;
+    border: 1px solid #47ae1b;
     border-radius: 30px;
     padding: 14px 45px;
     transition: all 0.3s;
@@ -112,17 +112,17 @@ select {
 .button-style-1 a:hover {
     transition: all 0.3s;
     background: transparent;
-    border: 1px solid #00509d;
-    color: #00509d;
+    border: 1px solid #47ae1b;
+    color: #47ae1b;
 }
 .button-style-2 a {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
-    border: 1px solid #00509d;
+    border: 1px solid #47ae1b;
     border-radius: 30px;
     padding: 8px 35px;
     transition: all 0.3s;
@@ -131,8 +131,8 @@ select {
 .button-style-2 a:hover {
     transition: all 0.3s;
     background: transparent;
-    border: 1px solid #00509d;
-    color: #00509d;
+    border: 1px solid #47ae1b;
+    color: #47ae1b;
 }
 
 
@@ -140,7 +140,7 @@ select {
 .top {
     min-height: 40px;
     color: #fff;
-    background: #00509d;
+    background: #47ae1b;
     font-size: 14px;
     border-bottom: 1px solid #d7d7d7;
 }
@@ -276,7 +276,7 @@ select {
     position: relative;
 }
 .main-nav nav .navbar-nav .nav-item.active a {
-    color: #00509d;
+    color: #47ae1b;
 }
 .main-nav nav .navbar-nav .nav-item .dropdown-menu li a {
     color: #444;
@@ -302,10 +302,10 @@ select {
     li
     a.active,
 .main-nav nav .navbar-nav .nav-item .dropdown-menu li:hover a {
-    color: #00509d;
+    color: #47ae1b;
 }
 .main-nav nav .navbar-nav .nav-item .dropdown-menu li a:hover {
-    color: #00509d !important;
+    color: #47ae1b !important;
 }
 .main-nav img {
     height: 50px;
@@ -325,10 +325,10 @@ select {
     height: 50px;
 }
 .mean-container a.meanmenu-reveal span {
-    background: #00509d;
+    background: #47ae1b;
 }
 .mean-container a.meanmenu-reveal {
-    color: #00509d;
+    color: #47ae1b;
 }
 
 /* Scroll to Top */
@@ -343,7 +343,7 @@ select {
     border-radius: 50%;
     bottom: 20px;
     right: 20px;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     opacity: 0.7;
     z-index: 999999;
@@ -443,8 +443,8 @@ select {
 }
 .slide-carousel.owl-carousel .owl-nav .owl-prev:hover,
 .slide-carousel.owl-carousel .owl-nav .owl-next:hover {
-    color: #00509d;
-    border: 2px solid #00509d;
+    color: #47ae1b;
+    border: 2px solid #47ae1b;
 }
 @media (max-width: 1310px) {
     .slider .text {
@@ -487,7 +487,7 @@ select {
 	margin-bottom: 10px;
 }
 .special .left-side h3 {
-	color: #00509d;
+	color: #47ae1b;
 	font-size: 34px;
 	font-weight: 800;
 	margin-bottom: 30px;
@@ -544,7 +544,7 @@ select {
 	display: block;
 	width: 66px;
 	height: 66px;
-    background: #00509d;
+    background: #47ae1b;
 	border-radius: 50%;
 	animation: video-pop 1500ms ease-out infinite;
 }
@@ -558,7 +558,7 @@ select {
 	display: block;
 	width: 66px;
 	height: 66px;
-	background: #00509d;
+	background: #47ae1b;
 	border-radius: 50%;
 	transition: all 200ms;
 }
@@ -782,7 +782,7 @@ select {
     margin-bottom: 15px;
 }
 .event .item .text .date-time i {
-    color: #00509d;
+    color: #47ae1b;
 }
 @media (max-width: 1199px) {
     .event .item .photo img {
@@ -842,7 +842,7 @@ select {
     font-size: 15px;
 }
 .blog .item .text .button a {
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
 }
 @media (max-width: 1199px) {
@@ -863,7 +863,7 @@ select {
 
 
 .cta {
-    background: #00509d;
+    background: #47ae1b;
 }
 .cta .left h2 {
     color: #fff;
@@ -886,7 +886,7 @@ select {
 }
 .cta .right a {
     background: #fff;
-    color: #00509d;
+    color: #47ae1b;
     border-radius: 30px;
     padding: 10px 30px;
     font-weight: 600;
@@ -937,14 +937,14 @@ select {
 }
 .footer input[type="submit"] {
     width: 100%;
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
     margin-top: 10px;
     font-weight: 600;
 }
 .footer input[type="submit"]:hover {
     background: #fff;
-    color: #00509d;
+    color: #47ae1b;
 }
 .footer .list-item {
     overflow: hidden;
@@ -979,7 +979,7 @@ select {
 }
 .footer ul.social li a {
     color: #fff;
-    background: #00509d;
+    background: #47ae1b;
     width: 30px;
     height: 30px;
     line-height: 30px;
@@ -988,7 +988,7 @@ select {
     display: block;
 }
 .footer ul.social li a:hover {
-    color: #00509d;
+    color: #47ae1b;
     background: #fff;
 }
 .footer ul.useful-links {
@@ -1005,7 +1005,7 @@ select {
 }
 .footer ul.useful-links li a:hover {
     padding-left: 6px;
-    color: #00509d!important;
+    color: #47ae1b!important;
 }
 
 
@@ -1057,11 +1057,11 @@ select {
     text-align: center;
 }
 .page-top .button a {
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
 }
 .page-top .button a:hover {
-    background: #00509d;
+    background: #47ae1b;
     opacity: 0.8;
 }
 .page-top .breadcrumb-container {
@@ -1084,7 +1084,7 @@ select {
     color: #ffffff;
 }
 .page-top .breadcrumb a:hover {
-    color: #00509d;
+    color: #47ae1b;
 }
 
 @media (max-width: 991px) {
@@ -1161,7 +1161,7 @@ select {
 }
 .team ul li a {
     color: #fff;
-    background: #00509d;
+    background: #47ae1b;
     width: 30px;
     height: 30px;
     line-height: 30px;
@@ -1269,10 +1269,10 @@ select {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
-    border: 1px solid #00509d;
+    border: 1px solid #47ae1b;
     border-radius: 30px;
     padding: 8px 35px;
     transition: all 0.3s;
@@ -1281,8 +1281,8 @@ select {
 .contact-form button:hover {
     transition: all 0.3s;
     background: transparent;
-    border: 1px solid #00509d;
-    color: #00509d;
+    border: 1px solid #47ae1b;
+    color: #47ae1b;
 }
 .map iframe {
     width: 100%;
@@ -1300,7 +1300,7 @@ select {
     width: 70%;
 }
 .faq .accordion-button {
-    color: #00509d;
+    color: #47ae1b;
     font-weight: 700;
     background: #ebebeb;
     font-size: 18px;
@@ -1321,7 +1321,7 @@ select {
     font-weight: 700;
     background-image: none;
     transform: none;
-    color: #00509d;
+    color: #47ae1b;
 }
 .faq .accordion-button.collapsed::after {
     font-family: "Font Awesome 5 Free";
@@ -1380,7 +1380,7 @@ select {
     font-weight: 700;
     background-image: none;
     transform: none;
-    color: #00509d;
+    color: #47ae1b;
 }
 .faq-cause .accordion-button.collapsed::after {
     font-family: "Font Awesome 5 Free";
@@ -1492,7 +1492,7 @@ select {
 .testimonial-carousel .owl-dots .owl-dot {
     width: 24px;
     height: 24px;
-    background: #00509d;
+    background: #47ae1b;
     border: 7px solid #fff;
     border-radius: 50%;
     display: inline-block;
@@ -1514,7 +1514,7 @@ select {
     height: 50px;
     line-height: 48px;
     background: #fff;
-    color: #00509d;
+    color: #47ae1b;
     margin-top: -25px;
     transition: all 0.3s;
     -webkit-transition: all 0.3s;
@@ -1527,7 +1527,7 @@ select {
 }
 .testimonial-carousel .owl-nav .owl-prev:hover,
 .testimonial-carousel .owl-nav .owl-next:hover {
-    color: #00509d;
+    color: #47ae1b;
     background: #fff;
 }
 @media (max-width: 991px) {
@@ -1550,12 +1550,12 @@ select {
 }
 .counter-section .counter-item {
     text-align: center;
-    color: #00509d;
+    color: #47ae1b;
 }
 .counter-section .counter-item .counter {
     font-size: 50px;
     font-weight: 700;
-    color: #00509d;
+    color: #47ae1b;
 }
 .counter-section .counter-item .text {
     font-size: 20px;
@@ -1606,7 +1606,7 @@ select {
     top: 35px;
 }
 .page-top-job-single .job-single .item .text .apply a {
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
     padding: 12px 30px;
     font-weight: 600;
@@ -1717,10 +1717,10 @@ select {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
-    border: 1px solid #00509d;
+    border: 1px solid #47ae1b;
     border-radius: 30px;
     padding: 8px 35px;
     transition: all 0.3s;
@@ -1729,8 +1729,8 @@ select {
 .event-detail .right-item .enquery-form button:hover {
     transition: all 0.3s;
     background: transparent;
-    border: 1px solid #00509d;
-    color: #00509d;
+    border: 1px solid #47ae1b;
+    color: #47ae1b;
 }
 .event-detail .right-item .summary table tr td:nth-of-type(1) {
     width: 120px;
@@ -1749,7 +1749,7 @@ select {
 	justify-content: center;
 }
 .event-detail .right-item .box {
-    background: #00509d;
+    background: #47ae1b;
 	border: 2px solid #fff;
 	width: 100px;
 	height: 100px;
@@ -1782,7 +1782,7 @@ select {
 }
 .event-detail .right-item .pay-sec .pay-now {
     font-weight: 600;
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
 }
 @media (max-width: 991px) {
@@ -1840,10 +1840,10 @@ select {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
-    border: 1px solid #00509d;
+    border: 1px solid #47ae1b;
     border-radius: 30px;
     padding: 8px 35px;
     transition: all 0.3s;
@@ -1852,8 +1852,8 @@ select {
 .cause-detail .right-item .enquery-form button:hover {
     transition: all 0.3s;
     background: transparent;
-    border: 1px solid #00509d;
-    color: #00509d;
+    border: 1px solid #47ae1b;
+    color: #47ae1b;
 }
 .cause-detail .right-item .summary table tr td:nth-of-type(1) {
     width: 160px;
@@ -1890,21 +1890,21 @@ select {
 }
 .cause-detail .right-item .donate-select ul li button {
     background: #fff;
-    color: #00509d;
+    color: #47ae1b;
     border: 0;
 }
 .cause-detail .right-item .donate-select ul li button.selected {
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
 }
 .cause-detail .right-item .donate-select ul li button:hover {
     background: #bbf5a3;
-    color: #00509d;
+    color: #47ae1b;
 }
 .cause-detail .right-item .donate-sec .donate-now {
     text-transform: uppercase;
     font-weight: 600;
-    background: #00509d;
+    background: #47ae1b;
     border: 0;
     margin-top: 15px;
 }
@@ -1977,7 +1977,7 @@ select {
     font-size: 14px;
 }
 .post .left-item .sub ul li i {
-    color: #00509d;
+    color: #47ae1b;
 }
 .post .left-item .description {
     display: block;
@@ -2021,7 +2021,7 @@ select {
     border-radius: 3px;
 }
 .post .right-item ul.tag li a:hover {
-    background: #00509d;
+    background: #47ae1b;
 }
 
 
@@ -2034,7 +2034,7 @@ select {
 .comment h2 {
     font-size: 18px;
     font-weight: 700;
-    color: #00509d;
+    color: #47ae1b;
     margin-bottom: 20px;
 }
 .comment .comment-section {
@@ -2067,7 +2067,7 @@ select {
     margin-top: 10px;
 }
 .comment .comment-box .right .reply a {
-    color: #00509d;
+    color: #47ae1b;
     font-size: 16px;
 }
 .comment .reply-box {
@@ -2085,7 +2085,7 @@ select {
     font-size: 16px;
     font-weight: 600;
     display: inline-block;
-    background: #00509d;
+    background: #47ae1b;
     color: #fff;
     text-decoration: none;
     border: 0;
@@ -2096,8 +2096,8 @@ select {
 }
 .comment button:hover {
     transition: all 0.3s;
-    background: #00509d;
-    color: #00509d;
+    background: #47ae1b;
+    color: #47ae1b;
 }
 .comment button:hover {
     background: #000!important;
@@ -2252,7 +2252,7 @@ select {
 .photo-gallery-heading {
 	font-weight: 700;
 	font-size: 22px;
-	color: #00509d;
+	color: #47ae1b;
 	text-align: left;
 }
 .photo-gallery-item {
@@ -2326,7 +2326,7 @@ select {
 .video-gallery-heading {
 	font-weight: 700;
 	font-size: 22px;
-	color: #00509d;
+	color: #47ae1b;
 	text-align: left;
 }
 .video-gallery-item {

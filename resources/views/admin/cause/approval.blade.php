@@ -4,7 +4,7 @@
 <div class="main-content">
     <section class="section">
         <div class="section-header d-flex justify-content-between">
-            <h1>Causes</h1>
+            <h1>Causes Approval</h1>
             <div>
                 <a href="{{ route('admin_cause_create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New</a>
             </div>
@@ -21,10 +21,7 @@
                                             <th>SL</th>
                                             <th>Featured Photo</th>
                                             <th>Name</th>
-                                            <th>Goal</th>
-                                            <th>Raised</th>
-                                            <th>Is Featured?</th>
-                                            <th>Options</th>
+                                            <th>Status</th> <!-- Updated column heading -->
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -39,23 +36,21 @@
                                                 {{ $item->name }}
                                             </td>
                                             <td>
-                                                ${{ $item->goal }}
+                                                <!-- Display buttons for approve and reject -->
+                                                @if($item->status == 'approve')
+                                                    <span class="badge badge-success">Approved</span>
+                                                @elseif($item->status == 'reject')
+                                                    <span class="badge badge-danger">Rejected</span>
+                                                @else
+                                                    <form method="POST" action="{{ route('update_cause_status', $item->id) }}">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success btn-sm" name="status" value="approve">Approve</button>
+                                                        <button type="submit" class="btn btn-danger btn-sm" name="status" value="reject">Reject</button>
+                                                    </form>
+                                                @endif
                                             </td>
                                             <td>
-                                                ${{ $item->raised }}
-                                            </td>
-                                            <td>
-                                                {{ $item->is_featured }}
-                                            </td>
-                                            <td>
-                                                <a href="{{ route('admin_cause_photo',$item->id) }}" class="btn btn-primary btn-sm w_100_p mb_5">Photo Gallery</a>
-                                                <a href="{{ route('admin_cause_video',$item->id) }}" class="btn btn-success btn-sm w_100_p mb_5">Video Gallery</a>
-                                                <a href="{{ route('admin_cause_faq',$item->id) }}" class="btn btn-info btn-sm w_100_p mb_5">FAQ</a>
-                                                <a href="{{ route('admin_cause_donations',$item->id) }}" class="btn btn-warning btn-sm w_100_p">Donations</a>
-                                            </td>
-                                            <td class="pt_10 pb_10">
-                                                <a href="{{ route('admin_cause_edit',$item->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                                <a href="{{ route('admin_cause_delete',$item->id) }}" class="btn btn-danger btn-sm" onClick="return confirm('Are you sure?');"><i class="fas fa-trash"></i></a>
+                                                <a href="{{ route('admin_cause_details',$item->slug) }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-eye"></i></a>
                                             </td>
                                         </tr>
                                         @endforeach
