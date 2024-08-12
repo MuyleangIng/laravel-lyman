@@ -105,11 +105,16 @@ class AdminCauseController extends Controller
     public function delete($id)
     {
         $cause = Cause::findOrFail($id);
-        unlink(public_path('uploads/'.$cause->featured_photo));
-        $cause->delete();
+    
+        if ($cause->featured_photo && file_exists(public_path('uploads/' . $cause->featured_photo))) {
+            unlink(public_path('uploads/' . $cause->featured_photo));
+        }
 
-        return redirect()->back()->with('success','Cause deleted successfully');
+        $cause->delete();
+    
+        return redirect()->back()->with('success', 'Cause deleted successfully');
     }
+    
 
     public function photo($id)
     {

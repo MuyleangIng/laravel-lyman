@@ -11,6 +11,7 @@ use App\Models\CauseFaq;
 use App\Models\CauseDonation;
 use App\Models\Admin;
 use App\Mail\Websitemail;
+use App\Services\PayWayService;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 class CauseController extends Controller
@@ -69,6 +70,13 @@ class CauseController extends Controller
         return redirect()->back()->with('success','Message sent successfully');
     }
 
+    protected $payWayService;
+
+    public function __construct(PayWayService $payWayService)
+    {
+        $this->payWayService = $payWayService;
+    }
+
 
 
     public function payment(Request $request)
@@ -90,6 +98,7 @@ class CauseController extends Controller
         }
 
         if($request->payment_method == 'paypal') {
+            // PayPal logic (existing)
             $provider = new PayPalClient;
             $provider->setApiCredentials(config('paypal'));
             $paypalToken = $provider->getAccessToken();
@@ -108,7 +117,7 @@ class CauseController extends Controller
                     ]
                 ]
             ]);
-            //dd($response);
+
             if(isset($response['id']) && $response['id']!=null) {
                 foreach($response['links'] as $link) {
                     if($link['rel'] === 'approve') {
@@ -123,6 +132,7 @@ class CauseController extends Controller
         }
 
         if($request->payment_method == 'stripe') {
+            // Stripe logic (existing)
             $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
             $response = $stripe->checkout->sessions->create([
                 'line_items' => [
@@ -141,7 +151,7 @@ class CauseController extends Controller
                 'success_url' => route('donation_stripe_success').'?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('donation_cancel'),
             ]);
-            // dd($response);
+
             if(isset($response->id) && $response->id != ''){
                 session()->put('cause_id', $request->cause_id);
                 session()->put('price', $request->price);
@@ -149,7 +159,52 @@ class CauseController extends Controller
             } else {
                 return redirect()->route('donation_cancel');
             }
-        } 
+        }
+
+        if($request->payment_method == 'payway') {
+            $item = [
+                ['name' => $cause_data->name, 'quantity' => '1', 'price' => $request->price]
+            ];
+
+            $items = base64_encode(json_encode($item));
+            $req_time = time();
+            $transactionId = $req_time; 
+            $amount = $request->price;
+            $firstName = auth()->user()->first_name;
+            $lastName = auth()->user()->last_name;
+            $phone = auth()->user()->phone;
+            $email = auth()->user()->email;
+            $return_params = 'Thank you for your donation!';
+            $type = 'purchase';
+            $currency = 'USD';
+            $shipping = '0.00';
+            $merchant_id = config('payway.merchant_id');
+            $payment_option = '';
+
+            $hash = $this->payWayService->getHash(
+                $req_time . $merchant_id . $transactionId . $amount . $items . $shipping .
+                $firstName . $lastName . $email . $phone . $type . $payment_option .
+                $currency . $return_params
+            );
+
+            return view('front/checkout', compact(
+                'hash', 'transactionId', 'amount', 'firstName', 'lastName', 'phone', 'email',
+                'items', 'return_params', 'shipping', 'currency', 'type', 'payment_option', 'merchant_id', 'req_time'
+            ));
+        }
+    }
+
+    public function payway_success(Request $request)
+    {
+        
+        $cause_data = Cause::where('id', session()->get('cause_id'))->first();
+        $cause_data->raised = $cause_data->raised + session()->get('price');
+        $cause_data->update();
+
+        unset($_SESSION['cause_id']);
+        unset($_SESSION['price']);
+
+        return redirect()->route('cause', $cause_data->slug)->with('success', 'Payment completed successfully via Payway');
     }
 
 
@@ -220,6 +275,8 @@ class CauseController extends Controller
             return redirect()->route('donation_cancel');
         }
     }
+
+
 
     public function cancel()
     {

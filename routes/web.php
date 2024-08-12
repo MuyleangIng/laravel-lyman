@@ -87,6 +87,7 @@ Route::get('/donation/cancel', [CauseController::class, 'cancel'])->name('donati
 
 Route::get('/donation/paypal-success', [CauseController::class, 'paypal_success'])->name('donation_paypal_success');
 Route::get('/donation/stripe-success', [CauseController::class, 'stripe_success'])->name('donation_stripe_success');
+Route::get('payway/success', [CauseController::class, 'payway_success'])->name('donation_payway_success');
 
 
 Route::get('/terms-and-conditions', [TermsController::class, 'index'])->name('terms');
