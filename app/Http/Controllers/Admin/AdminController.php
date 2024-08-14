@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Charts\MonthlyCausesAreaChart;
+use App\Charts\MonthlyEventsBarChart;
+use App\Charts\MonthlyUsersChart;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Hash;
-use Auth;
 use App\Models\Admin;
 use App\Mail\Websitemail;
 use App\Models\Cause;
@@ -17,22 +18,59 @@ use App\Models\Subscriber;
 use App\Models\Post;
 use App\Models\Photo;
 use App\Models\Video;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Yajra\DataTables\DataTables;
 
 class AdminController extends Controller
 {
-    public function dashboard()
-    {
-        $total_causes = Cause::count();
-        $total_events = Event::count();
-        $total_testimonials = Testimonial::count();
-        $total_users = User::count();
-        $total_volunteers = Volunteer::count();
-        $total_subscribers = Subscriber::count();
-        $total_posts = Post::count();
-        $total_photos = Photo::count();
-        $total_videos = Video::count();
-        return view('admin.dashboard', compact('total_causes', 'total_events', 'total_testimonials', 'total_users', 'total_volunteers', 'total_subscribers', 'total_posts', 'total_photos', 'total_videos'));
+    public function dashboard(MonthlyUsersChart $chart, MonthlyCausesAreaChart $causesAreaChart, MonthlyEventsBarChart $eventsBarChart)
+{
+    // Get the total counts for various entities
+    $total_causes = Cause::count();
+    $total_events = Event::count();
+    $total_testimonials = Testimonial::count();
+    $total_users = User::count();
+    $total_volunteers = Volunteer::count();
+    $total_subscribers = Subscriber::count();
+    $total_posts = Post::count();
+    $total_photos = Photo::count();
+    $total_videos = Video::count();
+
+    // Fetch volunteer data for the Datatables
+    if (request()->ajax()) {
+        $volunteers = Volunteer::latest()->get();
+        return DataTables::of($volunteers)
+            ->addIndexColumn()
+            ->addColumn('action', function($row){
+                $actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> 
+                              <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
+                return $actionBtn;
+            })
+            ->rawColumns(['action'])
+            ->make(true);
     }
+
+    // Return view with all the data
+    return view('admin.dashboard', [
+        'chart' => $chart->build(),
+        'causesAreaChart' => $causesAreaChart->build(),
+        'eventsBarChart' => $eventsBarChart->build(),
+        'total_causes' => $total_causes,
+        'total_events' => $total_events,
+        'total_testimonials' => $total_testimonials,
+        'total_users' => $total_users,
+        'total_volunteers' => $total_volunteers,
+        'total_subscribers' => $total_subscribers,
+        'total_posts' => $total_posts,
+        'total_photos' => $total_photos,
+        'total_videos' => $total_videos,
+    ]);
+}
+
+    
+    
     public function edit_profile()
     {
         return view('admin.edit_profile');
@@ -131,7 +169,7 @@ class AdminController extends Controller
         $message = "Please click on below link to reset your password<br><br>";
         $message .= "<a href='".$reset_link."'>Click Here</a>";
 
-        \Mail::to($request->email)->send(new Websitemail($subject,$message));
+        Mail::to($request->email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Reset password link sent on your email');
     }

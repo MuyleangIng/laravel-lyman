@@ -11,8 +11,7 @@ use App\Models\Admin;
 use App\Mail\Websitemail;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Models\EventTicket;
-use App\Models\User;
-use Auth;
+use Illuminate\Support\Facades\Mail;
 
 class EventController extends Controller
 {
@@ -53,7 +52,7 @@ class EventController extends Controller
         $message .= "<b>Event Page URL: </b><br>";
         $message .= "<a href='".url('/event/'.$event_data->slug)."'>".url('/event/'.$event_data->slug)."</a>";
 
-        \Mail::to($admin_email)->send(new Websitemail($subject,$message));
+        Mail::to($admin_email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Message sent successfully');
     }

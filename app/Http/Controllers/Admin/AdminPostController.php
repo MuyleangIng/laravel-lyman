@@ -8,9 +8,9 @@ use App\Models\PostCategory;
 use App\Models\Post;
 use App\Models\Comment;
 use App\Models\Reply;
-use Auth;
 use App\Models\Subscriber;
 use App\Mail\Websitemail;
+use Illuminate\Support\Facades\Mail;
 
 class AdminPostController extends Controller
 {
@@ -68,7 +68,7 @@ class AdminPostController extends Controller
             $message .= '<a href="'.route('post', $post_data->slug).'">Click here to read the post</a>';
 
             foreach($subscribers as $subscriber){
-                \Mail::to($subscriber->email)->send(new Websitemail($subject,$message));
+                Mail::to($subscriber->email)->send(new Websitemail($subject,$message));
             }
         }
 

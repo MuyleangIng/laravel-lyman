@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\CausesExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cause;
@@ -12,9 +13,15 @@ use App\Models\CauseDonation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdminCauseController extends Controller
 {
+    public function export()
+    {
+        return Excel::download(new CausesExport, 'causes.xlsx');
+    }
+
     public function index()
     {
         $causes = Cause::all();

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Subscriber;
 use App\Mail\Websitemail;
+use Illuminate\Support\Facades\Mail;
 
 class SubscriberController extends Controller
 {
@@ -25,7 +26,7 @@ class SubscriberController extends Controller
         $message = "Please verify your email address by clicking on the following link:<br><br>";
         $message .= "<a href='".route('subscriber_verify',[$request->email,$subscriber->token])."'>".route('subscriber_verify',[$request->email,$subscriber->token])."</a><br><br>";
 
-        \Mail::to($request->email)->send(new Websitemail($subject,$message));
+        Mail::to($request->email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success', 'An email has been sent to you, Please check and verify your email');
     }

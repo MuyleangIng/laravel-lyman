@@ -78,8 +78,6 @@ class CauseController extends Controller
         $this->payWayService = $payWayService;
     }
 
-
-
     public function payment(Request $request)
     {
         if(!auth()->user()) {
@@ -188,10 +186,29 @@ class CauseController extends Controller
                 $currency . $return_params
             );
 
-            return view('front/checkout', compact(
-                'hash', 'transactionId', 'amount', 'firstName', 'lastName', 'phone', 'email',
-                'items', 'return_params', 'shipping', 'currency', 'type', 'payment_option', 'merchant_id', 'req_time'
-            ));
+            // return view('front/checkout', compact(
+            //     'hash', 'transactionId', 'amount', 'firstName', 'lastName', 'phone', 'email',
+            //     'items', 'return_params', 'shipping', 'currency', 'type', 'payment_option', 'merchant_id', 'req_time'
+            // ));
+            return response()->json([
+                // 'success' => true,
+                'hash' => $hash,
+                'transactionId' => $transactionId,
+                'amount' => $amount,
+                'firstName' => $firstName,
+                'lastName' => $lastName,
+                'phone' => $phone,
+                'email' => $email,
+                'items' => $items,
+                'return_params' => $return_params,
+                'shipping' => $shipping,
+                'currency' => $currency,
+                'type' => $type,
+                'payment_option' => $payment_option,
+                'merchant_id' => $merchant_id,
+                'req_time' => $req_time,
+                'api_url' => config('payway.api_url')
+            ]);
         }
     }
 

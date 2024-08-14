@@ -11,6 +11,7 @@ use App\Models\Reply;
 use Carbon\Carbon;
 use App\Mail\Websitemail;
 use App\Models\Admin;
+use Illuminate\Support\Facades\Mail;
 
 class PostController extends Controller
 {
@@ -74,7 +75,7 @@ class PostController extends Controller
 
         $admin_email = Admin::where('id',1)->first()->email;
 
-        \Mail::to($admin_email)->send(new Websitemail($subject,$message));
+        Mail::to($admin_email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Comment submitted successfully');
     }
@@ -103,7 +104,7 @@ class PostController extends Controller
 
         $admin_email = Admin::where('id',1)->first()->email;
 
-        \Mail::to($admin_email)->send(new Websitemail($subject,$message));
+        Mail::to($admin_email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Reply submitted successfully');
     }

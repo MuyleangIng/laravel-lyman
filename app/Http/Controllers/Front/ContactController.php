@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Mail\Websitemail;
 use App\Models\Admin;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -30,7 +31,7 @@ class ContactController extends Controller
         $message .= "Email: <br>".$request->email."<br><br>";
         $message .= "Message: <br>".$request->message."<br><br>";
 
-        \Mail::to($admin_data->email)->send(new Websitemail($subject,$message));
+        Mail::to($admin_data->email)->send(new Websitemail($subject,$message));
 
         return redirect()->back()->with('success','Message sent successfully');
     }

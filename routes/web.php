@@ -264,6 +264,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/cause/approval', [AdminCauseController::class, 'approval'])->name('admin_cause_approval');
     Route::get('/cause/details/{slug}', [AdminCauseController::class, 'details'])->name('admin_cause_details');
     Route::get('/cause/{id}/undoReject', [AdminCauseController::class, 'undoReject'])->name('admin_undo_reject');
+    //New route for export the cause data
+    Route::get('/cause/export', [AdminCauseController::class,"export"])->name('admin_cause_export');
 
     Route::get('/cause/photo/{id}', [AdminCauseController::class, 'photo'])->name('admin_cause_photo');
     Route::post('/cause/photo', [AdminCauseController::class, 'photo_submit'])->name('admin_cause_photo_submit');

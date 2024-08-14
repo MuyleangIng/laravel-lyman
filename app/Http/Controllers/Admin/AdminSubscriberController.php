@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Subscriber;
 use App\Mail\Websitemail;
+use Illuminate\Support\Facades\Mail;
 
 class AdminSubscriberController extends Controller
 {
@@ -33,7 +34,7 @@ class AdminSubscriberController extends Controller
         $message = nl2br($request->content);
 
         foreach($subscribers as $subscriber){
-            \Mail::to($subscriber->email)->send(new Websitemail($subject,$message));
+            Mail::to($subscriber->email)->send(new Websitemail($subject,$message));
         }
 
         return redirect()->back()->with('success', 'Message sent successfully');
