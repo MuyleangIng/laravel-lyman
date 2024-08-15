@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Charts\MonthlyCausesAreaChart;
-use App\Charts\MonthlyEventsBarChart;
+use App\Charts\MonthlyCausesDonationsBarChart;
 use App\Charts\MonthlyUsersChart;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ use Yajra\DataTables\DataTables;
 
 class AdminController extends Controller
 {
-    public function dashboard(MonthlyUsersChart $chart, MonthlyCausesAreaChart $causesAreaChart, MonthlyEventsBarChart $eventsBarChart)
+    public function dashboard(MonthlyUsersChart $chart, MonthlyCausesAreaChart $causesAreaChart, MonthlyCausesDonationsBarChart $causesDonationsBarChart)
 {
     // Get the total counts for various entities
     $total_causes = Cause::count();
@@ -56,7 +56,7 @@ class AdminController extends Controller
     return view('admin.dashboard', [
         'chart' => $chart->build(),
         'causesAreaChart' => $causesAreaChart->build(),
-        'eventsBarChart' => $eventsBarChart->build(),
+        'causesDonationsBarChart' => $causesDonationsBarChart->build(), 
         'total_causes' => $total_causes,
         'total_events' => $total_events,
         'total_testimonials' => $total_testimonials,

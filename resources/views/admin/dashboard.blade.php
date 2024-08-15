@@ -155,7 +155,7 @@
 
                 <!-- Events Column Chart -->
                 <div class="col-xl-4 col-md-12">
-                    {!! $eventsBarChart->container() !!}
+                    {!! $causesDonationsBarChart->container() !!}
                 </div>
             </div>
 
@@ -196,8 +196,8 @@
     <script src="{{ $causesAreaChart->cdn() }}"></script>
     {{ $causesAreaChart->script() }}
 
-    <script src="{{ $eventsBarChart->cdn() }}"></script>
-    {{ $eventsBarChart->script() }}
+    <script src="{{ $causesDonationsBarChart->cdn() }}"></script>
+    {{ $causesDonationsBarChart->script() }}
 
     <!-- Datatables Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
