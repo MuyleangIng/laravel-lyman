@@ -185,11 +185,7 @@ class CauseController extends Controller
                 $firstName . $lastName . $email . $phone . $type . $payment_option .
                 $currency . $return_params
             );
-
-            // return view('front/checkout', compact(
-            //     'hash', 'transactionId', 'amount', 'firstName', 'lastName', 'phone', 'email',
-            //     'items', 'return_params', 'shipping', 'currency', 'type', 'payment_option', 'merchant_id', 'req_time'
-            // ));
+            
             return response()->json([
                 // 'success' => true,
                 'hash' => $hash,

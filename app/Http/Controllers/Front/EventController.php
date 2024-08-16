@@ -12,6 +12,7 @@ use App\Mail\Websitemail;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use App\Models\EventTicket;
 use Illuminate\Support\Facades\Mail;
+use App\Services\PayWayService;
 
 class EventController extends Controller
 {
@@ -57,94 +58,149 @@ class EventController extends Controller
         return redirect()->back()->with('success','Message sent successfully');
     }
 
-    public function payment(Request $request)
-    {
-        if(!auth()->user()) {
-            return redirect()->route('login');
-        }
+    protected $payWayService;
 
-        $request->validate([
-            'number_of_tickets' => 'required',
-            'payment_method' => 'required'
-        ]);
+public function __construct(PayWayService $payWayService)
+{
+    $this->payWayService = $payWayService;
+}
 
-        $event_data = Event::where('id',$request->event_id)->first();
+public function payment(Request $request)
+{
+    if(!auth()->user()) {
+        return redirect()->route('login');
+    }
 
-        if($event_data->total_seat > 0) {
-            $remaining_seat = $event_data->total_seat - $event_data->booked_seat;
-            if($event_data->booked_seat + $request->number_of_tickets > $event_data->total_seat) {
-                return redirect()->back()->with('error','Sorry, only '.$remaining_seat.' tickets/seats are available');
-            }
-        }
+    $request->validate([
+        'payment_method' => 'required',
+        'event_id' => 'required|exists:events,id',
+        'number_of_tickets' => 'required|integer|min:1',
+        'price' => 'required|numeric|min:1'
+    ]);
 
-        $total_price = $request->number_of_tickets * $request->unit_price;
+    $event_data = Event::where('id', $request->event_id)->first();
+    $remaining_tickets = $event_data->total_seat - $event_data->booked_seat;
+    // dd($event_data->total_seat);
 
-        if($request->payment_method == 'paypal') {
-            $provider = new PayPalClient;
-            $provider->setApiCredentials(config('paypal'));
-            $paypalToken = $provider->getAccessToken();
-            $response = $provider->createOrder([
-                "intent" => "CAPTURE",
-                "application_context" => [
-                    "return_url" => route('event_ticket_paypal_success'),
-                    "cancel_url" => route('event_ticket_cancel')
-                ],
-                "purchase_units" => [
-                    [
-                        "amount" => [
-                            "currency_code" => "USD",
-                            "value" => $total_price
-                        ]
+    if($request->price > $remaining_tickets) {
+        return redirect()->back()->with('error','You cannot purchase more tickets than available.');
+    }
+
+    $total_price = $request->price * $request->number_of_tickets;
+
+    if($request->payment_method == 'paypal') {
+        // PayPal logic
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $paypalToken = $provider->getAccessToken();
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "application_context" => [
+                "return_url" => route('event_paypal_success'),
+                "cancel_url" => route('event_cancel')
+            ],
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $request->price
                     ]
                 ]
-            ]);
-            //dd($response);
-            if(isset($response['id']) && $response['id']!=null) {
-                foreach($response['links'] as $link) {
-                    if($link['rel'] === 'approve') {
-                        session()->put('event_id', $request->event_id);
-                        session()->put('unit_price', $request->unit_price);
-                        session()->put('number_of_tickets', $request->number_of_tickets);
-                        session()->put('total_price', $total_price);
-                        return redirect()->away($link['href']);
-                    }
-                }
-            } else {
-                return redirect()->route('event_ticket_cancel');
-            }
-        }
+            ]
+        ]);
 
-        if($request->payment_method == 'stripe') {
-            $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
-            $response = $stripe->checkout->sessions->create([
-                'line_items' => [
-                    [
-                        'price_data' => [
-                            'currency' => 'usd',
-                            'product_data' => [
-                                'name' => $event_data->name,
-                            ],
-                            'unit_amount' => $total_price*100,
-                        ],
-                        'quantity' => $request->number_of_tickets,
-                    ],
-                ],
-                'mode' => 'payment',
-                'success_url' => route('event_ticket_stripe_success').'?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('event_ticket_cancel'),
-            ]);
-            //dd($response);
-            if(isset($response->id) && $response->id != ''){
-                session()->put('event_id', $request->event_id);
-                session()->put('unit_price', $request->unit_price);
-                session()->put('number_of_tickets', $request->number_of_tickets);
-                session()->put('total_price', $total_price);
-                return redirect($response->url);
-            } else {
-                return redirect()->route('event_ticket_cancel');
+        if(isset($response['id']) && $response['id'] != null) {
+            foreach($response['links'] as $link) {
+                if($link['rel'] === 'approve') {
+                    session()->put('event_id', $request->event_id);
+                    session()->put('price', $request->price);
+                    return redirect()->away($link['href']);
+                }
             }
-        } 
+        } else {
+            return redirect()->route('event_cancel');
+        }
     }
+
+    if($request->payment_method == 'stripe') {
+        // Stripe logic
+        $stripe = new \Stripe\StripeClient(config('stripe.stripe_sk'));
+        $response = $stripe->checkout->sessions->create([
+            'line_items' => [
+                [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => $event_data->name,
+                        ],
+                        'unit_amount' => $total_price * 100,
+                    ],
+                    'quantity' => 1,
+                ],
+            ],
+            'mode' => 'payment',
+            'success_url' => route('event_ticket_stripe_success').'?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('event_ticket_cancel'),
+        ]);
+
+        // dd($request->price);
+
+        if(isset($response->id) && $response->id != '') {
+            session()->put('event_id', $request->event_id);
+            session()->put('price', $request->price);
+            return redirect($response->url);
+        } else {
+            return redirect()->route('event_ticket_cancel');
+        }
+    }
+
+    if($request->payment_method == 'payway') {
+        $item = [
+            ['name' => $event_data->name, 'quantity' => '1', 'price' => $total_price]
+        ];
+
+        $items = base64_encode(json_encode($item));
+        $req_time = time();
+        $transactionId = $req_time; 
+        $amount = $total_price;
+        $firstName = auth()->user()->first_name;
+        $lastName = auth()->user()->last_name;
+        $phone = auth()->user()->phone;
+        $email = auth()->user()->email;
+        $return_params = 'Thank you for purchasing the ticket!';
+        $type = 'purchase';
+        $currency = 'USD';
+        $shipping = '0.00';
+        $merchant_id = config('payway.merchant_id');
+        $payment_option = '';
+
+        $hash = $this->payWayService->getHash(
+            $req_time . $merchant_id . $transactionId . $amount . $items . $shipping .
+            $firstName . $lastName . $email . $phone . $type . $payment_option .
+            $currency . $return_params
+        );
+        
+        return response()->json([
+            'hash' => $hash,
+            'transactionId' => $transactionId,
+            'amount' => $amount,
+            'firstName' => $firstName,
+            'lastName' => $lastName,
+            'phone' => $phone,
+            'email' => $email,
+            'items' => $items,
+            'return_params' => $return_params,
+            'shipping' => $shipping,
+            'currency' => $currency,
+            'type' => $type,
+            'payment_option' => $payment_option,
+            'merchant_id' => $merchant_id,
+            'req_time' => $req_time,
+            'api_url' => config('payway.api_url')
+        ]);
+    }
+}
+
 
 
     public function paypal_success(Request $request)
