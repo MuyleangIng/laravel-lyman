@@ -69,7 +69,7 @@
 
                 swal({
                     title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this event!",
+                    text: "Once deleted, you will not be able to recover this volunteer!",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
