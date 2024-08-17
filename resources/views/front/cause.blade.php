@@ -215,7 +215,7 @@
                                 <!-- Select Payment Method -->
                                 <h3>Select Payment Method:</h3>
                                 <div class="form-control">
-                                    <select name="payment_method" class="form-select" required>
+                                    <select name="payment_method" class="form-select" required id="paymentMethod">
                                         <option value="">Select Payment Method</option>
                                         <option value="paypal">PayPal</option>
                                         <option value="stripe">Stripe</option>
@@ -224,8 +224,8 @@
                                 </div>
 
                                 <!-- Submit Button -->
-                                <button type="button" class="btn btn-danger w-100-p donate-now" id="donateNowButton"
-                                    data-payment-method="payway">Donate Now</button>
+                                <button type="button" class="btn btn-danger w-100-p donate-now"
+                                    id="donatedNowButton">Donate Now</button>
                             </div>
                         </form>
                         <h2 class="mt_30">Information</h2>
@@ -330,45 +330,63 @@
                 }
             });
         });
-        $(document).ready(function() {
-            $('#donateNowButton').click(function(e) {
-                e.preventDefault();
+        document.getElementById('donatedNowButton').addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent form from auto-submitting
 
-                let form = $('#donationForm');
-                let formData = form.serialize();
+            var paymentMethod = document.getElementById('paymentMethod').value;
+            var donationForm = document.getElementById('donationForm');
 
-                $.ajax({
-                    type: 'POST',
-                    url: form.attr('action'),
-                    data: formData,
-                    success: function(response) {
-                        $('#aba_merchant_request').attr('action', response.api_url);
-                        $('#hash').val(response.hash);
-                        $('#tran_id').val(response.transactionId);
-                        $('#amount').val(response.amount);
-                        $('input[name="firstname"]').val(response.firstName);
-                        $('input[name="lastname"]').val(response.lastName);
-                        $('input[name="phone"]').val(response.phone);
-                        $('input[name="email"]').val(response.email);
-                        $('#items').val(response.items);
-                        $('input[name="return_params"]').val(response.return_params);
-                        $('input[name="shipping"]').val(response.shipping);
-                        $('input[name="currency"]').val(response.currency);
-                        $('input[name="type"]').val(response.type);
-                        $('input[name="payment_option"]').val(response.payment_option);
-                        $('input[name="merchant_id"]').val(response.merchant_id);
-                        $('input[name="req_time"]').val(response.req_time);
-                        $('#checkout_button').click();
-                    },
-                    error: function() {
-                        alert('There was an issue processing your request.');
-                    }
-                });
-            });
+            if (!paymentMethod) {
+                alert('Please select a payment method');
+                return; // Stop the function if no payment method is selected
+            }
+
+            // Handle payment submission based on selected method
+            if (paymentMethod === 'paypal' || paymentMethod === 'stripe') {
+                donationForm.submit(); // Directly submit the form for PayPal or Stripe
+            } else if (paymentMethod === 'payway') {
+                processPayWayPayment(); // Call PayWay payment function
+            }
         });
+
+        function processPayWayPayment() {
+            let form = $('#donationForm');
+            let formData = form.serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: formData,
+                success: function(response) {
+                    // Populate hidden form inputs with the PayWay response
+                    $('#aba_merchant_request').attr('action', response.api_url);
+                    $('#hash').val(response.hash);
+                    $('#tran_id').val(response.transactionId);
+                    $('#amount').val(response.amount);
+                    $('input[name="firstname"]').val(response.firstName);
+                    $('input[name="lastname"]').val(response.lastName);
+                    $('input[name="phone"]').val(response.phone);
+                    $('input[name="email"]').val(response.email);
+                    $('#items').val(response.items);
+                    $('input[name="return_params"]').val(response.return_params);
+                    $('input[name="shipping"]').val(response.shipping);
+                    $('input[name="currency"]').val(response.currency);
+                    $('input[name="type"]').val(response.type);
+                    $('input[name="payment_option"]').val(response.payment_option);
+                    $('input[name="merchant_id"]').val(response.merchant_id);
+                    $('input[name="req_time"]').val(response.req_time);
+
+                    $('#checkout_button').click(); // Trigger the AbaPayway checkout button
+                },
+                error: function() {
+                    alert('There was an issue processing your request.');
+                }
+            });
+        }
+
         $(document).ready(function() {
             $('#checkout_button').click(function() {
-                AbaPayway.checkout();
+                AbaPayway.checkout(); // Trigger the PayWay payment process
             });
         });
     </script>

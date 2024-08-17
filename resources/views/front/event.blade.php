@@ -202,7 +202,7 @@
                                                 <option value="{{ $i }}">{{ $i }}</option>
                                             @endfor
                                         </select>
-                                        <select name="payment_method" class="form-select mb_15">
+                                        <select name="payment_method" class="form-select mb_15" id="paymentMethod">
                                             <option value="">Select Payment Method</option>
                                             <option value="paypal">PayPal</option>
                                             <option value="stripe">Stripe</option>
@@ -211,8 +211,8 @@
                                         <div id="total_price">
                                             <!-- Total price will be updated here -->
                                         </div>
-                                        <button type="submit" class="btn btn-primary w-100-p pay-now" id="bookedNowButton"
-                                            data-payment-method="payway">Make Payment</button>
+                                        <button type="submit" class="btn btn-primary w-100-p pay-now"
+                                            id="bookedNowButton">Make Payment</button>
                                     </form>
                                 </div>
                             @endif
@@ -304,7 +304,7 @@
         <input type="hidden" name="merchant_id" value="" />
         <input type="hidden" name="req_time" value="" />
     </form>
-    <input type="button" id="checkout_button" value="Donate Now" style="display: none;">
+    <input type="button" id="checkout_button" value="Book Now" style="display: none;">
     <script src="https://checkout.payway.com.kh/plugins/checkout2-0.js"></script>
     <script>
         function updatePrice() {
@@ -313,42 +313,58 @@
             var totalPrice = unitPrice * numberOfTickets;
             document.getElementById('total_price').innerText = 'Total Price: $' + totalPrice.toFixed(2);
         }
-        $(document).ready(function() {
-            $('#bookedNowButton').click(function(e) {
-                e.preventDefault();
+        document.getElementById('bookedNowButton').addEventListener('click', function(e) {
+            e.preventDefault();
 
-                let form = $('#bookingForm');
-                let formData = form.serialize();
+            var paymentMethod = document.getElementById('paymentMethod').value;
+            var bookingForm = document.getElementById('bookingForm');
+            var formData = new FormData(bookingForm);
 
-                $.ajax({
-                    type: 'POST',
-                    url: form.attr('action'),
-                    data: formData,
-                    success: function(response) {
-                        $('#aba_merchant_request').attr('action', response.api_url);
-                        $('#hash').val(response.hash);
-                        $('#tran_id').val(response.transactionId);
-                        $('#amount').val(response.amount);
-                        $('input[name="firstname"]').val(response.firstName);
-                        $('input[name="lastname"]').val(response.lastName);
-                        $('input[name="phone"]').val(response.phone);
-                        $('input[name="email"]').val(response.email);
-                        $('#items').val(response.items);
-                        $('input[name="return_params"]').val(response.return_params);
-                        $('input[name="shipping"]').val(response.shipping);
-                        $('input[name="currency"]').val(response.currency);
-                        $('input[name="type"]').val(response.type);
-                        $('input[name="payment_option"]').val(response.payment_option);
-                        $('input[name="merchant_id"]').val(response.merchant_id);
-                        $('input[name="req_time"]').val(response.req_time);
-                        $('#checkout_button').click();
-                    },
-                    error: function() {
-                        alert('There was an issue processing your request.');
-                    }
-                });
-            });
+            if (paymentMethod === '') {
+                alert('Please select a payment method');
+                return;
+            }
+
+            if (paymentMethod === 'paypal' || paymentMethod === 'stripe') {
+                bookingForm.submit();
+            } else if (paymentMethod === 'payway') {
+                processPayWayPayment();
+            }
         });
+
+        function processPayWayPayment() {
+            let form = $('#bookingForm');
+            let formData = form.serialize();
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: formData,
+                success: function(response) {
+                    $('#aba_merchant_request').attr('action', response.api_url);
+                    $('#hash').val(response.hash);
+                    $('#tran_id').val(response.transactionId);
+                    $('#amount').val(response.amount);
+                    $('input[name="firstname"]').val(response.firstName);
+                    $('input[name="lastname"]').val(response.lastName);
+                    $('input[name="phone"]').val(response.phone);
+                    $('input[name="email"]').val(response.email);
+                    $('#items').val(response.items);
+                    $('input[name="return_params"]').val(response.return_params);
+                    $('input[name="shipping"]').val(response.shipping);
+                    $('input[name="currency"]').val(response.currency);
+                    $('input[name="type"]').val(response.type);
+                    $('input[name="payment_option"]').val(response.payment_option);
+                    $('input[name="merchant_id"]').val(response.merchant_id);
+                    $('input[name="req_time"]').val(response.req_time);
+                    $('#checkout_button').click();
+                },
+                error: function() {
+                    alert('There was an issue processing your request.');
+                }
+            });
+        }
+
         $(document).ready(function() {
             $('#checkout_button').click(function() {
                 AbaPayway.checkout();

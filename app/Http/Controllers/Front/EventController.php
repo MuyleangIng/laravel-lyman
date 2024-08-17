@@ -96,8 +96,8 @@ public function payment(Request $request)
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
             "application_context" => [
-                "return_url" => route('event_paypal_success'),
-                "cancel_url" => route('event_cancel')
+                "return_url" => route('event_ticket_paypal_success'),
+                "cancel_url" => route('event_ticket_cancel')
             ],
             "purchase_units" => [
                 [
@@ -118,7 +118,7 @@ public function payment(Request $request)
                 }
             }
         } else {
-            return redirect()->route('event_cancel');
+            return redirect()->route('event_ticket_cancel');
         }
     }
 
