@@ -63,10 +63,15 @@
                                                     <td class="pt_10 pb_10">
                                                         <a href="{{ route('admin_cause_edit', $item->id) }}"
                                                             class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                                        <a href="{{ route('admin_cause_delete', $item->id) }}"
-                                                            class="btn btn-danger btn-sm"
-                                                            onClick="return confirm('Are you sure?');"><i
-                                                                class="fas fa-trash"></i></a>
+                                                        <form action="{{ route('admin_cause_delete', $item->id) }}"
+                                                            method="POST" class="d-inline delete-form">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="button"
+                                                                class="btn btn-danger btn-sm delete-button">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -80,4 +85,26 @@
             </div>
         </section>
     </div>
+    <script>
+        $(document).ready(function() {
+            $('.delete-button').click(function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var form = $(this).closest(
+                    'form'); // Get the form associated with the clicked delete button
+
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this cause!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        form.submit(); 
+                    }
+                });
+            });
+        });
+    </script>
 @endsection
