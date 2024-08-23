@@ -24,50 +24,57 @@ use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\DataTables;
 
 class AdminController extends Controller
-{
-    public function dashboard(MonthlyUsersChart $chart, MonthlyCausesAreaChart $causesAreaChart, MonthlyCausesDonationsBarChart $causesDonationsBarChart)
-{
-    // Get the total counts for various entities
-    $total_causes = Cause::count();
-    $total_events = Event::count();
-    $total_testimonials = Testimonial::count();
-    $total_users = User::count();
-    $total_volunteers = Volunteer::count();
-    $total_subscribers = Subscriber::count();
-    $total_posts = Post::count();
-    $total_photos = Photo::count();
-    $total_videos = Video::count();
+{public function dashboard(
+    MonthlyUsersChart $monthlyUsersChart, 
+    MonthlyCausesAreaChart $monthlyCausesAreaChart, 
+    MonthlyCausesDonationsBarChart $monthlyCausesDonationsBarChart
+) {
+    // Get filter parameters from request, default to current year if not provided
+    $filterYear = request()->get('year', date('Y'));
 
     // Fetch volunteer data for the Datatables
     if (request()->ajax()) {
         $volunteers = Volunteer::latest()->get();
         return DataTables::of($volunteers)
             ->addIndexColumn()
-            ->addColumn('action', function($row){
-                $actionBtn = '<a href="javascript:void(0)" class="edit btn btn-success btn-sm">Edit</a> 
-                              <a href="javascript:void(0)" class="delete btn btn-danger btn-sm">Delete</a>';
+            ->addColumn('action', function($row) {
+                $editUrl = route('admin_volunteer_edit', $row->id);
+                $deleteUrl = route('admin_volunteer_delete', $row->id);
+                $actionBtn = '<a href="' . $editUrl . '" class="edit btn btn-primary btn-sm">Edit</a>
+                <form method="POST" style="display:inline">
+                    <a href="javascript:void(0)" data-url="'.$deleteUrl.'" class="delete-button btn btn-danger btn-sm">Delete</a>
+                </form>';
                 return $actionBtn;
             })
             ->rawColumns(['action'])
             ->make(true);
     }
 
+    // Set the filter year on the chart builders and build the charts
+    $causesAreaChart = $monthlyCausesAreaChart->setYear($filterYear)->build();
+    $usersChart = $monthlyUsersChart->setYear($filterYear)->build();
+    $donationsBarChart = $monthlyCausesDonationsBarChart->setYear($filterYear)->build();
+
     // Return view with all the data
     return view('admin.dashboard', [
-        'chart' => $chart->build(),
-        'causesAreaChart' => $causesAreaChart->build(),
-        'causesDonationsBarChart' => $causesDonationsBarChart->build(), 
-        'total_causes' => $total_causes,
-        'total_events' => $total_events,
-        'total_testimonials' => $total_testimonials,
-        'total_users' => $total_users,
-        'total_volunteers' => $total_volunteers,
-        'total_subscribers' => $total_subscribers,
-        'total_posts' => $total_posts,
-        'total_photos' => $total_photos,
-        'total_videos' => $total_videos,
+        'chart' => $usersChart,
+        'causesAreaChart' => $causesAreaChart,
+        'causesDonationsBarChart' => $donationsBarChart, 
+        'total_causes' => Cause::count(),
+        'total_events' => Event::count(),
+        'total_testimonials' => Testimonial::count(),
+        'total_users' => User::count(),
+        'total_volunteers' => Volunteer::count(),
+        'total_subscribers' => Subscriber::count(),
+        'total_posts' => Post::count(),
+        'total_photos' => Photo::count(),
+        'total_videos' => Video::count(),
     ]);
 }
+
+    
+
+    
 
     
     

@@ -39,6 +39,7 @@ use App\Http\Controllers\Admin\AdminHomePageController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminOtherPageController;
 use App\Http\Controllers\Admin\AdminSubscriberController;
+use App\Http\Controllers\Admin\AdminUserController;
 
 require __DIR__.'/auth.php';
 
@@ -80,6 +81,7 @@ Route::get('/causes', [CauseController::class, 'index'])->name('causes');
 Route::get('/cause/{slug}', [CauseController::class, 'detail'])->name('cause');
 
 Route::post('/cause/send-message', [CauseController::class, 'send_message'])->name('cause_send_message');
+Route::post('/casue/replies', [CauseController::class, 'store'])->name('replies.store');
 
 
 Route::post('/donation/payment', [CauseController::class, 'payment'])->name('donation_payment');
@@ -105,6 +107,8 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::get('/event/tickets', [UserController::class, 'tickets'])->name('user_event_tickets');
     Route::get('/event/ticket/invoice/{id}', [UserController::class, 'ticket_invoice'])->name('user_event_ticket_invoice');
 
+
+    Route::get('/user_reply_comment', [UserController::class, 'reply_comment'])->name('user_reply_comment');
 
 
     Route::get('/cause', [UserController::class, 'causes'])->name('user_cause');
@@ -178,6 +182,13 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/volunteer/edit/submit/{id}', [AdminVolunteerController::class, 'edit_submit'])->name('admin_volunteer_edit_submit');
     Route::get('/volunteer/delete/{id}', [AdminVolunteerController::class, 'delete'])->name('admin_volunteer_delete');
 
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin_user_index');
+    Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin_user_create');
+    Route::post('/admin/users/create', [AdminUserController::class, 'create_submit'])->name('admin_user_create_submit');
+    Route::get('/admin/users/edit/{id}', [AdminUserController::class, 'edit'])->name('admin_user_edit');
+    Route::post('/admin/users/edit/{id}', [AdminUserController::class, 'edit_submit'])->name('admin_user_edit_submit');
+    Route::get('/admin/users/delete/{id}', [AdminUserController::class, 'delete'])->name('admin_user_delete');
+    Route::get('/admin/user/block/{id}', [AdminUserController::class, 'block'])->name('admin_user_block');
 
     Route::get('/photo-category/index', [AdminPhotoCategoryController::class, 'index'])->name('admin_photo_category_index');
     Route::get('/photo-category/create', [AdminPhotoCategoryController::class, 'create'])->name('admin_photo_category_create');
@@ -186,14 +197,12 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/photo-category/edit/submit/{id}', [AdminPhotoCategoryController::class, 'edit_submit'])->name('admin_photo_category_edit_submit');
     Route::get('/photo-category/delete/{id}', [AdminPhotoCategoryController::class, 'delete'])->name('admin_photo_category_delete');
 
-
     Route::get('/photo/index', [AdminPhotoController::class, 'index'])->name('admin_photo_index');
     Route::get('/photo/create', [AdminPhotoController::class, 'create'])->name('admin_photo_create');
     Route::post('/photo/create/submit', [AdminPhotoController::class, 'create_submit'])->name('admin_photo_create_submit');
     Route::get('/photo/edit/{id}', [AdminPhotoController::class, 'edit'])->name('admin_photo_edit');
     Route::post('/photo/edit/submit/{id}', [AdminPhotoController::class, 'edit_submit'])->name('admin_photo_edit_submit');
     Route::get('/photo/delete/{id}', [AdminPhotoController::class, 'delete'])->name('admin_photo_delete');
-
 
     Route::get('/video-category/index', [AdminVideoCategoryController::class, 'index'])->name('admin_video_category_index');
     Route::get('/video-category/create', [AdminVideoCategoryController::class, 'create'])->name('admin_video_category_create');

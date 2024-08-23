@@ -13,3 +13,4 @@
 <script src="{{ asset('dist-front/js/jquery.meanmenu.js') }}"></script>
 <script src="{{ asset('dist-front/js/iziToast.min.js') }}"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>

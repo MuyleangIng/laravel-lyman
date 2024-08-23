@@ -192,14 +192,39 @@ class AdminPostController extends Controller
             'reply' => 'required',
         ]);
 
+        $adminName = null;
+        $adminEmail = null;
+        $userType = null;
+
+        // Check if the user is authenticated as an admin
+        if (auth('admin')->check()) {
+            $adminName = auth('admin')->user()->name;
+            $adminEmail = auth('admin')->user()->email;
+            $userType = 'Admin';
+        } 
+        // Check if the user is authenticated as a regular user
+        elseif (auth('web')->check()) {
+            $adminName = auth('web')->user()->name;
+            $adminEmail = auth('web')->user()->email;
+            $userType = 'User';
+        }
+
+        // If no authenticated user is found, handle it (you might redirect or throw an error)
+        if (is_null($adminName)) {
+            return redirect()->back()->with('error', 'No authenticated user found.');
+        }
+
+        // Create a new reply
         $reply = new Reply();
         $reply->comment_id = $request->comment_id;
         $reply->reply = $request->reply;
-        $reply->user_type = 'Admin';
+        $reply->user_type = $userType; // Set user type as 'Admin' or 'User'
         $reply->status = 'Active';
+        $reply->name = $adminName; // Set the name based on user type
+        $reply->email = $adminEmail; // Set the email based on user type
         $reply->save();
 
-        return redirect()->back()->with('success','Reply submitted successfully');
+        return redirect()->back()->with('success', 'Reply submitted successfully');
     }
     
 }

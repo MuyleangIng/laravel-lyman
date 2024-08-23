@@ -71,6 +71,10 @@ public function payment(Request $request)
         return redirect()->route('login');
     }
 
+    if (auth()->user()->block == 1) {
+        return redirect()->back()->with('error', 'You are blocked and cannot make a payment.');
+    }
+
     $request->validate([
         'payment_method' => 'required',
         'event_id' => 'required|exists:events,id',
@@ -286,6 +290,10 @@ public function payment(Request $request)
     {
         if(!auth()->user()) {
             return redirect()->route('login');
+        }
+
+        if (auth()->user()->block == 1) {
+            return redirect()->back()->with('error', 'You are blocked and cannot make a booking.');
         }
 
         $request->validate([

@@ -117,60 +117,115 @@
                             @endforeach
                         </div>
                     </div>
+                    <div class="left-item">
+                        <div class="card">
+                            <div class="card-body p-4">
+                                <h4 class="text-center mb-4 pb-2">Comments Section</h4>
+
+                                @foreach ($comments as $comment)
+                                    <div class="row mb-4">
+                                        <div class="col">
+                                            <div class="d-flex flex-start">
+                                                <!-- Commenter Avatar and Details -->​​​​​
+                                                <img class="rounded-circle shadow-1-strong me-3"
+                                                    src="{{ asset('uploads/' . ($comment->photo ?? 'default.png')) }}"
+                                                    alt="avatar" width="65" height="65" />
+                                                <div class="flex-grow-1 flex-shrink-1">
+                                                    <div>
+                                                        <div class="d-flex justify-content-between align-items-center">
+                                                            <p class="mb-1">
+                                                                {{ $comment->name }} <span class="small">-
+                                                                    {{ $comment->created_at->diffForHumans() }}</span>
+                                                            </p>
+                                                            <!-- Check if user can reply (not their own comment) -->
+                                                            @if (auth()->check() && auth()->user()->id !== $comment->user_id)
+                                                                <a href="#" data-bs-toggle="modal"
+                                                                    data-bs-target="#reply-form-{{ $comment->id }}">
+                                                                    <i class="fas fa-reply fa-xs"></i><span class="small">
+                                                                        reply</span>
+                                                                </a>
+                                                            @endif
+                                                        </div>
+                                                        <p class="small mb-0">
+                                                            {{ $comment->message }}
+                                                        </p>
+                                                    </div>
+
+                                                    <!-- Replies Section -->
+                                                    @foreach ($comment->replies as $reply)
+                                                        <div class="d-flex flex-start mt-4">
+                                                            <a class="me-3" href="#">
+                                                                <img class="rounded-circle shadow-1-strong"
+                                                                    src="{{ asset('uploads/' . ($reply->photo ?? 'default.png')) }}"
+                                                                    alt="avatar" width="65" height="65" />
+                                                            </a>
+                                                            <div class="flex-grow-1 flex-shrink-1">
+                                                                <div>
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <p class="mb-1">
+                                                                            {{ $reply->name }} <span class="small">-
+                                                                                {{ $reply->created_at->diffForHumans() }}</span>
+                                                                        </p>
+                                                                    </div>
+                                                                    <p class="small mb-0">
+                                                                        {{ $reply->reply }}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+
+                                                    <!-- Modal for Reply Form -->
+                                                    <div class="modal fade" id="reply-form-{{ $comment->id }}"
+                                                        tabindex="-1"
+                                                        aria-labelledby="replyFormLabel-{{ $comment->id }}"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="replyFormLabel-{{ $comment->id }}">Reply to
+                                                                        Comment</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form action="{{ route('replies.store') }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        <input type="hidden" name="comment_id"
+                                                                            value="{{ $comment->id }}">
+                                                                        <div class="form-outline mb-4">
+                                                                            <textarea name="reply" class="form-control" rows="4" placeholder="Write your reply here" required></textarea>
+                                                                            <label class="form-label" for="reply">Your
+                                                                                reply</label>
+                                                                        </div>
+                                                                        <div class="text-start">
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Submit
+                                                                                Reply</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div class="col-lg-4 col-md-12">
                     <div class="right-item">
                         <h2>Donate Now</h2>
-                        {{-- <form action="{{ route('donation_payment') }}" method="post">
-                            @csrf
-                            <input type="hidden" name="cause_id" value="{{ $cause->id }}">
-                            <div class="donate-sec">
-                                <h3>How much would you like to donate?</h3>
-                                <div class="donate-box">
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">$</span>
-                                        <input name="price" type="text" class="form-control" id="donation-amount"
-                                            required>
-                                    </div>
-                                </div>
-                                <h3>Select an Amount:</h3>
-                                <div class="donate-select">
-                                    <ul>
-                                        <li>
-                                            <button type="button" class="btn btn-primary donation-button"
-                                                data-amount="10">$10</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="btn btn-primary donation-button"
-                                                data-amount="25">$25</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="btn btn-primary donation-button selected"
-                                                data-amount="50">$50</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="btn btn-primary donation-button"
-                                                data-amount="100">$100</button>
-                                        </li>
-                                        <li>
-                                            <button type="button" class="btn btn-primary donation-button"
-                                                data-amount="">Custom</button>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <h3>Select Payment Method:</h3>
-                                <div class="form-control">
-                                    <select name="payment_method" class="form-select" required>
-                                        <option value="">Select Payment Method</option>
-                                        <option value="paypal">PayPal</option>
-                                        <option value="stripe">Stripe</option>
-                                        <option value="payway">PayWay</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-danger w-100-p donate-now">Donate Now</button>
-                            </div>
-                        </form> --}}
                         <form id="donationForm" action="{{ route('donation_payment') }}" method="post">
                             @csrf
                             <input type="hidden" name="cause_id" value="{{ $cause->id }}">
@@ -270,18 +325,6 @@
                                 @csrf
                                 <input type="hidden" name="cause_id" value="{{ $cause->id }}">
                                 <div class="mb-3">
-                                    <input name="name" type="text" class="form-control" placeholder="Full Name"
-                                        required>
-                                </div>
-                                <div class="mb-3">
-                                    <input name="email" type="email" class="form-control"
-                                        placeholder="Email Address" required>
-                                </div>
-                                <div class="mb-3">
-                                    <input name="phone" type="text" class="form-control"
-                                        placeholder="Phone Number (Optional)">
-                                </div>
-                                <div class="mb-3">
                                     <textarea name="message" class="form-control h-150" rows="3" placeholder="Message" required></textarea>
                                 </div>
                                 <div class="mb-3">
@@ -291,6 +334,7 @@
                                 </div>
                             </form>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -376,7 +420,7 @@
                     $('input[name="merchant_id"]').val(response.merchant_id);
                     $('input[name="req_time"]').val(response.req_time);
 
-                    $('#checkout_button').click(); // Trigger the AbaPayway checkout button
+                    $('#checkout_button').click();
                 },
                 error: function() {
                     alert('There was an issue processing your request.');
@@ -385,8 +429,23 @@
         }
 
         $(document).ready(function() {
+            @if (session('payment_success'))
+                swal({
+                    title: 'Thank you for your donation!',
+                    text: 'Your generosity helps us make a difference. We appreciate your support!',
+                    icon: 'success'
+                });
+                setTimeout(() => {
+                    @php
+                        session()->forget('payment_success');
+                    @endphp
+                }, 3000);
+            @endif
+        });
+
+        $(document).ready(function() {
             $('#checkout_button').click(function() {
-                AbaPayway.checkout(); // Trigger the PayWay payment process
+                AbaPayway.checkout();
             });
         });
     </script>

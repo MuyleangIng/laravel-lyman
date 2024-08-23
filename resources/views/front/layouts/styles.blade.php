@@ -11,3 +11,4 @@
 <link rel="stylesheet" href="{{ asset('dist-front/css/iziToast.min.css') }}">
 <link rel="stylesheet" href="{{ asset('dist-front/css/spacing.css') }}">
 <link rel="stylesheet" href="{{ asset('dist-front/css/style.css') }}">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/5.0.7/sweetalert2.min.css" rel="stylesheet">

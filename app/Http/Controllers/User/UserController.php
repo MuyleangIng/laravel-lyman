@@ -119,6 +119,13 @@ class UserController extends Controller
 
     public function createCauseSubmit(Request $request)
     {
+        // Check if the user is blocked
+        $user = Auth::user();
+        if ($user->block == 1) {
+            return redirect()->back()->with('error', 'You are blocked and cannot create a cause.');
+        }
+    
+        // Validate the required fields
         $request->validate([
             'name' => ['required', 'unique:causes'],
             'goal' => ['required', 'numeric', 'min:1'],
@@ -126,7 +133,8 @@ class UserController extends Controller
             'description' => 'required',
             'featured_photo' => 'required|image|mimes:jpg,jpeg,png',
         ]);
-
+    
+        // Create and save the new cause
         $obj = new Cause();
         $obj->name = $request->name;
         $obj->slug = Str::slug($request->name);
@@ -134,17 +142,18 @@ class UserController extends Controller
         $obj->raised = 0;
         $obj->short_description = $request->short_description;
         $obj->description = $request->description;
-        $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
+        $final_name = 'cause_featured_photo_' . time() . '.' . $request->featured_photo->extension();
         $request->featured_photo->move(public_path('uploads'), $final_name);
         $obj->featured_photo = $final_name;
         $obj->is_featured = $request->is_featured;
-
-        $obj->user_id = Auth::id();  
-
+        $obj->user_id = Auth::id();
+    
         $obj->save();
-
-        return redirect()->route('user_cause')->with('success','Cause created successfully');
+    
+        // Redirect with success message
+        return redirect()->route('user_cause')->with('success', 'Cause created successfully');
     }
+    
 
     public function edit($id)
     {
@@ -305,6 +314,10 @@ class UserController extends Controller
         $obj->update();
 
         return redirect()->back()->with('success','Cause FAQ updated successfully');
+    }
+
+    public function reply_comment(){
+        return view('user.reply_comment.index');
     }
 
 }

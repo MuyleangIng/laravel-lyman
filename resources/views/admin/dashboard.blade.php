@@ -10,7 +10,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
-                            <i class="fa-solid fa-hands-holding-child"></i>
+                            <i class="fas fa-heart"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -25,7 +25,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-danger">
-                            <i class="fa-regular fa-calendar"></i>
+                            <i class="fas fa-calendar"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -39,23 +39,8 @@
                 </div>
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
-                        <div class="card-icon bg-warning">
-                            <i class="fa-regular fa-comments"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Testimonials</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_testimonials }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
                         <div class="card-icon bg-success">
-                            <i class="fa-solid fa-user"></i>
+                            <i class="fas fa-user"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -67,82 +52,26 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
-                        <div class="card-icon bg-primary">
-                            <i class="fa-solid fa-people-carry-box"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Volunteers</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_volunteers }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
-                        <div class="card-icon bg-danger">
-                            <i class="fa-solid fa-people-roof"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Subscribers</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_subscribers }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
-                        <div class="card-icon bg-warning">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Posts</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_posts }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
-                        <div class="card-icon bg-success">
-                            <i class="fa-solid fa-image"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Photos</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_photos }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div class="card card-statistic-1">
-                        <div class="card-icon bg-primary">
-                            <i class="fa-solid fa-video"></i>
-                        </div>
-                        <div class="card-wrap">
-                            <div class="card-header">
-                                <h4>Total Videos</h4>
-                            </div>
-                            <div class="card-body">
-                                {{ $total_videos }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
+            <!-- Year Filter Form -->
+            <form id="filter-form" action="{{ route('admin_dashboard') }}" method="GET">
+                <div class="row">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="form-group">
+                            <label for="year">Select Year:</label>
+                            <select class="form-control" id="year" name="year">
+                                @for ($i = 2020; $i <= date('Y'); $i++)
+                                    <option value="{{ $i }}"
+                                        {{ request()->get('year') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 align-self-end mb-4">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </div>
+                </div>
+            </form>
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     {!! $chart->container() !!}
@@ -159,8 +88,8 @@
                 </div>
             </div>
 
-             <!-- Volunteer Data Table -->
-             <div class="row mt-5">
+            <!-- Volunteer Data Table -->
+            <div class="row mt-5">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
@@ -199,25 +128,78 @@
     <script src="{{ $causesDonationsBarChart->cdn() }}"></script>
     {{ $causesDonationsBarChart->script() }}
 
-    <!-- Datatables Scripts -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
     <script type="text/javascript">
         $(function() {
             var table = $('.yajra-datatable').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('admin_dashboard') }}",
-                columns: [
-                    { data: 'DT_RowIndex', name: 'DT_RowIndex' },
-                    { data: 'name', name: 'name' },
-                    { data: 'profession', name: 'profession' },
-                    { data: 'phone', name: 'phone' },
-                    { data: 'email', name: 'email' },
-                    { data: 'address', name: 'address' },
-                    { data: 'action', name: 'action', orderable: true, searchable: true },
+                columns: [{
+                        data: 'DT_RowIndex',
+                        name: 'DT_RowIndex'
+                    },
+                    {
+                        data: 'name',
+                        name: 'name'
+                    },
+                    {
+                        data: 'profession',
+                        name: 'profession'
+                    },
+                    {
+                        data: 'phone',
+                        name: 'phone'
+                    },
+                    {
+                        data: 'email',
+                        name: 'email'
+                    },
+                    {
+                        data: 'address',
+                        name: 'address'
+                    },
+                    {
+                        data: 'action',
+                        name: 'action',
+                        orderable: false,
+                        searchable: false
+                    }
                 ]
+            });
+
+            // SweetAlert delete button
+            $(document).on('click', '.delete-button', function(event) {
+                event.preventDefault();
+                var deleteUrl = $(this).data('url');
+
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this volunteer!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        $.ajax({
+                            url: deleteUrl,
+                            type: 'DELETE',
+                            data: {
+                                _token: "{{ csrf_token() }}"
+                            },
+                            success: function(response) {
+                                swal("Volunteer deleted successfully!", {
+                                    icon: "success",
+                                });
+                                table.ajax.reload();
+                            },
+                            error: function(xhr) {
+                                swal("Error occurred while deleting!", {
+                                    icon: "error",
+                                });
+                            }
+                        });
+                    }
+                });
             });
         });
     </script>

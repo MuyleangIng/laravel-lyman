@@ -8,38 +8,43 @@ use Illuminate\Support\Facades\DB;
 class MonthlyCausesDonationsBarChart
 {
     protected $chart;
+    protected $year;
 
     public function __construct(LarapexChart $chart)
     {
         $this->chart = $chart;
+        $this->year = date('Y'); // Default to current year
+    }
+
+    public function setYear($year)
+    {
+        $this->year = $year;
+        return $this;
     }
 
     public function build()
     {
-        // Fetch the total donation amounts grouped by month
         $donations = CauseDonation::select(
                             DB::raw("SUM(price) as total_donations"), 
                             DB::raw("MONTHNAME(created_at) as month_name")
                         )
-                        ->whereYear('created_at', date('Y'))
+                        ->whereYear('created_at', $this->year)
                         ->groupBy(DB::raw("MONTH(created_at)"), DB::raw("MONTHNAME(created_at)"))
                         ->orderBy(DB::raw("MONTH(created_at)"))
                         ->pluck('total_donations', 'month_name')
                         ->toArray();
 
-        // Prepare data for the chart
-        $months = array_keys($donations);  // Get the months
-        $totals = array_values($donations); // Get the total donations for each month
+        $months = array_keys($donations);
+        $totals = array_values($donations);
 
-        // Handle case where no donations exist for some months
         if (empty($months)) {
             $months = ['No Data'];
             $totals = [0];
         }
 
         return $this->chart->barChart()
-            ->setTitle('Donations by Month - ' . date('Y'))
-            ->setSubtitle('Total donations received per month for ' . date('Y'))
+            ->setTitle('Donations by Month - ' . $this->year)
+            ->setSubtitle('Total donations received per month for ' . $this->year)
             ->setDataset([
                 ['name' => 'Total Donations', 'data' => $totals]
             ])

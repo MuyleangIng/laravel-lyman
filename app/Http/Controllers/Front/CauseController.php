@@ -9,11 +9,14 @@ use App\Models\CausePhoto;
 use App\Models\CauseVideo;
 use App\Models\CauseFaq;
 use App\Models\CauseDonation;
-use App\Models\Admin;
 use App\Mail\Websitemail;
+use App\Models\CauseComment;
+use App\Models\CauseReply;
+use App\Models\User;
 use App\Services\PayWayService;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 
 class CauseController extends Controller
 {
@@ -34,42 +37,87 @@ class CauseController extends Controller
     return view('front.causes', compact('causes'));
 }
 
-    public function detail($slug)
-    {
-        $cause = Cause::where('slug', $slug)->first();
-        $cause_photos = CausePhoto::where('cause_id',$cause->id)->get();
-        $cause_videos = CauseVideo::where('cause_id',$cause->id)->get();
-        $cause_faqs = CauseFaq::where('cause_id',$cause->id)->get();
-        $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
-        return view('front.cause', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes'));
-    }
+public function detail($slug)
+{
+    // Fetch the cause based on the slug
+    $cause = Cause::where('slug', $slug)->firstOrFail();
+    
+    // Fetch related photos, videos, and FAQs
+    $cause_photos = CausePhoto::where('cause_id', $cause->id)->get();
+    $cause_videos = CauseVideo::where('cause_id', $cause->id)->get();
+    $cause_faqs = CauseFaq::where('cause_id', $cause->id)->get();
+    
+    // Fetch recent causes
+    $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
+    
+    // Fetch comments with their replies related to the cause
+    $comments = CauseComment::with('replies')->where('cause_id', $cause->id)
+                             ->orderBy('created_at', 'desc')
+                             ->get();
+    
+    // Pass all data to the view
+    return view('front.cause', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes', 'comments'));
+}
+
+
 
     public function send_message(Request $request)
     {
+        if (!auth()->check()) {
+            return redirect()->route('login')->with('error', 'You must be logged in to comment.');
+        }
+    
         $request->validate([
-            'name' => 'required',
-            'email' => 'required',
+            'cause_id' => 'required|exists:causes,id',
             'message' => 'required'
         ]);
-
-        $admin_data = Admin::where('id',1)->first();
-        $admin_email = $admin_data->email;
-
-        $cause_data = Cause::where('id',$request->cause_id)->first();
-
-        $subject = "Message from visitor for Cause - ".$cause_data->name;
+    
+        // Fetch the logged-in user
+        $user = auth()->user();
+    
+        // Fetch the cause details
+        $cause_data = Cause::where('id', $request->cause_id)->first();
+    
+        // Check if the cause belongs to the logged-in user
+        if ($cause_data->user_id == $user->id) {
+            return redirect()->back()->with('error', 'You cannot comment on your own cause.');
+        }
+    
+        // Fetch the cause creator's email and photo
+        $cause_creator = User::where('id', $cause_data->user_id)->first();
+        $creator_email = $cause_creator->email;
+        $creator_photo = $cause_creator->photo;
+    
+        // Prepare email content
+        $subject = "Message from visitor for Cause - " . $cause_data->name;
         $message = "<b>Visitor Information:</b><br><br>";
-        $message .= "Name: ".$request->name."<br>";
-        $message .= "Email: ".$request->email."<br>";
-        $message .= "Phone: ".$request->phone."<br>";
-        $message .= "Message: ".$request->message."<br><br>";
+        $message .= "Name: " . $user->name . "<br>";
+    
+        // Generate photo URL
+        $photo_url = $user->photo ? asset('uploads/' . $user->photo) : asset('uploads/default.png');
+        $message .= "Photo: <img src='" . $photo_url . "' alt='User Photo' style='width:100px;'><br>";
+    
+        $message .= "Message: " . $request->message . "<br><br>";
         $message .= "<b>Cause Page URL: </b><br>";
-        $message .= "<a href='".url('/cause/'.$cause_data->slug)."'>".url('/cause/'.$cause_data->slug)."</a>";
-
-        Mail::to($admin_email)->send(new Websitemail($subject,$message));
-
-        return redirect()->back()->with('success','Message sent successfully');
+        $message .= "<a href='" . url('/cause/' . $cause_data->slug) . "'>" . url('/cause/' . $cause_data->slug) . "</a>";
+    
+        // Send email to the cause creator
+        Mail::to($creator_email)->send(new Websitemail($subject, $message));
+    
+        // Save the comment to the database
+        CauseComment::create([
+            'cause_id' => $request->cause_id,
+            'name' => $user->name,
+            'photo' => $user->photo,
+            'message' => $request->message
+        ]);
+    
+        return redirect()->back()->with('success', 'Message sent successfully');
     }
+    
+
+
+    
 
     protected $payWayService;
 
@@ -80,8 +128,13 @@ class CauseController extends Controller
 
     public function payment(Request $request)
     {
-        if(!auth()->user()) {
+        // Check if the user is logged in and is not blocked
+        if (!auth()->user()) {
             return redirect()->route('login');
+        }
+
+        if (auth()->user()->block == 1) {
+            return redirect()->back()->with('error', 'You are blocked and cannot make a payment.');
         }
 
         $request->validate([
@@ -279,11 +332,12 @@ class CauseController extends Controller
             $cause_data = Cause::where('id',session()->get('cause_id'))->first();
             $cause_data->raised = $cause_data->raised + session()->get('price');
             $cause_data->update();
-
+  
             unset($_SESSION['cause_id']);
             unset($_SESSION['price']);
+            session()->put('payment_success', true);
 
-            return redirect()->route('cause', $cause_data->slug)->with('success','Payment completed successfully');
+            return redirect()->route('cause', $cause_data->slug);
 
         } else {
             return redirect()->route('donation_cancel');
@@ -296,4 +350,36 @@ class CauseController extends Controller
     {
         return redirect()->route('home')->with('error','Payment is cancelled');
     }
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'comment_id' => 'required|exists:cause_comments,id',
+        'reply' => 'required|string',
+    ]);
+
+    // Fetch the logged-in user
+    $user = Auth::user();
+
+    // Fetch the comment details
+    $comment = CauseComment::findOrFail($request->comment_id);
+
+    // Ensure the user is the owner of the cause related to the comment
+    $cause = $comment->cause; // Assuming `cause` is a relationship on CauseComment model
+
+    if ($user->id !== $cause->user_id) {
+        return redirect()->back()->with('error', 'You are not authorized to reply to this comment.');
+    }
+
+    // Save the reply to the database
+    $causeReply = new CauseReply();
+    $causeReply->comment_id = $request->comment_id;
+    $causeReply->name = $user->name;
+    $causeReply->photo = $user->photo; // Assuming the user has a photo
+    $causeReply->reply = $request->reply;
+    $causeReply->save();
+
+    return redirect()->back()->with('success', 'Reply sent successfully');
+}
+
 }
