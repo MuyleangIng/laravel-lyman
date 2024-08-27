@@ -9,8 +9,8 @@ use App\Models\CausePhoto;
 use App\Models\CauseVideo;
 use App\Models\CauseFaq;
 use App\Models\CauseDonation;
-use App\Mail\Websitemail;
 use App\Models\CauseComment;
+use App\Mail\Websitemail;
 use App\Models\CauseReply;
 use App\Models\User;
 use App\Services\PayWayService;
@@ -21,102 +21,96 @@ use Illuminate\Support\Facades\Auth;
 class CauseController extends Controller
 {
     public function index(Request $request)
-{
-    $query = $request->input('q');
+    {
+        $query = $request->input('q');
 
-    // Check if there's a search query
-    if ($query) {
-        $causes = Cause::where('status', 'approve')
-                        ->where('name', 'like', "%$query%")
-                        ->get();
-    } else {
-        // If no search query, retrieve all approved causes
-        $causes = Cause::where('status', 'approve')->get();
+        // Check if there's a search query
+        if ($query) {
+            $causes = Cause::where('status', 'approve')
+                            ->where('name', 'like', "%$query%")
+                            ->get();
+        } else {
+            // If no search query, retrieve all approved causes
+            $causes = Cause::where('status', 'approve')->get();
+        }
+
+        return view('front.causes', compact('causes'));
     }
 
-    return view('front.causes', compact('causes'));
-}
-
-public function detail($slug)
-{
-    // Fetch the cause based on the slug
-    $cause = Cause::where('slug', $slug)->firstOrFail();
+    public function detail($slug)
+    {
+        // Fetch the cause based on the slug
+        $cause = Cause::where('slug', $slug)->firstOrFail();
+        
+        // Fetch related photos, videos, and FAQs
+        $cause_photos = CausePhoto::where('cause_id', $cause->id)->get();
+        $cause_videos = CauseVideo::where('cause_id', $cause->id)->get();
+        $cause_faqs = CauseFaq::where('cause_id', $cause->id)->get();
+        
+        // Fetch recent causes
+        $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
+        
+        // Fetch comments with their nested replies related to the cause
+        $comments = CauseComment::with(['replies.children'])->where('cause_id', $cause->id)
+                                ->orderBy('created_at', 'desc')
+                                ->get();
+        
+        // Pass all data to the view
+        return view('front.cause', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes', 'comments'));
+    }
     
-    // Fetch related photos, videos, and FAQs
-    $cause_photos = CausePhoto::where('cause_id', $cause->id)->get();
-    $cause_videos = CauseVideo::where('cause_id', $cause->id)->get();
-    $cause_faqs = CauseFaq::where('cause_id', $cause->id)->get();
-    
-    // Fetch recent causes
-    $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
-    
-    // Fetch comments with their replies related to the cause
-    $comments = CauseComment::with('replies')->where('cause_id', $cause->id)
-                             ->orderBy('created_at', 'desc')
-                             ->get();
-    
-    // Pass all data to the view
-    return view('front.cause', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes', 'comments'));
-}
-
-
 
     public function send_message(Request $request)
     {
         if (!auth()->check()) {
             return redirect()->route('login')->with('error', 'You must be logged in to comment.');
         }
-    
+
         $request->validate([
             'cause_id' => 'required|exists:causes,id',
             'message' => 'required'
         ]);
-    
+
         // Fetch the logged-in user
         $user = auth()->user();
-    
+
         // Fetch the cause details
         $cause_data = Cause::where('id', $request->cause_id)->first();
-    
+
         // Check if the cause belongs to the logged-in user
         if ($cause_data->user_id == $user->id) {
             return redirect()->back()->with('error', 'You cannot comment on your own cause.');
         }
-    
-        // Fetch the cause creator's email and photo
+
+        // Fetch the cause creator's email
         $cause_creator = User::where('id', $cause_data->user_id)->first();
         $creator_email = $cause_creator->email;
-        $creator_photo = $cause_creator->photo;
-    
+
         // Prepare email content
         $subject = "Message from visitor for Cause - " . $cause_data->name;
         $message = "<b>Visitor Information:</b><br><br>";
         $message .= "Name: " . $user->name . "<br>";
-    
+
         // Generate photo URL
         $photo_url = $user->photo ? asset('uploads/' . $user->photo) : asset('uploads/default.png');
         $message .= "Photo: <img src='" . $photo_url . "' alt='User Photo' style='width:100px;'><br>";
-    
+
         $message .= "Message: " . $request->message . "<br><br>";
         $message .= "<b>Cause Page URL: </b><br>";
         $message .= "<a href='" . url('/cause/' . $cause_data->slug) . "'>" . url('/cause/' . $cause_data->slug) . "</a>";
-    
+
         // Send email to the cause creator
         Mail::to($creator_email)->send(new Websitemail($subject, $message));
-    
+
         // Save the comment to the database
         CauseComment::create([
             'cause_id' => $request->cause_id,
-            'name' => $user->name,
-            'photo' => $user->photo,
+            'user_id' => $user->id, // Store the user ID instead of name and photo
             'message' => $request->message
         ]);
-    
+
         return redirect()->back()->with('success', 'Message sent successfully');
     }
-    
-
-
     
 
     protected $payWayService;
@@ -345,41 +339,111 @@ public function detail($slug)
     }
 
 
-
     public function cancel()
     {
         return redirect()->route('home')->with('error','Payment is cancelled');
     }
 
+
     public function store(Request $request)
-{
-    $request->validate([
-        'comment_id' => 'required|exists:cause_comments,id',
-        'reply' => 'required|string',
-    ]);
+    {
+        $request->validate([
+            'comment_id' => 'required|exists:cause_comments,id',
+            'reply' => 'required|string',
+            'parent_id' => 'nullable|exists:cause_replies,id',
+        ]);
 
-    // Fetch the logged-in user
-    $user = Auth::user();
+        // Fetch the logged-in user
+        $user = Auth::user();
 
-    // Fetch the comment details
-    $comment = CauseComment::findOrFail($request->comment_id);
+        // Fetch the comment details
+        $comment = CauseComment::findOrFail($request->comment_id);
 
-    // Ensure the user is the owner of the cause related to the comment
-    $cause = $comment->cause; // Assuming `cause` is a relationship on CauseComment model
+        // Ensure the user is the owner of the cause related to the comment
+        $cause = $comment->cause; // Assuming `cause` is a relationship on CauseComment model
 
-    if ($user->id !== $cause->user_id) {
-        return redirect()->back()->with('error', 'You are not authorized to reply to this comment.');
+        // Save the reply to the database
+        $causeReply = new CauseReply();
+        $causeReply->user_id = $user->id; // Store the user ID instead of name and photo
+        $causeReply->comment_id = $request->comment_id;
+        $causeReply->reply = $request->reply;
+        $causeReply->parent_id = $request->parent_id;
+        $causeReply->save();
+
+        return redirect()->back()->with('success', 'Reply sent successfully');
     }
 
-    // Save the reply to the database
-    $causeReply = new CauseReply();
-    $causeReply->comment_id = $request->comment_id;
-    $causeReply->name = $user->name;
-    $causeReply->photo = $user->photo; // Assuming the user has a photo
-    $causeReply->reply = $request->reply;
-    $causeReply->save();
 
-    return redirect()->back()->with('success', 'Reply sent successfully');
-}
+
+    public function deleteCommentOrReply($id, $type)
+    {
+        $user = auth()->user(); // Get the currently authenticated user
+
+        if ($type === 'comment') {
+            $comment = CauseComment::findOrFail($id);
+
+            // Check if the current user is the owner of the comment
+            if ($comment->user_id !== $user->id) {
+                return back()->with('error', 'You do not have permission to delete this comment.');
+            }
+
+            // Delete the comment and its replies
+            $comment->replies()->delete(); // Delete all replies associated with the comment
+            $comment->delete(); // Delete the comment
+
+            return back()->with('success', 'Comment and its replies deleted successfully.');
+        } elseif ($type === 'reply') {
+            return back()->with('error', 'Only comment owner can delete the comment.');
+        } else {
+            return back()->with('error', 'Invalid deletion type specified.');
+        }
+    }
+
+
+
+    public function updateCommentOrReply(Request $request, $id, $type)
+    {
+        $user = auth()->user(); // Get the currently authenticated user
+
+        if ($type === 'comment') {
+            $comment = CauseComment::findOrFail($id);
+
+            // Check if the current user is the owner of the comment
+            if ($comment->user_id !== $user->id) {
+                return back()->with('error', 'You do not have permission to edit this comment.');
+            }
+
+            $request->validate([
+                'message' => 'required|string',
+            ]);
+
+            $comment->update([
+                'message' => $request->input('message'),
+            ]);
+
+            return back()->with('success', 'Comment updated successfully.');
+        } elseif ($type === 'reply') {
+            $reply = CauseReply::findOrFail($id);
+
+            // Check if the current user is the owner of the reply
+            if ($reply->user_id !== $user->id) {
+                return back()->with('error', 'You do not have permission to edit this reply.');
+            }
+
+            $request->validate([
+                'reply' => 'required|string',
+            ]);
+
+            $reply->update([
+                'reply' => $request->input('reply'),
+            ]);
+
+            return back()->with('success', 'Reply updated successfully.');
+        } else {
+            return back()->with('error', 'Invalid update type specified.');
+        }
+    }
+
+
 
 }

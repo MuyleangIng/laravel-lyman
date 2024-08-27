@@ -61,6 +61,7 @@ Route::get('/tag/{name}', [PostController::class, 'tag'])->name('tag');
 Route::post('/comment-submit', [PostController::class, 'comment_submit'])->name('comment_submit');
 Route::post('/reply-submit', [PostController::class, 'reply_submit'])->name('reply_submit');
 
+
 Route::get('/events', [EventController::class, 'index'])->name('events');
 Route::get('/event/{slug}', [EventController::class, 'detail'])->name('event');
 
@@ -82,6 +83,8 @@ Route::get('/cause/{slug}', [CauseController::class, 'detail'])->name('cause');
 
 Route::post('/cause/send-message', [CauseController::class, 'send_message'])->name('cause_send_message');
 Route::post('/casue/replies', [CauseController::class, 'store'])->name('replies.store');
+Route::get('/cause/delete/{id}/{type}', [CauseController::class, 'deleteCommentOrReply'])->name('cause.delete');
+Route::patch('/cause/update/{id}/{type}', [CauseController::class, 'updateCommentOrReply'])->name('replies.update');
 
 
 Route::post('/donation/payment', [CauseController::class, 'payment'])->name('donation_payment');
@@ -128,9 +131,13 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::post('/user/cause/faq/submit', [UserController::class, 'faq_submit'])->name('user_cause_faq_submit');
     Route::get('/user/cause/faq/delete/{id}', [UserController::class, 'faq_delete'])->name('user_cause_faq_delete');
     Route::post('/user/cause/faq/update/{id}', [UserController::class, 'faq_update'])->name('user_cause_faq_update');    
-    Route::get('/user/cause/donations/{id}', [UserController::class, 'donations'])->name('user_cause_donations');
-    Route::get('/cause/donations', [UserController::class, 'donations'])->name('user_cause_donations');
+    Route::get('/user/cause/donations-received', [UserController::class, 'donationsReceived'])->name('user_cause_donations_received');
+    Route::get('/user/cause/donations-made', [UserController::class, 'donationsMade'])->name('user_cause_donations_made');
     Route::get('/cause/donation/invoice/{id}', [UserController::class, 'donation_invoice'])->name('user_cause_donation_invoice');
+
+    // Gemini Text Generative
+    Route::get('/messages', [UserController::class, 'listMessages'])->name('user_message_list');
+    Route::post('/messages/store', [UserController::class, 'storeMessage'])->name('user_message_store');
 });
 
 

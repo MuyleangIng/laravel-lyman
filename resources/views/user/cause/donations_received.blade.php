@@ -1,0 +1,49 @@
+@extends('user.layouts.app')
+
+@section('main_content')
+<div class="main-content">
+    <section class="section">
+        <div class="section-header d-flex justify-content-between">
+            <h1>Donations Received</h1>
+        </div>
+        <div class="section-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>SL</th>
+                                            <th>Donor Name</th>
+                                            <th>Cause Name</th>
+                                            <th>Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($receivedDonations as $item)
+                                        <tr>
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $item->user->name }}</td>
+                                            <td style="width:300px;">
+                                                <a href="{{ route('cause', $item->cause->slug) }}">{{ $item->cause->name }}</a>
+                                            </td>
+                                            <td>${{ $item->price }}</td>
+                                            <td style="width:140px;">
+                                                <a href="{{ route('user_cause_donation_invoice', $item->id) }}" class="btn btn-primary btn-sm">See Invoice</a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+@endsection

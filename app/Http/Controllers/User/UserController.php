@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\EventTicket;
 use App\Models\Cause;
-use App\Models\CauseDonation;
+use App\Models\Message;
 use App\Models\CauseFaq;
 use App\Models\CausePhoto;
 use App\Models\CauseVideo;
+use App\Models\EventTicket;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Models\CauseDonation;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
+use GeminiAPI\Laravel\Facades\Gemini;
 
 class UserController extends Controller
 {
@@ -93,11 +95,27 @@ class UserController extends Controller
     }
 
 
-    public function donations()
+    public function donationsReceived()
     {
-        $donations = CauseDonation::where('user_id', auth()->user()->id)->where('payment_status', 'COMPLETED')->get();
-        return view('user.cause.donations', compact('donations'));
+        $receivedDonations = CauseDonation::whereHas('cause', function ($query) {
+            $query->where('user_id', auth()->user()->id);
+        })->where('payment_status', 'COMPLETED')->get();
+
+        return view('user.cause.donations_received', compact('receivedDonations'));
     }
+
+    public function donationsMade()
+    {
+        $madeDonations = CauseDonation::where('user_id', auth()->user()->id)
+                                    ->where('payment_status', 'COMPLETED')
+                                    ->with('cause') // Eager load the related Cause model
+                                    ->paginate(10);
+
+        return view('user.cause.donations_made', compact('madeDonations'));
+    }
+
+
+
 
     public function donation_invoice($id)
     {
@@ -320,4 +338,49 @@ class UserController extends Controller
         return view('user.reply_comment.index');
     }
 
+
+    // Method to list all messages
+    public function listMessages()
+    {
+        $messages = Message::all();
+        return view('user.message.list', ['messages' => $messages]);
+    }
+
+    // Method to store a new message
+    public function storeMessage(Request $request)
+{
+    // Validate the incoming request data
+    $validatedData = $request->validate([
+        'message' => 'required|string',
+    ]);
+
+    // Create a new message using the validated data
+    $message = new Message();
+    $message->message = $validatedData['message'];
+    $message->user_id = auth()->user()->id;
+    $message->save();
+
+    // Send the message to Gemini and get the response
+    try {
+        $apiKey = config('services.gemini.api_key'); // Fetch the API key
+        $response = Gemini::geminiPro()->generateContent($validatedData['message'], $apiKey);
+        $responseText = $response->text();
+
+        // Save the response as a new message from the chatbot
+        $chatbotMessage = new Message();
+        $chatbotMessage->message = $responseText;
+        $chatbotMessage->user_id = null; // Assuming null indicates the message is from the chatbot
+        $chatbotMessage->save();
+
+    } catch (\Exception $e) {
+        dd($e->getMessage());
+        // Handle exception
+        return redirect()->route('user_message_list')->with('error', 'An error occurred while communicating with the chatbot.');
+    }
+
+    // Redirect back to the message list with a success message
+    return redirect()->route('user_message_list')->with('success', 'Message successfully sent and response received!');
+}
+
+    
 }

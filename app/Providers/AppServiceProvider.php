@@ -24,7 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Paginator::useBootstrap();
+        Paginator::useBootstrapFive();
+        
+        Paginator::useBootstrapFour();
 
         $setting_data = Setting::where('id',1)->first();
 

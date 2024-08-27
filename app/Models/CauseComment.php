@@ -15,8 +15,7 @@ class CauseComment extends Model
     // Define the fillable attributes
     protected $fillable = [
         'cause_id',
-        'name',
-        'photo',
+        'user_id', // To track who made the comment
         'message',
     ];
 
@@ -29,6 +28,13 @@ class CauseComment extends Model
     // Define the relationship to the CauseReply model
     public function replies()
     {
-        return $this->hasMany(CauseReply::class, 'comment_id');
+        return $this->hasMany(CauseReply::class, 'comment_id')->whereNull('parent_id');
+    }
+
+    // Define the relationship to the User model
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
+

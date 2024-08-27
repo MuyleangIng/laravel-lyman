@@ -1,6 +1,9 @@
 @extends('front.layouts.app')
 
 @section('main_content')
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
     <div class="page-top" style="background-image: url({{ asset('uploads/' . $global_setting_data->banner) }})">
         <div class="container">
             <div class="row">
@@ -121,30 +124,42 @@
                         <div class="card">
                             <div class="card-body p-4">
                                 <h4 class="text-center mb-4 pb-2">Comments Section</h4>
-
                                 @foreach ($comments as $comment)
                                     <div class="row mb-4">
                                         <div class="col">
                                             <div class="d-flex flex-start">
-                                                <!-- Commenter Avatar and Details -->​​​​​
+                                                <!-- Commenter Avatar and Details -->
                                                 <img class="rounded-circle shadow-1-strong me-3"
-                                                    src="{{ asset('uploads/' . ($comment->photo ?? 'default.png')) }}"
+                                                    src="{{ asset('uploads/' . ($comment->user->photo ?? 'default.png')) }}"
                                                     alt="avatar" width="65" height="65" />
                                                 <div class="flex-grow-1 flex-shrink-1">
                                                     <div>
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <p class="mb-1">
-                                                                {{ $comment->name }} <span class="small">-
+                                                                {{ $comment->user->name }} <span class="small">-
                                                                     {{ $comment->created_at->diffForHumans() }}</span>
                                                             </p>
-                                                            <!-- Check if user can reply (not their own comment) -->
-                                                            @if (auth()->check() && auth()->user()->id !== $comment->user_id)
-                                                                <a href="#" data-bs-toggle="modal"
-                                                                    data-bs-target="#reply-form-{{ $comment->id }}">
-                                                                    <i class="fas fa-reply fa-xs"></i><span class="small">
-                                                                        reply</span>
+                                                            <div class="dropdown">
+                                                                <a href="#"
+                                                                    id="dropdownMenuButton-{{ $comment->id }}"
+                                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="fas fa-ellipsis-v"></i>
                                                                 </a>
-                                                            @endif
+                                                                <ul class="dropdown-menu"
+                                                                    aria-labelledby="dropdownMenuButton-{{ $comment->id }}">
+                                                                    <li><a class="dropdown-item" href="#"
+                                                                            data-bs-toggle="modal"
+                                                                            data-bs-target="#reply-form-{{ $comment->id }}">Reply</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item" href="#">Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a class="dropdown-item" href="#"
+                                                                            onclick="event.preventDefault(); deleteCauseCommentOrReply({{ $comment->id }}, 'comment');">Delete</a>
+                                                                    </li>
+
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                         <p class="small mb-0">
                                                             {{ $comment->message }}
@@ -152,31 +167,181 @@
                                                     </div>
 
                                                     <!-- Replies Section -->
-                                                    @foreach ($comment->replies as $reply)
-                                                        <div class="d-flex flex-start mt-4">
-                                                            <a class="me-3" href="#">
-                                                                <img class="rounded-circle shadow-1-strong"
-                                                                    src="{{ asset('uploads/' . ($reply->photo ?? 'default.png')) }}"
+                                                    <div class="mt-4">
+                                                        @foreach ($comment->replies as $reply)
+                                                            <div class="d-flex flex-start mb-4">
+                                                                <img class="rounded-circle shadow-1-strong me-3"
+                                                                    src="{{ asset('uploads/' . ($reply->user->photo ?? 'default.png')) }}"
                                                                     alt="avatar" width="65" height="65" />
-                                                            </a>
-                                                            <div class="flex-grow-1 flex-shrink-1">
-                                                                <div>
-                                                                    <div
-                                                                        class="d-flex justify-content-between align-items-center">
-                                                                        <p class="mb-1">
-                                                                            {{ $reply->name }} <span class="small">-
-                                                                                {{ $reply->created_at->diffForHumans() }}</span>
+                                                                <div class="flex-grow-1 flex-shrink-1">
+                                                                    <div>
+                                                                        <div
+                                                                            class="d-flex justify-content-between align-items-center">
+                                                                            <p class="mb-1">
+                                                                                {{ $reply->user->name }} <span
+                                                                                    class="small">-
+                                                                                    {{ $reply->created_at->diffForHumans() }}</span>
+                                                                            </p>
+                                                                            <div class="dropdown">
+                                                                                <a href="#"
+                                                                                    id="dropdownMenuButton-{{ $reply->id }}"
+                                                                                    data-bs-toggle="dropdown"
+                                                                                    aria-expanded="false">
+                                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                                                </a>
+                                                                                <ul class="dropdown-menu"
+                                                                                    aria-labelledby="dropdownMenuButton-{{ $reply->id }}">
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#reply-form-{{ $reply->id }}">Reply</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            data-bs-toggle="modal"
+                                                                                            data-bs-target="#edit-reply-{{ $reply->id }}">Edit</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item"
+                                                                                            href="#"
+                                                                                            onclick="event.preventDefault(); deleteCauseCommentOrReply({{ $reply->id }}, 'reply');">Delete</a>
+                                                                                    </li>
+                                                                                </ul>
+                                                                            </div>
+                                                                        </div>
+                                                                        <p class="small mb-0">
+                                                                            {{ $reply->reply }}
                                                                         </p>
                                                                     </div>
-                                                                    <p class="small mb-0">
-                                                                        {{ $reply->reply }}
-                                                                    </p>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    @endforeach
 
-                                                    <!-- Modal for Reply Form -->
+                                                            <!-- Nested Replies -->
+                                                            <div class="mt-4">
+                                                                @foreach ($reply->children as $childReply)
+                                                                    <div class="d-flex flex-start mb-4">
+                                                                        <img class="rounded-circle shadow-1-strong me-3"
+                                                                            src="{{ asset('uploads/' . ($childReply->user->photo ?? 'default.png')) }}"
+                                                                            alt="avatar" width="65"
+                                                                            height="65" />
+                                                                        <div class="flex-grow-1 flex-shrink-1">
+                                                                            <div>
+                                                                                <div
+                                                                                    class="d-flex justify-content-between align-items-center">
+                                                                                    <p class="mb-1">
+                                                                                        {{ $childReply->user->name }} <span 
+                                                                                            class="small">-
+                                                                                            {{ $childReply->created_at->diffForHumans() }}</span>
+                                                                                    </p>
+                                                                                    <div class="dropdown">
+                                                                                        <a href="#"
+                                                                                            id="dropdownMenuButton-{{ $childReply->id }}"
+                                                                                            data-bs-toggle="dropdown"
+                                                                                            aria-expanded="false">
+                                                                                            <i
+                                                                                                class="fas fa-ellipsis-v"></i>
+                                                                                        </a>
+                                                                                        <ul class="dropdown-menu"
+                                                                                            aria-labelledby="dropdownMenuButton-{{ $childReply->id }}">
+                                                                                            <li><a class="dropdown-item"
+                                                                                                    href="#"
+                                                                                                    data-bs-toggle="modal"
+                                                                                                    data-bs-target="#edit-reply-{{ $childReply->id }}">Edit</a>
+                                                                                            </li>
+                                                                                            <li><a class="dropdown-item"
+                                                                                                    href="#"
+                                                                                                    onclick="event.preventDefault(); deleteCauseCommentOrReply({{ $childReply->id }}, 'reply');">Delete</a>
+                                                                                            </li>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <p class="small mb-0">
+                                                                                    {{ $childReply->reply }}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+
+                                                            <!-- Modal for Reply Form (for Replies) -->
+                                                            <div class="modal fade" id="reply-form-{{ $reply->id }}"
+                                                                tabindex="-1"
+                                                                aria-labelledby="replyFormLabel-{{ $reply->id }}"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title"
+                                                                                id="replyFormLabel-{{ $reply->id }}">
+                                                                                Reply to {{ $reply->name }}</h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form action="{{ route('replies.store') }}"
+                                                                                method="POST">
+                                                                                @csrf
+                                                                                <input type="hidden" name="comment_id"
+                                                                                    value="{{ $reply->comment_id }}">
+                                                                                <input type="hidden" name="parent_id"
+                                                                                    value="{{ $reply->id }}">
+                                                                                <div class="form-outline mb-4">
+                                                                                    <textarea name="reply" class="form-control" rows="4" placeholder="Write your reply here" required></textarea>
+                                                                                    <label class="form-label"
+                                                                                        for="reply">Your reply</label>
+                                                                                </div>
+                                                                                <div class="text-start">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Submit
+                                                                                        Reply</button>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Modal for Editing Reply -->
+                                                            <div class="modal fade" id="edit-reply-{{ $reply->id }}"
+                                                                tabindex="-1"
+                                                                aria-labelledby="editReplyLabel-{{ $reply->id }}"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title"
+                                                                                id="editReplyLabel-{{ $reply->id }}">
+                                                                                Edit Reply</h5>
+                                                                            <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"
+                                                                                aria-label="Close"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form
+                                                                                action="{{ route('replies.update', ['id' => $reply->id, 'type' => 'reply']) }}"
+                                                                                method="POST">
+                                                                                @csrf
+                                                                                @method('PATCH')
+                                                                                <div class="form-outline mb-4">
+                                                                                    <textarea name="reply" class="form-control" rows="4" required>{{ $reply->reply }}</textarea>
+                                                                                    <label class="form-label"
+                                                                                        for="reply">Your reply</label>
+                                                                                </div>
+                                                                                <div class="text-start">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Update
+                                                                                        Reply</button>
+                                                                                </div>
+                                                                            </form>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+
+                                                    <!-- Modal for Reply Form (for Comments) -->
                                                     <div class="modal fade" id="reply-form-{{ $comment->id }}"
                                                         tabindex="-1"
                                                         aria-labelledby="replyFormLabel-{{ $comment->id }}"
@@ -197,6 +362,8 @@
                                                                         @csrf
                                                                         <input type="hidden" name="comment_id"
                                                                             value="{{ $comment->id }}">
+                                                                        <input type="hidden" name="parent_id"
+                                                                            value="">
                                                                         <div class="form-outline mb-4">
                                                                             <textarea name="reply" class="form-control" rows="4" placeholder="Write your reply here" required></textarea>
                                                                             <label class="form-label" for="reply">Your
@@ -212,6 +379,45 @@
                                                             </div>
                                                         </div>
                                                     </div>
+
+                                                    <!-- Modal for Editing Comment -->
+                                                    <div class="modal fade" id="edit-comment-{{ $comment->id }}"
+                                                        tabindex="-1"
+                                                        aria-labelledby="editCommentLabel-{{ $comment->id }}"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="editCommentLabel-{{ $comment->id }}">Edit
+                                                                        Comment</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <form
+                                                                        action="{{ route('replies.update', ['id' => $comment->id, 'type' => 'comment']) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        @method('PATCH')
+                                                                        <div class="form-outline mb-4">
+                                                                            <textarea name="message" class="form-control" rows="4" required>{{ $comment->message }}</textarea>
+                                                                            <label class="form-label"
+                                                                                for="message">Comment</label>
+                                                                        </div>
+                                                                        <div class="text-start">
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Update
+                                                                                Comment</button>
+                                                                        </div>
+                                                                    </form>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -220,6 +426,8 @@
                             </div>
                         </div>
                     </div>
+
+
 
                 </div>
 
@@ -280,7 +488,8 @@
 
                                 <!-- Submit Button -->
                                 <button type="button" class="btn btn-danger w-100-p donate-now"
-                                    id="donatedNowButton">Donate Now</button>
+                                    id="donatedNowButton">Donate
+                                    Now</button>
                             </div>
                         </form>
                         <h2 class="mt_30">Information</h2>
@@ -448,5 +657,39 @@
                 AbaPayway.checkout();
             });
         });
+
+        function deleteCauseCommentOrReply(id, type) {
+            swal({
+                title: "Are you sure?",
+                text: "Once deleted, you will not be able to recover this!",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    // Create a form and submit it
+                    var form = document.createElement('form');
+                    form.action = `/cause/delete/${id}/${type}`;
+                    form.method = 'DELETE';
+
+                    // Add CSRF token
+                    var csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '_token';
+                    csrfInput.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfInput);
+
+                    // Add method spoofing input for DELETE request
+                    var methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
 @endsection

@@ -14,8 +14,7 @@ return new class extends Migration
         Schema::create('cause_comments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cause_id')->constrained('causes')->onDelete('cascade');
-            $table->string('name');
-            $table->string('photo')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Foreign key to the users table
             $table->text('message');
             $table->timestamps();
         });

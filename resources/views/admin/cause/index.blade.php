@@ -88,20 +88,36 @@
     <script>
         $(document).ready(function() {
             $('.delete-button').click(function(event) {
-                event.preventDefault(); // Prevent the default form submission
+                event.preventDefault(); // Prevent the default link action
 
-                var form = $(this).closest(
-                    'form'); // Get the form associated with the clicked delete button
+                var id = $(this).data('id'); // Get the ID of the comment/reply
+                var type = $(this).data('type'); // Determine if it's a comment or reply
 
                 swal({
                     title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this cause!",
+                    text: "Once deleted, you will not be able to recover this!",
                     icon: "warning",
                     buttons: true,
                     dangerMode: true,
                 }).then((willDelete) => {
                     if (willDelete) {
-                        form.submit(); 
+                        $.ajax({
+                            url: `/cause/delete/${id}/${type}`,
+                            type: 'DELETE',
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                            },
+                            success: function(response) {
+                                swal("Deleted!", response.message, "success").then(
+                                    () => {
+                                        location
+                                            .reload(); // Reload the page after deletion
+                                    });
+                            },
+                            error: function(xhr) {
+                                swal("Oops!", "Something went wrong!", "error");
+                            }
+                        });
                     }
                 });
             });

@@ -9,14 +9,52 @@
 
         <ul class="sidebar-menu">
 
-            <li class="{{ Request::is('user/dashboard') ? 'active' : '' }}"><a class="nav-link" href="{{ route('user_dashboard') }}"><i class="fa-solid fa-palette"></i> <span>Dashboard</span></a></li>
+            <li class="{{ Request::is('user/dashboard') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_dashboard') }}">
+                    <i class="fa-solid fa-palette"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
 
-            <li class="{{ Request::is('user/event/tickets') ? 'active' : '' }}"><a class="nav-link" href="{{ route('user_event_tickets') }}"><i class="fa-solid fa-ticket"></i> <span>Event Tickets</span></a></li>
+            <li class="{{ Request::is('user/event/tickets') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_event_tickets') }}">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Event Tickets</span>
+                </a>
+            </li>
 
-            <li class="{{ Request::is('user/cause/donations') ? 'active' : '' }}"><a class="nav-link" href="{{ route('user_cause_donations') }}"><i class="fa-solid fa-handshake-angle"></i> <span>Cause Donations</span></a></li>
+            <!-- Section for Donations Received from Others -->
+            <li class="menu-header">Donations Received</li>
+            <li class="{{ Request::is('user/cause/donations/received') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_cause_donations_received') }}">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                    <span>Donations Received</span>
+                </a>
+            </li>
 
-            <li class="{{ Request::is('user/causes') ? 'active' : '' }}"><a class="nav-link" href="{{ route('user_cause') }}"><i class="fa-solid fa-hand-holding-heart"></i> <span>Causes</span></a></li>
+            <!-- Section for Donations Made to Other Causes -->
+            <li class="menu-header">Donations Made</li>
+            <li class="{{ Request::is('user/cause/donations/made') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_cause_donations_made') }}">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>Donations Made</span>
+                </a>
+            </li>
 
-        </ul> 
+            <li class="{{ Request::is('user/causes') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_cause') }}">
+                    <i class="fa-solid fa-hand-holding-heart"></i>
+                    <span>My Causes</span>
+                </a>
+            </li>
+
+            <!-- Chatbot Section -->
+            <li class="{{ Request::is('user/messages') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('user_message_list') }}">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>Chatbot</span>
+                </a>
+            </li>
+        </ul>
     </aside>
 </div>

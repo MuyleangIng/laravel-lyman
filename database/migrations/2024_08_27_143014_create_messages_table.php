@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cause_replies', function (Blueprint $table) {
+        Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('comment_id')->constrained('cause_comments')->onDelete('cascade');
-            $table->string('name');
-            $table->string('photo')->nullable();
-            $table->text('reply');
+            $table->foreignId('user_id')->nullable();
+            $table->text('message');
             $table->timestamps();
         });
     }
@@ -26,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cause_replies');
+        Schema::dropIfExists('messages');
     }
 };
