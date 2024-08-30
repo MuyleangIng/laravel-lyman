@@ -131,8 +131,10 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::post('/user/cause/faq/submit', [UserController::class, 'faq_submit'])->name('user_cause_faq_submit');
     Route::get('/user/cause/faq/delete/{id}', [UserController::class, 'faq_delete'])->name('user_cause_faq_delete');
     Route::post('/user/cause/faq/update/{id}', [UserController::class, 'faq_update'])->name('user_cause_faq_update');    
-    Route::get('/user/cause/donations-received', [UserController::class, 'donationsReceived'])->name('user_cause_donations_received');
-    Route::get('/user/cause/donations-made', [UserController::class, 'donationsMade'])->name('user_cause_donations_made');
+    Route::get('/cause/donations-received', [UserController::class, 'donationsReceived'])->name('user_cause_donations_received');
+    Route::get('/donations/invoice-received', [UserController::class, 'donationsReceivedInvoice'])->name('user_donation_received_invoice');
+    Route::get('/cause/donations-made', [UserController::class, 'donationsMade'])->name('user_cause_donations_made');
+    Route::get('/donations/invoice-made', [UserController::class, 'donationsMadeInvoice'])->name('donations.made.invoice');
     Route::get('/cause/donation/invoice/{id}', [UserController::class, 'donation_invoice'])->name('user_cause_donation_invoice');
 
     // Gemini Text Generative

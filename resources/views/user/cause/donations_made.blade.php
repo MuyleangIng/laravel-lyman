@@ -5,6 +5,10 @@
         <section class="section">
             <div class="section-header d-flex justify-content-between">
                 <h1>Donations Made</h1>
+                <div>
+                    <a href="{{ route('donations.made.invoice') }}" class="btn btn-success"><i class="fas fa-file-invoice"></i>
+                        Invoice</a>
+                </div>
             </div>
             <div class="section-body">
                 <div class="row">

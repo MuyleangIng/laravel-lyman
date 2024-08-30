@@ -99,10 +99,26 @@ class UserController extends Controller
     {
         $receivedDonations = CauseDonation::whereHas('cause', function ($query) {
             $query->where('user_id', auth()->user()->id);
-        })->where('payment_status', 'COMPLETED')->get();
+        })->where('payment_status', 'COMPLETED')->paginate(10);
 
         return view('user.cause.donations_received', compact('receivedDonations'));
     }
+
+    public function donationsReceivedInvoice()
+    {
+        $user = auth()->user();
+        $receivedDonations = CauseDonation::whereHas('cause', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+        ->where('payment_status', 'COMPLETED')
+        ->with('cause')
+        ->get();
+
+        return view('user.cause.invoice_received', compact('receivedDonations'));
+    }
+
+
+
 
     public function donationsMade()
     {
@@ -114,7 +130,16 @@ class UserController extends Controller
         return view('user.cause.donations_made', compact('madeDonations'));
     }
 
+    public function donationsMadeInvoice()
+    {
+        $user = auth()->user();
+        $donationsMade = CauseDonation::where('user_id', $user->id)
+                                    ->where('payment_status', 'COMPLETED')
+                                    ->with('cause')
+                                    ->get();
 
+        return view('user.cause.invoice_made', compact('donationsMade'));
+    }
 
 
     public function donation_invoice($id)
@@ -379,7 +404,7 @@ class UserController extends Controller
     }
 
     // Redirect back to the message list with a success message
-    return redirect()->route('user_message_list')->with('success', 'Message successfully sent and response received!');
+    return redirect()->route('user_message_list');
 }
 
     

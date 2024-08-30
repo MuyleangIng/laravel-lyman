@@ -25,7 +25,7 @@
 
             <!-- Section for Donations Received from Others -->
             <li class="menu-header">Donations Received</li>
-            <li class="{{ Request::is('user/cause/donations/received') ? 'active' : '' }}">
+            <li class="{{ Request::is('user/cause/donations-received') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('user_cause_donations_received') }}">
                     <i class="fa-solid fa-handshake-angle"></i>
                     <span>Donations Received</span>
@@ -34,17 +34,17 @@
 
             <!-- Section for Donations Made to Other Causes -->
             <li class="menu-header">Donations Made</li>
-            <li class="{{ Request::is('user/cause/donations/made') ? 'active' : '' }}">
+            <li class="{{ Request::is('user/cause/donations-made') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('user_cause_donations_made') }}">
                     <i class="fa-solid fa-hand-holding-heart"></i>
                     <span>Donations Made</span>
                 </a>
             </li>
 
-            <li class="{{ Request::is('user/causes') ? 'active' : '' }}">
+            <li class="{{ Request::is('user/cause') ? 'active' : '' }}">
                 <a class="nav-link" href="{{ route('user_cause') }}">
-                    <i class="fa-solid fa-hand-holding-heart"></i>
-                    <span>My Causes</span>
+                    <i class="fa-solid fa-chart-simple"></i>
+                    <span>My Project</span>
                 </a>
             </li>
 
