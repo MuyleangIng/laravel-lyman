@@ -68,7 +68,8 @@
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="button"
-                                                                class="btn btn-danger btn-sm delete-button">
+                                                                class="btn btn-danger btn-sm delete-button"
+                                                                data-id="{{ $item->id }}">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </form>
@@ -90,8 +91,8 @@
             $('.delete-button').click(function(event) {
                 event.preventDefault(); // Prevent the default link action
 
-                var id = $(this).data('id'); // Get the ID of the comment/reply
-                var type = $(this).data('type'); // Determine if it's a comment or reply
+                var button = $(this); // Get the button that was clicked
+                var id = button.data('id'); // Get the ID of the cause
 
                 swal({
                     title: "Are you sure?",
@@ -102,7 +103,7 @@
                 }).then((willDelete) => {
                     if (willDelete) {
                         $.ajax({
-                            url: `/cause/delete/${id}/${type}`,
+                            url: `/cause/delete/${id}`,
                             type: 'DELETE',
                             data: {
                                 "_token": "{{ csrf_token() }}",

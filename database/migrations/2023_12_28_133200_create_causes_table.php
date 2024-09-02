@@ -16,17 +16,22 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('short_description');
-            $table->text('description');
+            $table->string('objective');
+            $table->text('expectations');
             $table->string('featured_photo');
             $table->integer('goal');
             $table->integer('raised')->nullable();
             $table->string('is_featured');
             $table->enum('status', ['pending', 'approve', 'reject'])->default('pending')->nullable();
+            $table->text('legal_considerations')->nullable(); // Legal and ethical considerations
+            $table->text('challenges_and_solution')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->json('supporting_documents')->nullable();
             $table->foreignId('user_id')->constrained();
             $table->integer('approved_by')->nullable();
             $table->timestamps();
         });
-        
     }
 
     /**

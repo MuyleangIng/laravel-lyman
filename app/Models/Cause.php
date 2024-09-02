@@ -5,13 +5,10 @@ namespace App\Models;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Cause extends Model
 {
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
 
     use HasFactory;
     use Sluggable;
@@ -26,4 +23,16 @@ class Cause extends Model
             ]
         ];
     }
+
+    public function targetAudiences()
+    {
+        return $this->belongsToMany(TargetAudienceCategory::class, 'cause_target_audiences', 'cause_id', 'target_audience_category_id');
+    }
+
+    public function partnershipsAndCollaborations()
+    {
+        return $this->belongsToMany(PartnershipAndCollaborationCategory::class, 'cause_partnerships_and_collaborations', 'cause_id', 'partnership_id');
+    }
+    
+
 }

@@ -13,3 +13,5 @@
 <link rel="stylesheet" href="{{ asset('dist-admin/css/spacing.css') }}">
 <link rel="stylesheet" href="{{ asset('dist-admin/css/custom.css') }}">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/5.0.7/sweetalert2.min.css" rel="stylesheet">
+<link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/css/multi-select-tag.css">

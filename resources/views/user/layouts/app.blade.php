@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+
     @include('user.layouts.styles')
 
     @include('user.layouts.scripts')
@@ -19,18 +21,19 @@
 </head>
 
 <body>
-<div id="app">
-    <div class="main-wrapper">
-        
-        @include('user.layouts.nav')
-        @include('user.layouts.sidebar')
+    <div id="app">
+        <div class="main-wrapper">
 
-        @yield('main_content')
+            @include('user.layouts.nav')
+            @include('user.layouts.sidebar')
 
+            @yield('main_content')
+
+        </div>
     </div>
-</div>
 
-@include('user.layouts.scripts-footer')
+    @include('user.layouts.scripts-footer')
 
 </body>
+
 </html>

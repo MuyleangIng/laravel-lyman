@@ -53,8 +53,65 @@
                             <div class="goal">Goal: ${{ $cause->goal }}</div>
                             <div class="raised">Raised: ${{ $cause->raised }}</div>
                         </div>
-                        {!! $cause->description !!}
                     </div>
+                    <div class="left-item">
+                        <h2>Objective</h2>
+                        {{ $cause->objective }}
+                    </div>
+                    <div class="left-item">
+                        <h2>Expectations</h2>
+                        {!! $cause->expectations !!}
+                    </div>
+                    <div class="left-item">
+                        <h2>Legal Considerations</h2>
+                        {!! $cause->legal_considerations !!}
+                    </div>
+                    <div class="left-item">
+                        <h2>Challenges and Solution</h2>
+                        {!! $cause->legal_considerations !!}
+                    </div>
+                    <div class="left-item">
+                        <h2>Target Audience</h2>
+                        @foreach ($cause->targetAudiences as $audience)
+                            <button class="btn btn-success">{{ $audience->name }}</button>
+                        @endforeach
+                    </div>
+
+                    <div class="left-item">
+                        <h2>Partnerships and Collaborations</h2>
+                        @foreach ($cause->partnershipsAndCollaborations as $partnership)
+                            <button class="btn btn-warning">{{ $partnership->name }}</button>
+                        @endforeach
+                    </div>
+
+                    <div class="left-item">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">Project Timeline</h6>
+                                        <div id="content">
+                                            <ul class="timeline">
+                                                <li class="event" data-date="{{ $cause->start_date }}">
+                                                    <h3>Start Date</h3>
+                                                    <p>This is the date when the youth project officially begins. It marks
+                                                        the commencement of all planned activities, initiatives, and
+                                                        milestones.</p>
+                                                </li>
+                                                <li class="event" data-date="{{ $cause->end_date }}">
+                                                    <h3>End Date</h3>
+                                                    <p>This is the date when the youth project is scheduled to be completed.
+                                                        By the end date, all activities and objectives outlined in the
+                                                        project's plan should be achieved.</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="left-item">
                         <h2>Photos</h2>
                         <div class="photo-all">
@@ -228,7 +285,7 @@
                                                                                 <div
                                                                                     class="d-flex justify-content-between align-items-center">
                                                                                     <p class="mb-1">
-                                                                                        {{ $childReply->user->name }} <span 
+                                                                                        {{ $childReply->user->name }} <span
                                                                                             class="small">-
                                                                                             {{ $childReply->created_at->diffForHumans() }}</span>
                                                                                     </p>
@@ -426,8 +483,6 @@
                             </div>
                         </div>
                     </div>
-
-
 
                 </div>
 

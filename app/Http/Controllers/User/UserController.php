@@ -13,6 +13,10 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\CauseDonation;
 use App\Http\Controllers\Controller;
+use App\Models\CausePartnershipAndCollaboration;
+use App\Models\CauseTargetAudience;
+use App\Models\PartnershipAndCollaborationCategory;
+use App\Models\TargetAudienceCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GeminiAPI\Laravel\Facades\Gemini;
@@ -118,8 +122,6 @@ class UserController extends Controller
     }
 
 
-
-
     public function donationsMade()
     {
         $madeDonations = CauseDonation::where('user_id', auth()->user()->id)
@@ -156,9 +158,15 @@ class UserController extends Controller
         return view('user.cause.index', compact('causes'));
     }
 
-    public function create(){
-        return view('user.cause.create');
+    public function create()
+    {
+        $targetAudiences = TargetAudienceCategory::all();
+        $partnerships = PartnershipAndCollaborationCategory::all();
+
+        return view('user.cause.create', compact('targetAudiences', 'partnerships'));
     }
+
+
 
     public function createCauseSubmit(Request $request)
     {
@@ -167,16 +175,24 @@ class UserController extends Controller
         if ($user->block == 1) {
             return redirect()->back()->with('error', 'You are blocked and cannot create a cause.');
         }
-    
+        // dd($request->all());
         // Validate the required fields
         $request->validate([
-            'name' => ['required', 'unique:causes'],
+            'name' => ['required'],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
-            'description' => 'required',
-            'featured_photo' => 'required|image|mimes:jpg,jpeg,png',
+            'objective' => 'required',
+            'expectations' => 'required',
+            'legal_considerations' => 'nullable',
+            'challenges_and_solution' => 'nullable',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
+            'target_audience.*' => 'exists:target_audience_categories,id', 
+            'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
+            'is_featured' => 'required'
         ]);
-    
+
         // Create and save the new cause
         $obj = new Cause();
         $obj->name = $request->name;
@@ -184,19 +200,70 @@ class UserController extends Controller
         $obj->goal = $request->goal;
         $obj->raised = 0;
         $obj->short_description = $request->short_description;
-        $obj->description = $request->description;
-        $final_name = 'cause_featured_photo_' . time() . '.' . $request->featured_photo->extension();
-        $request->featured_photo->move(public_path('uploads'), $final_name);
-        $obj->featured_photo = $final_name;
+        $obj->objective = $request->objective;
+        $obj->expectations = $request->expectations;
+        $obj->legal_considerations = $request->legal_considerations;
+        $obj->challenges_and_solution = $request->challenges_and_solution;
+        $obj->start_date = $request->start_date;
+        $obj->end_date = $request->end_date;
         $obj->is_featured = $request->is_featured;
         $obj->user_id = Auth::id();
-    
+
+        // Handle file uploads for supporting documents
+        if ($request->hasFile('supporting_documents')) {
+            $files = $request->file('supporting_documents');
+            $filePaths = [];
+            foreach ($files as $file) {
+                $fileName = 'supporting_document_' . time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/supporting_documents'), $fileName);
+                $filePaths[] = $fileName;
+            }
+            $obj->supporting_documents = json_encode($filePaths);
+        }
+
+         // Handle the featured photo
+        if($request->featured_photo != null) {
+            $request->validate([
+                'featured_photo' => 'image|mimes:jpg,jpeg,png',
+            ]);
+
+            $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
+            $request->featured_photo->move(public_path('uploads'), $final_name);
+            $obj->featured_photo = $final_name;
+        }
+
         $obj->save();
-    
+
+        // Handle target audience categories (pivot table entries)
+        if ($request->has('target_audience')) {
+            // $obj->targetAudienceCategories()->attach($request->target_audience_categories);
+            // dd($request->target_audience_categories);
+            foreach($request->target_audience as $ret)
+            {
+                $target = new CauseTargetAudience();
+                $target->cause_id = $obj->id;
+                $target->target_audience_category_id = $ret;
+                $target->save();
+            }
+        }
+
+        // Handle partnerships and collaborations
+        if ($request->has('partnerships_and_collaborations')) {
+            foreach($request->partnerships_and_collaborations as $ret)
+            {
+                $target = new CausePartnershipAndCollaboration();
+                $target->cause_id = $obj->id;
+                $target->partnership_id = $ret;
+                $target->save();
+            }
+            // $obj->partnershipsAndCollaborations()->attach($request->partnerships_and_collaborations);
+        }
+
         // Redirect with success message
         return redirect()->route('user_cause')->with('success', 'Cause created successfully');
     }
-    
+
+
 
     public function edit($id)
     {
@@ -373,39 +440,39 @@ class UserController extends Controller
 
     // Method to store a new message
     public function storeMessage(Request $request)
-{
-    // Validate the incoming request data
-    $validatedData = $request->validate([
-        'message' => 'required|string',
-    ]);
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'message' => 'required|string',
+        ]);
 
-    // Create a new message using the validated data
-    $message = new Message();
-    $message->message = $validatedData['message'];
-    $message->user_id = auth()->user()->id;
-    $message->save();
+        // Create a new message using the validated data
+        $message = new Message();
+        $message->message = $validatedData['message'];
+        $message->user_id = auth()->user()->id;
+        $message->save();
 
-    // Send the message to Gemini and get the response
-    try {
-        $apiKey = config('services.gemini.api_key'); // Fetch the API key
-        $response = Gemini::geminiPro()->generateContent($validatedData['message'], $apiKey);
-        $responseText = $response->text();
+        // Send the message to Gemini and get the response
+        try {
+            $apiKey = config('services.gemini.api_key'); // Fetch the API key
+            $response = Gemini::geminiPro()->generateContent($validatedData['message'], $apiKey);
+            $responseText = $response->text();
 
-        // Save the response as a new message from the chatbot
-        $chatbotMessage = new Message();
-        $chatbotMessage->message = $responseText;
-        $chatbotMessage->user_id = null; // Assuming null indicates the message is from the chatbot
-        $chatbotMessage->save();
+            // Save the response as a new message from the chatbot
+            $chatbotMessage = new Message();
+            $chatbotMessage->message = $responseText;
+            $chatbotMessage->user_id = null; // Assuming null indicates the message is from the chatbot
+            $chatbotMessage->save();
 
-    } catch (\Exception $e) {
-        dd($e->getMessage());
-        // Handle exception
-        return redirect()->route('user_message_list')->with('error', 'An error occurred while communicating with the chatbot.');
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+            // Handle exception
+            return redirect()->route('user_message_list')->with('error', 'An error occurred while communicating with the chatbot.');
+        }
+
+        // Redirect back to the message list with a success message
+        return redirect()->route('user_message_list');
     }
-
-    // Redirect back to the message list with a success message
-    return redirect()->route('user_message_list');
-}
 
     
 }

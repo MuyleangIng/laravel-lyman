@@ -276,7 +276,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/cause/create/submit', [AdminCauseController::class, 'create_submit'])->name('admin_cause_create_submit');
     Route::get('/cause/edit/{id}', [AdminCauseController::class, 'edit'])->name('admin_cause_edit');
     Route::post('/cause/edit/submit/{id}', [AdminCauseController::class, 'edit_submit'])->name('admin_cause_edit_submit');
-    Route::get('/cause/delete/{id}', [AdminCauseController::class, 'delete'])->name('admin_cause_delete');
+    Route::delete('/cause/delete/{id}', [AdminCauseController::class, 'delete'])->name('admin_cause_delete');
     // New route for updating cause status
     Route::post('/cause/{id}/status', [AdminCauseController::class, 'updateStatus'])->name('update_cause_status');
     Route::get('/cause/approval', [AdminCauseController::class, 'approval'])->name('admin_cause_approval');

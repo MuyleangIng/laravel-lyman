@@ -10,6 +10,10 @@ use App\Models\CausePhoto;
 use App\Models\CauseVideo;
 use App\Models\CauseFaq;
 use App\Models\CauseDonation;
+use App\Models\CausePartnershipAndCollaboration;
+use App\Models\CauseTargetAudience;
+use App\Models\PartnershipAndCollaborationCategory;
+use App\Models\TargetAudienceCategory;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -31,17 +35,26 @@ class AdminCauseController extends Controller
     public function create()
     {
         $users = User::all();
-        return view('admin.cause.create', compact('users'));
+        $targetAudiences = TargetAudienceCategory::all();
+        $partnerships = PartnershipAndCollaborationCategory::all();
+        return view('admin.cause.create', compact('users', 'targetAudiences', 'partnerships'));
     }
 
     public function create_submit(Request $request)
     {
         $request->validate([
             'name' => ['required', 'unique:causes'],
-            // 'slug' => ['required', 'alpha_dash', 'unique:causes'],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
-            'description' => 'required',
+            'objective' => 'required',
+            'expectations' => 'required',
+            'legal_considerations' => 'nullable',
+            'challenges_and_solution' => 'nullable',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
+            'target_audience.*' => 'exists:target_audience_categories,id', 
+            'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
             'featured_photo' => 'required|image|mimes:jpg,jpeg,png',
         ]);
 
@@ -58,13 +71,53 @@ class AdminCauseController extends Controller
         $obj->goal = $request->goal;
         $obj->raised = 0;
         $obj->short_description = $request->short_description;
-        $obj->description = $request->description;
         $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
         $request->featured_photo->move(public_path('uploads'), $final_name);
+        $obj->objective = $request->objective;
+        $obj->expectations = $request->expectations;
+        $obj->legal_considerations = $request->legal_considerations;
+        $obj->challenges_and_solution = $request->challenges_and_solution;
+        $obj->start_date = $request->start_date;
+        $obj->end_date = $request->end_date;
         $obj->featured_photo = $final_name;
         $obj->is_featured = $request->is_featured;  
 
+        // Handle file uploads for supporting documents
+        if ($request->hasFile('supporting_documents')) {
+            $files = $request->file('supporting_documents');
+            $filePaths = [];
+            foreach ($files as $file) {
+                $fileName = 'supporting_document_' . time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/supporting_documents'), $fileName);
+                $filePaths[] = $fileName;
+            }
+            $obj->supporting_documents = json_encode($filePaths);
+        }
+
         $obj->save();
+
+         // Handle target audience categories (pivot table entries)
+         if ($request->has('target_audience')) {
+            foreach($request->target_audience as $ret)
+            {
+                $target = new CauseTargetAudience();
+                $target->cause_id = $obj->id;
+                $target->target_audience_category_id = $ret;
+                $target->save();
+            }
+        }
+
+        // Handle partnerships and collaborations
+        if ($request->has('partnerships_and_collaborations')) {
+            foreach($request->partnerships_and_collaborations as $ret)
+            {
+                $target = new CausePartnershipAndCollaboration();
+                $target->cause_id = $obj->id;
+                $target->partnership_id = $ret;
+                $target->save();
+            }
+            // $obj->partnershipsAndCollaborations()->attach($request->partnerships_and_collaborations);
+        }
 
         return redirect()->route('admin_cause_index')->with('success','Cause created successfully');
     }

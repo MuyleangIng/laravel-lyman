@@ -40,7 +40,7 @@ class CauseController extends Controller
     public function detail($slug)
     {
         // Fetch the cause based on the slug
-        $cause = Cause::where('slug', $slug)->firstOrFail();
+        $cause = Cause::where('slug', $slug)->with(['targetAudiences', 'partnershipsAndCollaborations'])->firstOrFail();
         
         // Fetch related photos, videos, and FAQs
         $cause_photos = CausePhoto::where('cause_id', $cause->id)->get();
@@ -384,7 +384,7 @@ class CauseController extends Controller
 
             // Check if the current user is the owner of the comment
             if ($comment->user_id !== $user->id) {
-                return back()->with('error', 'You do not have permission to delete this comment.');
+                return back()->with('error', 'Only the comment owner can be able to delete the comment.');
             }
 
             // Delete the comment and its replies
@@ -392,12 +392,24 @@ class CauseController extends Controller
             $comment->delete(); // Delete the comment
 
             return back()->with('success', 'Comment and its replies deleted successfully.');
+
         } elseif ($type === 'reply') {
-            return back()->with('error', 'Only comment owner can delete the comment.');
+            $reply = CauseReply::findOrFail($id);
+
+            // Check if the current user is the owner of the reply
+            if ($reply->user_id !== $user->id) {
+                return back()->with('error', 'You do not have permission to delete this reply.');
+            }
+
+            // Delete the reply
+            $reply->delete();
+
+            return back()->with('success', 'Reply deleted successfully.');
         } else {
             return back()->with('error', 'Invalid deletion type specified.');
         }
     }
+
 
 
 
