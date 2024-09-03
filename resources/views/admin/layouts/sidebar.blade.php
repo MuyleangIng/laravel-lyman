@@ -118,7 +118,7 @@
                     href="{{ route('admin_cause_index') }}"><i class="fa-solid fa-hand-holding-hand"></i>
                     <span>Causes</span></a></li>
 
-            <li class="{{ Request::is('admin/approval*') ? 'active' : '' }}"><a class="nav-link"
+            <li class="{{ Request::is('admin/cause-approval*') ? 'active' : '' }}"><a class="nav-link"
                     href="{{ route('admin_cause_approval') }}"><i class="fa-solid fa-person-circle-check"></i>
                     <span>Causes Approval</span></a></li>
 

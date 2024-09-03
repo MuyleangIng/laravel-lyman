@@ -139,15 +139,12 @@
                                 @foreach ($cause_videos as $item)
                                     <div class="col-md-6 col-lg-4">
                                         <div class="item">
-                                            <a class="video-button"
-                                                href="http://www.youtube.com/watch?v={{ $item->youtube_video_id }}">
-                                                <img src="http://img.youtube.com/vi/{{ $item->youtube_video_id }}/0.jpg"
-                                                    alt="" />
-                                                <div class="icon">
-                                                    <i class="far fa-play-circle"></i>
-                                                </div>
-                                                <div class="bg"></div>
-                                            </a>
+                                            <div class="ratio ratio-4x3">
+                                                <!-- Embed the YouTube video using an iframe -->
+                                                <iframe src="https://www.youtube.com/embed/{{ $item->youtube_video_id }}"
+                                                    title="YouTube video" allowfullscreen>
+                                                </iframe>
+                                            </div>
                                         </div>
                                     </div>
                                 @endforeach

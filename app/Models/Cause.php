@@ -33,6 +33,11 @@ class Cause extends Model
     {
         return $this->belongsToMany(PartnershipAndCollaborationCategory::class, 'cause_partnerships_and_collaborations', 'cause_id', 'partnership_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
     
 
 }

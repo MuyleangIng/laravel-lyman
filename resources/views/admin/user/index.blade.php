@@ -33,16 +33,8 @@
                                                     <td>{{ $user->name }}</td>
                                                     <td>{{ $user->email }}</td>
                                                     <td class="pt_10 pb_10">
-                                                        <a href="{{ route('admin_user_edit', $user->id) }}"
-                                                            class="btn btn-primary btn-sm">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="{{ route('admin_user_delete', $user->id) }}"
-                                                            class="btn btn-danger btn-sm delete-button">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
                                                         <a href="{{ route('admin_user_block', $user->id) }}"
-                                                            class="btn btn-warning btn-sm">
+                                                            class="btn btn-danger btn-sm">
                                                             <i class="fas fa-ban"></i>
                                                             {{ $user->block ? 'Unblock' : 'Block' }}
                                                         </a>
@@ -59,23 +51,4 @@
             </div>
         </section>
     </div>
-    <script>
-        $(document).ready(function() {
-            $('.delete-button').click(function(event) {
-                event.preventDefault();
-                var form = $(this).closest('form');
-                swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this user!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        form.submit();
-                    }
-                });
-            });
-        });
-    </script>
 @endsection

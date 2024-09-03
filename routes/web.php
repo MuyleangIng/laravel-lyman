@@ -192,11 +192,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/volunteer/delete/{id}', [AdminVolunteerController::class, 'delete'])->name('admin_volunteer_delete');
 
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin_user_index');
-    Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('admin_user_create');
-    Route::post('/admin/users/create', [AdminUserController::class, 'create_submit'])->name('admin_user_create_submit');
-    Route::get('/admin/users/edit/{id}', [AdminUserController::class, 'edit'])->name('admin_user_edit');
-    Route::post('/admin/users/edit/{id}', [AdminUserController::class, 'edit_submit'])->name('admin_user_edit_submit');
-    Route::get('/admin/users/delete/{id}', [AdminUserController::class, 'delete'])->name('admin_user_delete');
     Route::get('/admin/user/block/{id}', [AdminUserController::class, 'block'])->name('admin_user_block');
 
     Route::get('/photo-category/index', [AdminPhotoCategoryController::class, 'index'])->name('admin_photo_category_index');
@@ -279,8 +274,8 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::delete('/cause/delete/{id}', [AdminCauseController::class, 'delete'])->name('admin_cause_delete');
     // New route for updating cause status
     Route::post('/cause/{id}/status', [AdminCauseController::class, 'updateStatus'])->name('update_cause_status');
-    Route::get('/cause/approval', [AdminCauseController::class, 'approval'])->name('admin_cause_approval');
-    Route::get('/cause/details/{slug}', [AdminCauseController::class, 'details'])->name('admin_cause_details');
+    Route::get('/cause-approval', [AdminCauseController::class, 'approval'])->name('admin_cause_approval');
+    Route::get('/cause-approval/details/{slug}', [AdminCauseController::class, 'details'])->name('admin_cause_details');
     Route::get('/cause/{id}/undoReject', [AdminCauseController::class, 'undoReject'])->name('admin_undo_reject');
     //New route for export the cause data
     Route::get('/cause/export', [AdminCauseController::class,"export"])->name('admin_cause_export');

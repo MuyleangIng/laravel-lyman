@@ -345,12 +345,14 @@ class AdminCauseController extends Controller
 
     public function details($slug)
     {
-        $cause = Cause::where('slug', $slug)->first();
+        $cause = Cause::where('slug', $slug)->with(['targetAudiences', 'partnershipsAndCollaborations', 'user'])->firstOrFail();
         $cause_photos = CausePhoto::where('cause_id',$cause->id)->get();
         $cause_videos = CauseVideo::where('cause_id',$cause->id)->get();
         $cause_faqs = CauseFaq::where('cause_id',$cause->id)->get();
         $recent_causes = Cause::orderBy('id', 'desc')->take(5)->get();
-        return view('admin.cause.details', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes'));
+        // Decode the JSON supporting_documents field
+        $supporting_documents = json_decode($cause->supporting_documents, true);
+        return view('admin.cause.details', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes', 'supporting_documents'));
     }
 
 

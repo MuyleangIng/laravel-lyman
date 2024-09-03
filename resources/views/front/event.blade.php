@@ -345,7 +345,7 @@
 
 
         document.getElementById('bookedNowButton').addEventListener('click', function(e) {
-            e.preventDefault();
+            e.preventDefault(); 
 
             var paymentMethod = document.getElementById('paymentMethod').value;
             var bookingForm = document.getElementById('bookingForm');
