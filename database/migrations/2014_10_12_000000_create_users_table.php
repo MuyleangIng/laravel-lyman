@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->boolean('block')->default(false);
             $table->string('photo')->nullable();
+            $table->text('quote')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -21,7 +21,7 @@
                                                 <th>SL</th>
                                                 <th>Featured Photo</th>
                                                 <th>Name</th>
-                                                <th>Status</th> <!-- Updated column heading -->
+                                                <th>Status</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -37,7 +37,6 @@
                                                         {{ $item->name }}
                                                     </td>
                                                     <td>
-                                                        <!-- Display buttons for approve and reject -->
                                                         @if ($item->status == 'approve')
                                                             <span class="badge badge-success">Approved</span>
                                                         @elseif($item->status == 'reject')
@@ -55,9 +54,23 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('admin_cause_details', $item->slug) }}"
-                                                            class="btn btn-primary btn-sm"><i
-                                                                class="fa-solid fa-eye"></i></a>
+                                                        <div class="d-flex align-items-center">
+                                                            <a href="{{ route('admin_cause_details', $item->slug) }}"
+                                                                class="btn btn-primary btn-sm">
+                                                                <i class="fa-solid fa-eye"></i> View
+                                                            </a>
+                                                            @if ($item->status == 'reject')
+                                                                <form method="POST"
+                                                                    action="{{ route('admin_undo_reject', $item->id) }}"
+                                                                    class="mr-4">
+                                                                    @csrf
+                                                                    <button type="submit"
+                                                                        class="btn btn-warning btn-sm undo-button">
+                                                                        <i class="fa-solid fa-rotate-left"></i> Undo Reject
+                                                                    </button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -104,6 +117,22 @@
                     value: 'approve'
                 }).appendTo(form);
                 form.submit();
+            });
+
+            $('.undo-button').click(function(event) {
+                event.preventDefault();
+                var form = $(this).closest('form');
+                swal({
+                    title: "Are you sure?",
+                    text: "Are you sure you want to undo the rejection of this cause?",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: false,
+                }).then((willUndo) => {
+                    if (willUndo) {
+                        form.submit();
+                    }
+                });
             });
         });
     </script>

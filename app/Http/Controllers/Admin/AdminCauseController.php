@@ -323,24 +323,24 @@ class AdminCauseController extends Controller
     }
 
     public function undoReject($id)
-{
-    $cause = Cause::findOrFail($id);
+    {
+        $cause = Cause::findOrFail($id);
 
-    // Check if the current status is "Reject"
-    if ($cause->status === 'reject') {
-        // Store the current status as previous status
-        $cause->previous_status = $cause->status;
-        // Set the status to "Pending"
-        $cause->status = 'pending';
-        // Save the changes
-        $cause->save();
+        // Check if the current status is "Reject"
+        if ($cause->status === 'reject') {
+            // Store the current status as previous status
+            $cause->previous_status = $cause->status;
+            // Set the status to "Pending"
+            $cause->status = 'pending';
+            // Save the changes
+            $cause->save();
 
-        return redirect()->route('admin_cause_approval', $cause->id)->with('success', 'Reject status undone successfully');
-    } else {
-        // If the current status is not "Reject", redirect back with a warning message
-        return redirect()->back()->with('error', 'The cause status cannot be undone because it is not currently rejected');
+            return redirect()->route('admin_cause_approval', $cause->id)->with('success', 'Reject status undone successfully');
+        } else {
+            // If the current status is not "Reject", redirect back with a warning message
+            return redirect()->back()->with('error', 'The cause status cannot be undone because it is not currently rejected');
+        }
     }
-}
 
 
     public function details($slug)
