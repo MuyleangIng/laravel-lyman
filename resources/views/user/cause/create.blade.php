@@ -4,9 +4,10 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header d-flex justify-content-between">
-                <h1>Create Cause</h1>
+                <h1>Create Project</h1>
                 <div>
-                    <a href="#" class="btn btn-primary"><i class="fas fa-folder-open"></i> Sample</a>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#imageModal"><i
+                            class="fas fa-folder-open"></i> Sample</button>
                     <a href="{{ route('user_cause') }}" class="btn btn-primary"><i class="fas fa-plus"></i> View All</a>
                 </div>
             </div>
@@ -133,6 +134,28 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal -->
+            <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalTitle"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="imageModalTitle">Sample Project Input</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/uploads/cause_sample.png" alt="Sample Image" class="img-fluid mb-3">
+                            <!-- Download Button -->
+                            <a href="/uploads/cause_sample.png" download="cause_sample.png" class="btn btn-primary">
+                                Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </section>
     </div>
     <script>

@@ -537,7 +537,7 @@
                                         <option value="">Select Payment Method</option>
                                         <option value="paypal">PayPal</option>
                                         <option value="stripe">Stripe</option>
-                                        <option value="payway">PayWay</option>
+                                        <option value="payway">ABA</option>
                                     </select>
                                 </div>
 

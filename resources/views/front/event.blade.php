@@ -196,24 +196,30 @@
                                         @csrf
                                         <input type="hidden" name="price" value="{{ $event->price }}">
                                         <input type="hidden" name="event_id" value="{{ $event->id }}">
-                                        <select name="number_of_tickets" class="form-select mb_15" onchange="updatePrice()">
-                                            <option value="">How many tickets?</option>
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <option value="{{ $i }}">{{ $i }}</option>
-                                            @endfor
-                                        </select>
-                                        <select name="payment_method" class="form-select mb_15" id="paymentMethod">
+                                        <input type="hidden" id="total_seats" value="{{ $event->total_seat }}">
+                                        <input type="hidden" id="booked_seats" value="{{ $event->booked_seat }}">
+
+
+                                        <div class="ticket-input-box mb-3">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Tickets</span>
+                                                <input name="number_of_tickets" type="number" class="form-control"
+                                                    id="ticket-quantity-input" min="1" max="10"
+                                                    placeholder="Enter number of tickets" onchange="updatePrice()">
+                                            </div>
+                                        </div>
+
+                                        <select name="payment_method" class="form-select mb_15" id="paymentMethod"
+                                            onchange="updatePrice()">
                                             <option value="">Select Payment Method</option>
                                             <option value="paypal">PayPal</option>
                                             <option value="stripe">Stripe</option>
-                                            <option value="payway">PayWay</option>
+                                            <option value="payway">ABA</option>
                                         </select>
-                                        <div id="total_price">
-                                            <!-- Total price will be updated here -->
-                                        </div>
                                         <button type="submit" class="btn btn-primary w-100-p pay-now"
                                             id="bookedNowButton">Make Payment</button>
                                     </form>
+
                                 </div>
                             @endif
 
@@ -308,11 +314,36 @@
     <script src="https://checkout.payway.com.kh/plugins/checkout2-0.js"></script>
     <script>
         function updatePrice() {
-            var numberOfTickets = document.querySelector('select[name="number_of_tickets"]').value;
+            // Get number of tickets and unit price
+            var numberOfTickets = parseInt(document.getElementById('number_of_tickets').value);
             var unitPrice = parseFloat(document.getElementById('price').value);
-            var totalPrice = unitPrice * numberOfTickets;
-            document.getElementById('total_price').innerText = 'Total Price: $' + totalPrice.toFixed(2);
+
+            var totalPrice = unitPrice * (isNaN(numberOfTickets) ? 0 : numberOfTickets);
         }
+
+        function validateTickets() {
+            // Get the number of tickets and available seats
+            var numberOfTickets = parseInt(document.getElementById('ticket-quantity-input').value);
+            var totalSeats = parseInt(document.getElementById('total_seats').value);
+            var bookedSeats = parseInt(document.getElementById('booked_seats').value);
+
+            var remainingSeats = totalSeats - bookedSeats;
+
+            // Check if the number of tickets exceeds the remaining seats
+            if (numberOfTickets > remainingSeats) {
+                alert('You cannot purchase more tickets than available.');
+                return false;
+            }
+            return true;
+        }
+
+        // Attach the validation function to form submission
+        document.getElementById('bookingForm').onsubmit = function() {
+            return validateTickets();
+        }
+
+
+
         document.getElementById('bookedNowButton').addEventListener('click', function(e) {
             e.preventDefault();
 
