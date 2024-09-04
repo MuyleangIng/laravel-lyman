@@ -23,6 +23,9 @@ return new class extends Migration
             $table->boolean('block')->default(false);
             $table->string('photo')->nullable();
             $table->text('quote')->nullable();
+            $table->string('provider_name')->nullable();
+            $table->string('provider_id')->nullable();
+            $table->string('provider_token',500)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -33,6 +36,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['provider_name', 'provider_id', 'provider_token']);
+        });
     }
 };

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Front\HomeController;
@@ -40,6 +39,7 @@ use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\AdminOtherPageController;
 use App\Http\Controllers\Admin\AdminSubscriberController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Auth\SocialLoginController;
 
 require __DIR__.'/auth.php';
 
@@ -101,6 +101,9 @@ Route::get('/privacy-policy', [PrivacyController::class, 'index'])->name('privac
 Route::post('/subscriber-submit', [SubscriberController::class, 'subscriber_submit'])->name('subscriber_submit');
 Route::get('/subscriber-verify/{email}/{token}', [SubscriberController::class, 'subscriber_verify'])->name('subscriber_verify');
 
+
+Route::get('auth/{provider}/redirect', [SocialLoginController::class , 'redirect'])->name('auth.socialite.redirect');
+Route::get('auth/{provider}/callback', [SocialLoginController::class , 'callback'])->name('auth.socialite.callback');
 
 /* User */
 Route::middleware('auth', 'verified')->prefix('user')->group(function () {

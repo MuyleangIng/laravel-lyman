@@ -10,23 +10,30 @@
             <a href="{{ route('home') }}" target="_blank" class="btn btn-warning">Front End</a>
         </li>
         <li class="text-white pt_5">
-            Logged in as: {{ Auth::guard('web')->user()->name  }}
+            Logged in as: {{ Auth::guard('web')->user()->name }}
         </li>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                @if(Auth::guard('web')->user()->photo != null)
-                    <img src="{{ asset('uploads/'.Auth::guard('web')->user()->photo) }}" alt="" class="rounded-circle-custom">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                @if (filter_var(Auth::user()->photo, FILTER_VALIDATE_URL))
+                    <!-- Display URL directly -->
+                    <img src="{{ Auth::user()->photo }}" alt="Profile Picture" class="rounded-circle-custom">
                 @else
-                    <img src="{{ asset('uploads/default.png') }}" alt="" class="rounded-circle-custom">
+                    <!-- Display local file path -->
+                    <img src="{{ asset('uploads/' . Auth::user()->photo) }}" alt="Profile Picture"
+                        class="rounded-circle-custom">
                 @endif
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="{{ route('user_profile') }}"><i class="far fa-user"></i> Edit Profile</a></li>
+                <li><a class="dropdown-item" href="{{ route('user_profile') }}"><i class="far fa-user"></i> Edit
+                        Profile</a></li>
                 <li>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
-                        this.closest('form').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}"
+                            onclick="event.preventDefault();
+                        this.closest('form').submit();"><i
+                                class="fas fa-sign-out-alt"></i> Logout</a>
                     </form>
                 </li>
             </ul>
