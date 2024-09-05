@@ -51,5 +51,10 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),  
         'redirect' => env('GITHUB_REDIRECT_URI') 
     ],
+    'telegram' => [
+    'token' => env('TELEGRAM_BOT_TOKEN'),
+    'channel_id' => env('TELEGRAM_CHANNEL_ID'),
+],
+
 
 ];

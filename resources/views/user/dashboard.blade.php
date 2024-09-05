@@ -10,7 +10,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
-                            <i class="far fa-user"></i>
+                            <i class="fas fa-ticket-alt"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -25,7 +25,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
-                            <i class="far fa-user"></i>
+                            <i class="fas fa-dollar-sign"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -40,7 +40,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
-                            <i class="far fa-user"></i>
+                            <i class="fas fa-hand-holding-heart"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
@@ -55,7 +55,7 @@
                 <div class="col-lg-4 col-md-6 col-sm-6 col-12">
                     <div class="card card-statistic-1">
                         <div class="card-icon bg-primary">
-                            <i class="far fa-user"></i>
+                            <i class="fas fa-gift"></i>
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">

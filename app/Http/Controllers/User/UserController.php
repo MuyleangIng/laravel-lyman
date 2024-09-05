@@ -20,6 +20,7 @@ use App\Models\TargetAudienceCategory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GeminiAPI\Laravel\Facades\Gemini;
+use Telegram\Bot\Laravel\Facades\Telegram;
 
 class UserController extends Controller
 {
@@ -255,11 +256,32 @@ class UserController extends Controller
                 $target->partnership_id = $ret;
                 $target->save();
             }
-            // $obj->partnershipsAndCollaborations()->attach($request->partnerships_and_collaborations);
         }
+
+        $this->sendTelegramAlert($request);
 
         // Redirect with success message
         return redirect()->route('user_cause')->with('success', 'Cause created successfully');
+    }
+
+
+    function sendTelegramAlert(Request $request)
+    {
+        $channelId = config('services.telegram.channel_id');
+        $message = "📢 A new project has been submitted:\n\n";
+        $message .= "📝 <b>Name:</b> " . $request->input('name') . "\n";
+        $message .= "🎯 <b>Goal:</b> " . $request->input('goal') . "\n";
+        $message .= "✍️ <b>Short Description:</b> " . $request->input('short_description') . "\n";
+        $message .= "🎯 <b>Objective:</b> " . $request->input('objective') . "\n";
+        $message .= "🔍 <b>Expectations:</b> " . $request->input('expectations') . "\n";
+        $message .= "📅 <b>Start Date:</b> " . $request->input('start_date') . "\n";
+        $message .= "📅 <b>End Date:</b> " . $request->input('end_date') . "\n";
+
+        Telegram::sendMessage([
+            'chat_id' => $channelId,
+            'text'    => $message,
+            'parse_mode' => 'HTML',
+        ]);
     }
 
 

@@ -43,7 +43,6 @@ use App\Http\Controllers\Auth\SocialLoginController;
 
 require __DIR__.'/auth.php';
 
-
 /* Front */
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
