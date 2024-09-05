@@ -527,6 +527,8 @@
                                     </ul>
                                 </div>
 
+                                <input type="hidden" name="send_invoice" id="sendInvoice" value="0">
+
                                 <!-- Select Payment Method -->
                                 <h3>Select Payment Method:</h3>
                                 <div class="form-control">
@@ -635,6 +637,8 @@
                 }
             });
         });
+
+
         document.getElementById('donatedNowButton').addEventListener('click', function(e) {
             e.preventDefault(); // Prevent form from auto-submitting
 
@@ -646,13 +650,29 @@
                 return; // Stop the function if no payment method is selected
             }
 
-            // Handle payment submission based on selected method
-            if (paymentMethod === 'paypal' || paymentMethod === 'stripe') {
-                donationForm.submit(); // Directly submit the form for PayPal or Stripe
-            } else if (paymentMethod === 'payway') {
-                processPayWayPayment(); // Call PayWay payment function
-            }
+            // Prompt user to choose if they want to receive an invoice
+            swal({
+                title: "Receive Invoice",
+                text: "Would you like to receive an invoice via email?",
+                icon: "info",
+                buttons: {
+                    cancel: "No",
+                    confirm: "Yes"
+                }
+            }).then((willSendInvoice) => {
+                if (willSendInvoice) {
+                    document.getElementById('sendInvoice').value = "1";
+                }
+
+                // Handle payment submission based on selected method
+                if (paymentMethod === 'paypal' || paymentMethod === 'stripe') {
+                    donationForm.submit(); // Directly submit the form for PayPal or Stripe
+                } else if (paymentMethod === 'payway') {
+                    processPayWayPayment(); // Call PayWay payment function
+                }
+            });
         });
+
 
         function processPayWayPayment() {
             let form = $('#donationForm');

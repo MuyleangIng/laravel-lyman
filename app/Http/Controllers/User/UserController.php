@@ -25,24 +25,23 @@ class UserController extends Controller
 {
     public function dashboard()
     {
-        $total_ticket = 0;
-        $total_ticket_price = 0;
-        $event_ticket_data = EventTicket::where('user_id',auth()->user()->id)->get();
-        foreach($event_ticket_data as $item) {
-            $total_ticket += $item->number_of_tickets;
-            $total_ticket_price += $item->total_price;
-        }
+        $userId = auth()->user()->id;
 
+        // Calculate total tickets purchased and their price
+        $total_ticket = EventTicket::where('user_id', $userId)->sum('number_of_tickets');
+        $total_ticket_price = EventTicket::where('user_id', $userId)->sum('total_price');
 
-        $total_donation_price = 0;
-        $donation_data = CauseDonation::where('user_id',auth()->user()->id)->get();
-        foreach($donation_data as $item) {
-            $total_donation_price += $item->price;
-        }
+        // Calculate total donations made
+        $total_donation_made = CauseDonation::where('user_id', $userId)->sum('price');
 
+        // Calculate total donations received
+        $total_donation_received = CauseDonation::whereHas('cause', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->where('payment_status', 'COMPLETED')->sum('price');
 
-        return view('user.dashboard', compact('total_ticket', 'total_ticket_price', 'total_donation_price'));
+        return view('user.dashboard', compact('total_ticket', 'total_ticket_price', 'total_donation_made', 'total_donation_received'));
     }
+
 
     public function profile()
     {

@@ -4,7 +4,7 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header d-flex justify-content-between">
-                <h1>Causes Approval</h1>
+                <h1>Projects Approval</h1>
                 <div>
                     <a href="{{ route('admin_cause_create') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Add New</a>
                 </div>

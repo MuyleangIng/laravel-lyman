@@ -23,7 +23,6 @@
                                                 <th>Cause Name</th>
                                                 <th>Payment Id</th>
                                                 <th>Price</th>
-                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -40,10 +39,6 @@
                                                     </td>
                                                     <td>
                                                         ${{ $item->price }}
-                                                    </td>
-                                                    <td style="width:140px;">
-                                                        <a href="{{ route('user_cause_donation_invoice', $item->id) }}"
-                                                            class="btn btn-primary btn-sm">See Invoice</a>
                                                     </td>
                                                 </tr>
                                                 @php $total_price += $item->price; @endphp
