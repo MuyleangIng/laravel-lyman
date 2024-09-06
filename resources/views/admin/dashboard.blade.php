@@ -14,7 +14,7 @@
                         </div>
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>Total Causes</h4>
+                                <h4>Total Projects</h4>
                             </div>
                             <div class="card-body">
                                 {{ $total_causes }}
@@ -103,7 +103,6 @@
                                         <th>Name</th>
                                         <th>Profession</th>
                                         <th>Phone</th>
-                                        <th>Email</th>
                                         <th>Address</th>
                                         <th>Action</th>
                                     </tr>
@@ -151,22 +150,24 @@
                         name: 'phone'
                     },
                     {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
                         data: 'address',
                         name: 'address'
                     },
                     {
-                        data: 'action',
+                        data: 'id',
                         name: 'action',
                         orderable: false,
-                        searchable: false
+                        searchable: false,
+                        render: function(data, type, full, meta) {
+                            return `
+                    <a href="/volunteer/edit/${data}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
+                    <a href="javascript:void(0)" data-url="/volunteer/delete/${data}" class="btn btn-danger btn-sm delete-button"><i class="fas fa-trash"></i> Delete</a>
+                `;
+                        }
                     }
                 ]
-            });
 
+            });
             // SweetAlert delete button
             $(document).on('click', '.delete-button', function(event) {
                 event.preventDefault();
@@ -184,13 +185,13 @@
                             url: deleteUrl,
                             type: 'DELETE',
                             data: {
-                                _token: "{{ csrf_token() }}"
+                                _token: "{{ csrf_token() }}" // Make sure to send the CSRF token
                             },
                             success: function(response) {
                                 swal("Volunteer deleted successfully!", {
                                     icon: "success",
                                 });
-                                table.ajax.reload();
+                                table.ajax.reload(); // Reload DataTable
                             },
                             error: function(xhr) {
                                 swal("Error occurred while deleting!", {
@@ -201,6 +202,8 @@
                     }
                 });
             });
+
+
         });
     </script>
 @endsection

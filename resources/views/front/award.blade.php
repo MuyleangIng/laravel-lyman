@@ -25,7 +25,7 @@
                         <div class="single-award">
                             <img class="icon" src="{{ asset('uploads/' . $topUsers[1]->photo) }}" alt="">
                             <h3 class="title">{{ $topUsers[1]->name }}</h3>
-                            <span class="date">{{ now()->year }}</span>
+                            <span class="date">Top 2</span>
                             <p class="description">{{ $topUsers[1]->quote ?? 'No description available.' }}</p>
                         </div>
                     @endif
@@ -37,7 +37,7 @@
                         <div class="single-award active">
                             <img class="icon" src="{{ asset('uploads/' . $topUsers[0]->photo) }}" alt="">
                             <h3 class="title">{{ $topUsers[0]->name }}</h3>
-                            <span class="date">{{ now()->year }}</span>
+                            <span class="date">Top 1</span>
                             <p class="description">{{ $topUsers[0]->quote ?? 'No description available.' }}</p>
                             <a class="read-more" href="#">Read More</a>
                         </div>
@@ -50,7 +50,7 @@
                         <div class="single-award">
                             <img class="icon" src="{{ asset('uploads/' . $topUsers[2]->photo) }}" alt="">
                             <h3 class="title">{{ $topUsers[2]->name }}</h3>
-                            <span class="date">{{ now()->year }}</span>
+                            <span class="date">Top 3</span>
                             <p class="description">{{ $topUsers[2]->quote ?? 'No description available.' }}</p>
                         </div>
                     @endif

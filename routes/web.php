@@ -208,7 +208,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/volunteer/create/submit', [AdminVolunteerController::class, 'create_submit'])->name('admin_volunteer_create_submit');
     Route::get('/volunteer/edit/{id}', [AdminVolunteerController::class, 'edit'])->name('admin_volunteer_edit');
     Route::post('/volunteer/edit/submit/{id}', [AdminVolunteerController::class, 'edit_submit'])->name('admin_volunteer_edit_submit');
-    Route::get('/volunteer/delete/{id}', [AdminVolunteerController::class, 'delete'])->name('admin_volunteer_delete');
+    Route::delete('/volunteer/delete/{id}', [AdminVolunteerController::class, 'delete'])->name('admin_volunteer_delete');
 
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin_user_index');
     Route::get('/admin/user/block/{id}', [AdminUserController::class, 'block'])->name('admin_user_block');

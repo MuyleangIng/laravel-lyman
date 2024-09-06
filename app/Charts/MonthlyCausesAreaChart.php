@@ -51,9 +51,9 @@ class MonthlyCausesAreaChart
 
         // Return the area chart with dynamic data
         return $this->chart->areaChart()
-            ->setTitle('New Causes - ' . $year)
+            ->setTitle('New Projects - ' . $year)
             ->setDataset([[
-                'name' => 'Causes',
+                'name' => 'Projects',
                 'data' => $counts
             ]])
             ->setLabels($months);

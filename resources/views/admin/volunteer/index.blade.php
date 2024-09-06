@@ -43,9 +43,15 @@
                                                     <td class="pt_10 pb_10">
                                                         <a href="{{ route('admin_volunteer_edit', $volunteer->id) }}"
                                                             class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                                        <a href="{{ route('admin_volunteer_delete', $volunteer->id) }}"
-                                                            class="btn btn-danger btn-sm delete-button"><i
-                                                                class="fas fa-trash"></i></a>
+                                                        <form id="delete-form-{{ $volunteer->id }}"
+                                                            action="{{ route('admin_volunteer_delete', $volunteer->id) }}"
+                                                            method="POST" style="display: none;">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                        </form>
+
+                                                        <a href="#" class="btn btn-danger btn-sm delete-button"
+                                                            data-id="{{ $volunteer->id }}"><i class="fas fa-trash"></i></a>
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -64,8 +70,8 @@
             $('.delete-button').click(function(event) {
                 event.preventDefault();
 
-                var form = $(this).closest(
-                    'form');
+                var id = $(this).data('id');
+                var form = $('#delete-form-' + id);
 
                 swal({
                     title: "Are you sure?",

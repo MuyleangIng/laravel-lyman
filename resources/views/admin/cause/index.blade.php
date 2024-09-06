@@ -34,22 +34,12 @@
                                             @foreach ($causes as $item)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
-                                                    <td>
-                                                        <img src="{{ asset('uploads/' . $item->featured_photo) }}"
-                                                            alt="" class="w_150">
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->name }}
-                                                    </td>
-                                                    <td>
-                                                        ${{ $item->goal }}
-                                                    </td>
-                                                    <td>
-                                                        ${{ $item->raised }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->is_featured }}
-                                                    </td>
+                                                    <td><img src="{{ asset('uploads/' . $item->featured_photo) }}"
+                                                            alt="" class="w_150"></td>
+                                                    <td>{{ $item->name }}</td>
+                                                    <td>${{ $item->goal }}</td>
+                                                    <td>${{ $item->raised }}</td>
+                                                    <td>{{ $item->is_featured }}</td>
                                                     <td>
                                                         <a href="{{ route('admin_cause_photo', $item->id) }}"
                                                             class="btn btn-primary btn-sm w_100_p mb_5">Photo Gallery</a>
@@ -86,13 +76,13 @@
             </div>
         </section>
     </div>
+
     <script>
         $(document).ready(function() {
             $('.delete-button').click(function(event) {
-                event.preventDefault(); // Prevent the default link action
+                event.preventDefault(); // Prevent the default action
 
-                var button = $(this); // Get the button that was clicked
-                var id = button.data('id'); // Get the ID of the cause
+                var form = $(this).closest('form'); // Get the closest form to the clicked button
 
                 swal({
                     title: "Are you sure?",
@@ -102,23 +92,7 @@
                     dangerMode: true,
                 }).then((willDelete) => {
                     if (willDelete) {
-                        $.ajax({
-                            url: `/cause/delete/${id}`,
-                            type: 'DELETE',
-                            data: {
-                                "_token": "{{ csrf_token() }}",
-                            },
-                            success: function(response) {
-                                swal("Deleted!", response.message, "success").then(
-                                    () => {
-                                        location
-                                            .reload(); // Reload the page after deletion
-                                    });
-                            },
-                            error: function(xhr) {
-                                swal("Oops!", "Something went wrong!", "error");
-                            }
-                        });
+                        form.submit(); // Submit the form after confirmation
                     }
                 });
             });
