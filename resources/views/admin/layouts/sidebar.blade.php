@@ -13,45 +13,47 @@
                     href="{{ route('admin_dashboard') }}"><i class="fa-solid fa-palette"></i> <span>Dashboard</span></a>
             </li>
 
-            <li class="{{ Request::is('admin/settings/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_settings_index') }}"><i class="fa-solid fa-gear"></i>
-                    <span>Settings</span></a></li>
+            <li
+                class="nav-item dropdown {{ Request::is('admin/settings/*') || Request::is('admin/slider/*') || Request::is('admin/special/*') || Request::is('admin/feature/*') || Request::is('admin/testimonial/*') || Request::is('admin/counter/*') || Request::is('admin/faq/*') || Request::is('admin/other-pages/*') || Request::is('admin/home-page/*') ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown"><i class="fa-solid fa-gear"></i><span>Admin
+                        Settings</span></a>
+                <ul class="dropdown-menu">
+                    <li class="{{ Request::is('admin/settings/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_settings_index') }}"><i class="fas fa-angle-right"></i> Settings</a>
+                    </li>
+                    <li class="{{ Request::is('admin/slider/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_slider_index') }}"><i class="fas fa-angle-right"></i> Sliders</a></li>
+                    <li class="{{ Request::is('admin/special/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_special_edit') }}"><i class="fas fa-angle-right"></i> Special</a>
+                    </li>
+                    <li class="{{ Request::is('admin/feature/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_feature_index') }}"><i class="fas fa-angle-right"></i> Features</a>
+                    </li>
+                    <li class="{{ Request::is('admin/testimonial/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_testimonial_index') }}"><i class="fas fa-angle-right"></i>
+                            Testimonials</a></li>
+                    <li class="{{ Request::is('admin/counter/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_counter_edit') }}"><i class="fas fa-angle-right"></i> Counters</a>
+                    </li>
+                    <li class="{{ Request::is('admin/faq/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_faq_index') }}"><i class="fas fa-angle-right"></i> FAQs</a></li>
+                    <li class="{{ Request::is('admin/other-pages/terms') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('admin_terms_page') }}">
+                            <i class="fas fa-angle-right"></i> Terms Page
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('admin/other-pages/privacy') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('admin_privacy_page') }}">
+                            <i class="fas fa-angle-right"></i> Privacy Page
+                        </a>
+                    </li>
 
-            <li class="{{ Request::is('admin/slider/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_slider_index') }}"><i class="fa-solid fa-image"></i> <span>Sliders</span></a>
+                    <li class="{{ Request::is('admin/home-page/*') ? 'active' : '' }}"><a class="nav-link"
+                            href="{{ route('admin_home_page_index') }}"><i class="fas fa-angle-right"></i> Home Page
+                            Items</a></li>
+                </ul>
             </li>
 
-            <li class="{{ Request::is('admin/special/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_special_edit') }}"><i class="fa-solid fa-star"></i> <span>Special</span></a>
-            </li>
-
-            <li class="{{ Request::is('admin/feature/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_feature_index') }}"><i class="fa-solid fa-layer-group"></i>
-                    <span>Features</span></a></li>
-
-            <li class="{{ Request::is('admin/testimonial/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_testimonial_index') }}"><i class="fa-solid fa-people-robbery"></i>
-                    <span>Testimonials</span></a></li>
-
-            <li class="{{ Request::is('admin/counter/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_counter_edit') }}"><i class="fa-solid fa-list-ol"></i>
-                    <span>Counters</span></a></li>
-
-            <li class="{{ Request::is('admin/faq/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_faq_index') }}"><i class="fa-solid fa-circle-question"></i>
-                    <span>FAQs</span></a></li>
-
-            <li class="{{ Request::is('admin/volunteer/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_volunteer_index') }}"><i class="fa-solid fa-handshake-angle"></i>
-                    <span>Volunteers</span></a></li>
-
-            <li class="{{ Request::is('admin/users/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_user_index') }}"><i class="fa-solid fa-user"></i>
-                    <span>Users</span></a></li>
-
-            <li class="{{ Request::is('admin/home-page/*') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_home_page_index') }}"><i class="fa-solid fa-house"></i> <span>Home Page
-                        Items</span></a></li>
 
             <li
                 class="nav-item dropdown {{ Request::is('admin/photo-category/*') || Request::is('admin/photo/*') ? 'active' : '' }}">
@@ -122,14 +124,13 @@
                     href="{{ route('admin_cause_approval') }}"><i class="fa-solid fa-person-circle-check"></i>
                     <span>Projects Approval</span></a></li>
 
-            <li class="{{ Request::is('admin/other-pages/terms') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_terms_page') }}"><i class="fa-solid fa-gears"></i> <span>Terms
-                        Page</span></a></li>
+            <li class="{{ Request::is('admin/volunteer/*') ? 'active' : '' }}"><a class="nav-link"
+                    href="{{ route('admin_volunteer_index') }}"><i class="fa-solid fa-handshake-angle"></i>
+                    <span>Volunteers</span></a></li>
 
-            <li class="{{ Request::is('admin/other-pages/privacy') ? 'active' : '' }}"><a class="nav-link"
-                    href="{{ route('admin_privacy_page') }}"><i class="fa-solid fa-shield-halved"></i> <span>Privacy
-                        Page</span></a></li>
-
+            <li class="{{ Request::is('admin/users/*') ? 'active' : '' }}"><a class="nav-link"
+                    href="{{ route('admin_user_index') }}"><i class="fa-solid fa-user"></i>
+                    <span>Users</span></a></li>
 
         </ul>
     </aside>

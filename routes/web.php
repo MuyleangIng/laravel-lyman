@@ -40,11 +40,13 @@ use App\Http\Controllers\Admin\AdminOtherPageController;
 use App\Http\Controllers\Admin\AdminSubscriberController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\SocialLoginController;
+use App\Http\Controllers\Front\AwardController;
 
 require __DIR__.'/auth.php';
 
 /* Front */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/award', [AwardController::class, 'award'])->name('award');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact/send-message', [ContactController::class, 'send_message'])->name('contact_send_message');
@@ -186,6 +188,21 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/faq/edit/submit/{id}', [AdminFaqController::class, 'edit_submit'])->name('admin_faq_edit_submit');
     Route::get('/faq/delete/{id}', [AdminFaqController::class, 'delete'])->name('admin_faq_delete');
 
+    
+    Route::get('/home-page/index', [AdminHomePageController::class, 'index'])->name('admin_home_page_index');
+    Route::post('/home-page/update', [AdminHomePageController::class, 'update'])->name('admin_home_page_update');
+
+    Route::get('/settings/index', [AdminSettingController::class, 'index'])->name('admin_settings_index');
+    Route::post('/settings/update', [AdminSettingController::class, 'update'])->name('admin_settings_update');
+
+
+    Route::get('/other-pages/terms', [AdminOtherPageController::class, 'terms'])->name('admin_terms_page');
+    Route::post('/other-pages/terms-update', [AdminOtherPageController::class, 'terms_update'])->name('admin_terms_page_update');
+
+    Route::get('/other-pages/privacy', [AdminOtherPageController::class, 'privacy'])->name('admin_privacy_page');
+    Route::post('/other-pages/privacy-update', [AdminOtherPageController::class, 'privacy_update'])->name('admin_privacy_page_update');
+
+
     Route::get('/volunteer/index', [AdminVolunteerController::class, 'index'])->name('admin_volunteer_index');
     Route::get('/volunteer/create', [AdminVolunteerController::class, 'create'])->name('admin_volunteer_create');
     Route::post('/volunteer/create/submit', [AdminVolunteerController::class, 'create_submit'])->name('admin_volunteer_create_submit');
@@ -297,22 +314,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
 
     Route::get('/cause/donations/{id}', [AdminCauseController::class, 'donations'])->name('admin_cause_donations');
     Route::get('/cause/donation/invoice/{id}', [AdminCauseController::class, 'donation_invoice'])->name('admin_cause_donation_invoice');
-
-
-    
-    
-    Route::get('/home-page/index', [AdminHomePageController::class, 'index'])->name('admin_home_page_index');
-    Route::post('/home-page/update', [AdminHomePageController::class, 'update'])->name('admin_home_page_update');
-
-    Route::get('/settings/index', [AdminSettingController::class, 'index'])->name('admin_settings_index');
-    Route::post('/settings/update', [AdminSettingController::class, 'update'])->name('admin_settings_update');
-
-
-    Route::get('/other-pages/terms', [AdminOtherPageController::class, 'terms'])->name('admin_terms_page');
-    Route::post('/other-pages/terms-update', [AdminOtherPageController::class, 'terms_update'])->name('admin_terms_page_update');
-
-    Route::get('/other-pages/privacy', [AdminOtherPageController::class, 'privacy'])->name('admin_privacy_page');
-    Route::post('/other-pages/privacy-update', [AdminOtherPageController::class, 'privacy_update'])->name('admin_privacy_page_update');
 
 
     Route::get('/subscriber/index', [AdminSubscriberController::class, 'index'])->name('admin_subscriber_index');

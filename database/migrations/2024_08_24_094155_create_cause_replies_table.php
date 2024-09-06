@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('comment_id')->constrained('cause_comments')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Foreign key to track who made the reply
-            $table->unsignedBigInteger('parent_id')->nullable(); // For nested replies
+            // $table->unsignedBigInteger('parent_id')->nullable(); // For nested replies
             $table->text('reply');
 
             // Foreign key constraint for parent_id to support nested replies

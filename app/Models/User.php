@@ -66,4 +66,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return Crypt::decrypt($value);
     }
+
+    public function causes()
+    {
+        return $this->hasMany(Cause::class, 'user_id');
+    }
+    
 }
