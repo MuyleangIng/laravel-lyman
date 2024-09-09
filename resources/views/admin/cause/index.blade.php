@@ -48,7 +48,13 @@
                                                         <a href="{{ route('admin_cause_faq', $item->id) }}"
                                                             class="btn btn-info btn-sm w_100_p mb_5">FAQ</a>
                                                         <a href="{{ route('admin_cause_donations', $item->id) }}"
-                                                            class="btn btn-warning btn-sm w_100_p">Donations</a>
+                                                            class="btn btn-warning btn-sm w_100_p mb_5">Donations</a>
+                                                        <a href="javascript:void(0)" class="btn btn-danger btn-sm w_100_p"
+                                                            data-toggle="modal" data-id="{{ $item->id }}"
+                                                            data-target="#reportModal">
+                                                            Report
+                                                        </a>
+
                                                     </td>
                                                     <td class="pt_10 pb_10">
                                                         <a href="{{ route('admin_cause_edit', $item->id) }}"
@@ -65,6 +71,31 @@
                                                         </form>
                                                     </td>
                                                 </tr>
+                                                <div class="modal" id="reportModal" tabindex="-1" role="dialog"
+                                                    aria-labelledby="reportModalLabel" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">Modal title</h5>
+                                                                <button type="button" class="close" data-dismiss="modal"
+                                                                    aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <!-- Dynamic content will be loaded here -->
+                                                                <div id="reportContent"></div>
+                                                            </div>
+
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-primary">Save
+                                                                    changes</button>
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -76,6 +107,12 @@
             </div>
         </section>
     </div>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -93,6 +130,30 @@
                 }).then((willDelete) => {
                     if (willDelete) {
                         form.submit(); // Submit the form after confirmation
+                    }
+                });
+            });
+        });
+
+        $(document).ready(function() {
+            $('#reportModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var causeId = button.data('id'); // Extract the cause_id
+
+                // Clear any previous content
+                $('#reportContent').html('');
+
+                // AJAX request to fetch report data
+                $.ajax({
+                    url: '/admin/cause/report/' + causeId, // Adjust the URL to match your route
+                    type: 'GET',
+                    success: function(data) {
+                        // Populate the modal with the retrieved data
+                        $('#reportContent').html(data);
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors here
+                        $('#reportContent').html('<p>Error fetching report details.</p>');
                     }
                 });
             });

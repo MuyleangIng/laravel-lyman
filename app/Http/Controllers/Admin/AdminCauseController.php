@@ -11,6 +11,7 @@ use App\Models\CauseVideo;
 use App\Models\CauseFaq;
 use App\Models\CauseDonation;
 use App\Models\CausePartnershipAndCollaboration;
+use App\Models\CauseReport;
 use App\Models\CauseTargetAudience;
 use App\Models\PartnershipAndCollaborationCategory;
 use App\Models\TargetAudienceCategory;
@@ -343,7 +344,7 @@ class AdminCauseController extends Controller
     }
 
 
-    public function details($slug)
+    public function details($slug) 
     {
         $cause = Cause::where('slug', $slug)->with(['targetAudiences', 'partnershipsAndCollaborations', 'user'])->firstOrFail();
         $cause_photos = CausePhoto::where('cause_id',$cause->id)->get();
@@ -354,6 +355,13 @@ class AdminCauseController extends Controller
         $supporting_documents = json_decode($cause->supporting_documents, true);
         return view('admin.cause.details', compact('cause', 'cause_photos', 'cause_videos', 'cause_faqs', 'recent_causes', 'supporting_documents'));
     }
+
+    public function showReport($id)
+    {
+        $report = CauseReport::with('media')->where('cause_id', $id)->first();
+        return view('admin.partials.cause_report', compact('report'));
+    }
+
 
 
     

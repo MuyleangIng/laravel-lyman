@@ -15,6 +15,7 @@ class CauseReport extends Model implements HasMedia
 
     protected $fillable = [
         'cause_id',        
+        'user_id',
         'report_type',
         'report_date',
         'report',
@@ -31,6 +32,11 @@ class CauseReport extends Model implements HasMedia
             ->quality(60)
             ->performOnCollections('images');
 
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class); // Make sure the 'cause_reports' table has a 'user_id' column
     }
 
     public function cause()

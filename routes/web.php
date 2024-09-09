@@ -132,7 +132,7 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::post('/user/cause/video/submit', [UserController::class, 'video_submit'])->name('user_cause_video_submit');
     Route::get('/user/cause/video/delete/{id}', [UserController::class, 'video_delete'])->name('user_cause_video_delete');
     Route::get('/user/cause/faq/{id}', [UserController::class, 'faq'])->name('user_cause_faq');
-    Route::get('/user/cause/{id}/report', [UserController::class, 'report'])->name('user_cause_report');
+    Route::get('/cause/{id}/report', [UserController::class, 'report'])->name('user_cause_report');
     Route::post('user/cause/report', [UserController::class, 'store'])->name('reports.store');
     Route::post('/user/cause/faq/submit', [UserController::class, 'faq_submit'])->name('user_cause_faq_submit');
     Route::get('/user/cause/faq/delete/{id}', [UserController::class, 'faq_delete'])->name('user_cause_faq_delete');
@@ -315,6 +315,7 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::get('/cause/faq/delete/{id}', [AdminCauseController::class, 'faq_delete'])->name('admin_cause_faq_delete');
 
     Route::get('/cause/donations/{id}', [AdminCauseController::class, 'donations'])->name('admin_cause_donations');
+    Route::get('/cause/report/{id}', [AdminCauseController::class, 'showReport'])->name('admin_cause_report');
     Route::get('/cause/donation/invoice/{id}', [AdminCauseController::class, 'donation_invoice'])->name('admin_cause_donation_invoice');
 
 

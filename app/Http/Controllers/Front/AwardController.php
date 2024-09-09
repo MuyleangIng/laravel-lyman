@@ -8,13 +8,22 @@ use Illuminate\Support\Facades\DB;
 
 class AwardController extends Controller
 {
-    function award(){
-        $topUsers = User::withCount(['causes' => function ($query) {
-            $query->where('status', 'approve');
-        }])->orderBy('causes_count', 'desc')->limit(3)->get();
+    public function award()
+    {
+        $topUsers = User::withCount([
+            'causeReports as approved_reports_count' => function ($query) {
+                $query->whereHas('cause', function ($subQuery) {
+                    $subQuery->where('status', 'approve');
+                });
+            }
+        ])
+        ->orderBy('approved_reports_count', 'desc')
+        ->limit(3)
+        ->get();
 
-
-    return view('front.award', compact('topUsers'));
+        return view('front.award', compact('topUsers'));
     }
+
+
 }
 

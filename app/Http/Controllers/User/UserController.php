@@ -548,11 +548,15 @@ class UserController extends Controller
             'solutions' => 'nullable|string',
         ]);
 
+         // Get the currently authenticated user
+        $user = auth()->user();
+
         // Create or update the report
         $report = CauseReport::updateOrCreate([
             'cause_id' => $request->cause_id,
             'report_type' => $request->report_type,
         ], [
+            'user_id' => $user->id,
             'report_date' => now(),
             'report' => $request->report,
             'challenges' => $request->challenges,
