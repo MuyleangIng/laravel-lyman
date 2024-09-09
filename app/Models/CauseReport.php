@@ -12,6 +12,15 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class CauseReport extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
+
+    protected $fillable = [
+        'cause_id',        
+        'report_type',
+        'report_date',
+        'report',
+        'challenges',
+        'solutions',
+    ];
     
     public function registerMediaConversions(Media $media = null): void
     {
@@ -22,5 +31,10 @@ class CauseReport extends Model implements HasMedia
             ->quality(60)
             ->performOnCollections('images');
 
+    }
+
+    public function cause()
+    {
+        return $this->belongsTo(Cause::class);
     }
 }

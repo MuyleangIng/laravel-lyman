@@ -14,15 +14,18 @@ use Illuminate\Http\Request;
 use App\Models\CauseDonation;
 use App\Http\Controllers\Controller;
 use App\Models\CausePartnershipAndCollaboration;
+use App\Models\CauseReport;
 use App\Models\CauseTargetAudience;
 use App\Models\CauseTargetRegion;
 use App\Models\PartnershipAndCollaborationCategory;
 use App\Models\TargetAudienceCategory;
 use App\Models\TargetRegion;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GeminiAPI\Laravel\Facades\Gemini;
 use Telegram\Bot\Laravel\Facades\Telegram;
+use Spatie\Image\Image;
 
 class UserController extends Controller
 {
@@ -511,10 +514,65 @@ class UserController extends Controller
         return redirect()->route('user_message_list');
     }
 
-    public function report($id){
-        $cause_single = Cause::findOrFail($id);
-        return view('user.cause.report_progress');
-    }
 
+    public function report($id)
+    {
+        $cause = Cause::findOrFail($id);
     
+        // Retrieve the submission status for each report type
+        $submittedReports = CauseReport::where('cause_id', $id)
+                                        ->pluck('report_type')
+                                        ->toArray();
+    
+        // Calculate middle date
+        $startDate = Carbon::parse($cause->start_date);
+        $endDate = Carbon::parse($cause->end_date);
+        $middleDate = $startDate->copy()->addDays($endDate->diffInDays($startDate) / 2);
+    
+        return view('user.cause.report_progress', [
+            'cause' => $cause,
+            'middleDate' => $middleDate,
+            'submittedReports' => $submittedReports
+        ]);
+    }
+    
+    public function store(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'cause_id' => 'required|exists:causes,id',
+            'report_type' => 'required|string|in:before,during,after',
+            'report' => 'required|string',
+            'images.*' => 'file|mimes:jpg,png,jpeg,gif',
+            'challenges' => 'nullable|string',
+            'solutions' => 'nullable|string',
+        ]);
+
+        // Create or update the report
+        $report = CauseReport::updateOrCreate([
+            'cause_id' => $request->cause_id,
+            'report_type' => $request->report_type,
+        ], [
+            'report_date' => now(),
+            'report' => $request->report,
+            'challenges' => $request->challenges,
+            'solutions' => $request->solutions,
+            'submitted' => true, // Set as submitted
+        ]);
+
+        // Handle image uploads with Spatie Media Library
+        if ($request->has('images')) {
+            foreach ($request->images as $image) {
+                Image::load($image->getPathName())
+                    ->quality(60)
+                    ->save();
+
+                $report->addMedia($image)->toMediaCollection('images');
+            }
+        }
+
+        return redirect()->route('user_cause_report', ['id' => $request->cause_id])
+                        ->with('success', ucfirst($request->report_type) . ' project report submitted successfully.');
+    }
+  
 }

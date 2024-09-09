@@ -132,7 +132,8 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::post('/user/cause/video/submit', [UserController::class, 'video_submit'])->name('user_cause_video_submit');
     Route::get('/user/cause/video/delete/{id}', [UserController::class, 'video_delete'])->name('user_cause_video_delete');
     Route::get('/user/cause/faq/{id}', [UserController::class, 'faq'])->name('user_cause_faq');
-    Route::get('/user/cause/report/{id}', [UserController::class, 'report'])->name('user_cause_report');
+    Route::get('/user/cause/{id}/report', [UserController::class, 'report'])->name('user_cause_report');
+    Route::post('user/cause/report', [UserController::class, 'store'])->name('reports.store');
     Route::post('/user/cause/faq/submit', [UserController::class, 'faq_submit'])->name('user_cause_faq_submit');
     Route::get('/user/cause/faq/delete/{id}', [UserController::class, 'faq_delete'])->name('user_cause_faq_delete');
     Route::post('/user/cause/faq/update/{id}', [UserController::class, 'faq_update'])->name('user_cause_faq_update');    

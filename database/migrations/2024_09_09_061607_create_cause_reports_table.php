@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('report');
             $table->text('challenges')->nullable();
             $table->text('solutions')->nullable();
+            $table->boolean('submitted')->default(false);
             $table->timestamps();
         });
     }

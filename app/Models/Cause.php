@@ -43,6 +43,11 @@ class Cause extends Model
     {
         return $this->belongsToMany(TargetRegion::class, 'cause_target_regions');
     }
+
+    public function reports()
+    {
+        return $this->hasMany(CauseReport::class);
+    }
     
 
 }
