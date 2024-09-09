@@ -21,10 +21,10 @@ return new class extends Migration
             $table->string('featured_photo');
             $table->integer('goal');
             $table->integer('raised')->nullable();
-            $table->string('is_featured');
+            $table->integer('number_of_participants')->default(0)->nullable();
+            $table->string('is_featured')->nullable();
             $table->enum('status', ['pending', 'approve', 'reject'])->default('pending')->nullable();
-            $table->text('legal_considerations')->nullable(); // Legal and ethical considerations
-            $table->text('challenges_and_solution')->nullable();
+            $table->text('legal_considerations')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->json('supporting_documents')->nullable();

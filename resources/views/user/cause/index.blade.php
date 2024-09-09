@@ -61,6 +61,8 @@
                                                             class="btn btn-success btn-sm w_100_p mb_5">Video Gallery</a>
                                                         <a href="{{ route('user_cause_faq', $item->id) }}"
                                                             class="btn btn-info btn-sm w_100_p mb_5">FAQ</a>
+                                                        <a href="{{ route('user_cause_report', $item->id) }}"
+                                                            class="btn btn-warning btn-sm w_100_p mb_5">Report</a>
                                                     </td>
                                                     <td class="pt_10 pb_10">
                                                         @if ($item->status == 'pending')

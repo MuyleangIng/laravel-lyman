@@ -15,8 +15,10 @@ use App\Models\CauseDonation;
 use App\Http\Controllers\Controller;
 use App\Models\CausePartnershipAndCollaboration;
 use App\Models\CauseTargetAudience;
+use App\Models\CauseTargetRegion;
 use App\Models\PartnershipAndCollaborationCategory;
 use App\Models\TargetAudienceCategory;
+use App\Models\TargetRegion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GeminiAPI\Laravel\Facades\Gemini;
@@ -162,8 +164,11 @@ class UserController extends Controller
     {
         $targetAudiences = TargetAudienceCategory::all();
         $partnerships = PartnershipAndCollaborationCategory::all();
+        $targetRegions = TargetRegion::all(); 
 
-        return view('user.cause.create', compact('targetAudiences', 'partnerships'));
+    
+
+        return view('user.cause.create', compact('targetAudiences', 'partnerships', 'targetRegions'));
     }
 
 
@@ -190,7 +195,7 @@ class UserController extends Controller
             'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
             'target_audience.*' => 'exists:target_audience_categories,id', 
             'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
-            'is_featured' => 'required'
+            'target_regions.*' => 'exists:target_regions,id',
         ]);
 
         // Create and save the new cause
@@ -257,6 +262,17 @@ class UserController extends Controller
                 $target->save();
             }
         }
+
+        // Handle target regions
+        if ($request->has('target_regions')) {
+            foreach($request->target_regions as $region_id) {
+                $region = new CauseTargetRegion();
+                $region->cause_id = $obj->id;
+                $region->target_region_id = $region_id;
+                $region->save();
+            }
+        }
+
 
         $this->sendTelegramAlert($request);
 
@@ -493,6 +509,11 @@ class UserController extends Controller
 
         // Redirect back to the message list with a success message
         return redirect()->route('user_message_list');
+    }
+
+    public function report($id){
+        $cause_single = Cause::findOrFail($id);
+        return view('user.cause.report_progress');
     }
 
     

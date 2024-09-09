@@ -69,7 +69,7 @@
                                     </div>
 
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group mb-3">
                                                 <label>Target Audience</label>
                                                 <select class="form-select" name="target_audience[]" id="target_audience"
@@ -80,7 +80,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group mb-3">
                                                 <label>Partnerships and Collaborations</label>
                                                 <select name="partnerships_and_collaborations[]" id="partnerships" multiple>
@@ -91,7 +91,19 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label>Target Regions</label>
+                                                <select class="form-select" name="target_regions[]" id="target_regions"
+                                                    multiple>
+                                                    @foreach ($targetRegions as $region)
+                                                        <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
+
 
                                     <div class="row">
                                         <div class="col-md-6">
@@ -115,14 +127,6 @@
                                         <input type="file" name="supporting_documents[]" class="form-control" multiple>
                                         <small class="form-text text-muted">Upload files as necessary. They will be saved as
                                             JSON.</small>
-                                    </div>
-
-                                    <div class="form-group mb-3">
-                                        <label>Is Featured? *</label>
-                                        <select name="is_featured" class="form-select">
-                                            <option value="Yes">Yes</option>
-                                            <option value="No">No</option>
-                                        </select>
                                     </div>
 
                                     <div class="form-group">
@@ -161,5 +165,6 @@
     <script>
         new MultiSelectTag('partnerships')
         new MultiSelectTag('target_audience')
+        new MultiSelectTag('target_regions')
     </script>
 @endsection
