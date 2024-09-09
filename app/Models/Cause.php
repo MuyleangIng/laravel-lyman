@@ -38,6 +38,11 @@ class Cause extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function targetRegions()
+    {
+        return $this->belongsToMany(TargetRegion::class, 'cause_target_regions');
+    }
     
 
 }

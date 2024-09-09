@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cause_partnership_and_collaborations', function (Blueprint $table) {
+        Schema::create('cause_target_regions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cause_id')->constrained()->onDelete('cascade');
-            $table->foreignId('partnership_id')->constrained('partnerships_and_collaborations')->onDelete('cascade');
+            $table->foreignId('target_region_id')->constrained('target_regions')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cause_partnership_and_collaborations');
+        Schema::dropIfExists('cause_target_regions');
     }
 };
