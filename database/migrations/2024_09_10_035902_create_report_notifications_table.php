@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('cause_reports', function (Blueprint $table) {
+        Schema::create('report_notifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('cause_id')->constrained()->onDelete('cascade');
-            $table->enum('report_type', ['before', 'during', 'after']); 
-            $table->date('report_date'); 
-            $table->text('report');
-            $table->text('challenges')->nullable();
-            $table->text('solutions')->nullable();
-            $table->boolean('submitted')->default(false);
+            $table->enum('report_type', ['initial', 'progress', 'final']);
+            $table->date('notification_date');
+            $table->boolean('notified')->default(false); // To track if the notification has been sent
             $table->timestamps();
         });
     }
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('cause_reports');
+        Schema::dropIfExists('report_notifications');
     }
 };

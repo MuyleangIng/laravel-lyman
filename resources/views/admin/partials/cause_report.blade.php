@@ -4,26 +4,26 @@
         <h2 class="accordion-header" id="headingOne">
             <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
                 data-bs-target="#collapseOne">
-                1. Before Project
+                1. Initial Report
             </button>
         </h2>
         <div id="collapseOne" class="accordion-collapse collapse">
             <div class="card-body">
                 <div class="mb-3">
                     <strong>Report:
-                    </strong>{{ $report->where('report_type', 'before')->first()->report ?? 'No report available' }}
+                    </strong>{{ $report->where('report_type', 'initial')->first()->report ?? 'No report available' }}
                 </div>
                 <div class="mb-3">
                     <strong>Challenges:
-                    </strong>{{ $report->where('report_type', 'before')->first()->challenges ?? 'No challenges reported' }}
+                    </strong>{{ $report->where('report_type', 'initial')->first()->challenges ?? 'No challenges reported' }}
                 </div>
                 <div class="mb-3">
-                    <strong>Solutions:</strong>{{ $report->where('report_type', 'before')->first()->solutions ?? 'No solutions provided' }}
+                    <strong>Solutions:</strong>{{ $report->where('report_type', 'initial')->first()->solutions ?? 'No solutions provided' }}
                 </div>
                 <div>
                     <strong>Images: </strong>
-                    @if ($report->where('report_type', 'before')->first())
-                        @foreach ($report->where('report_type', 'before')->first()->media as $image)
+                    @if ($report->where('report_type', 'initial')->first())
+                        @foreach ($report->where('report_type', 'initial')->first()->media as $image)
                             <img src="{{ $image->getUrl('thumb') }}" alt="No images" class="img-fluid">
                         @endforeach
                     @else
@@ -34,34 +34,35 @@
         </div>
     </div>
 
-    <!-- During Project Section -->
+    <!-- Progress Project Section -->
     <div class="accordion-item">
         <h2 class="accordion-header" id="headingTwo">
             <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
                 data-bs-target="#collapseTwo">
-                2. During Project
+                2. Progress Report
             </button>
         </h2>
         <div id="collapseTwo" class="accordion-collapse collapse">
             <div class="card-body">
-                <h5>Report:</h5>
-                <p>{{ $report->where('report_type', 'during')->first()->report ?? 'No report available' }}
-                </p>
-                <h5>Challenges:</h5>
-                <p>{{ $report->where('report_type', 'during')->first()->challenges ?? 'No challenges reported' }}
-                </p>
-                <h5>Solutions:</h5>
-                <p>{{ $report->where('report_type', 'during')->first()->solutions ?? 'No solutions provided' }}
-                </p>
-                <h5>Images:</h5>
-                @if ($report->where('report_type', 'during')->first() && $report->where('report_type', 'during')->first()->images)
-                    @foreach (json_decode($report->where('report_type', 'during')->first()->images) as $image)
-                        <img src="{{ asset('uploads/reports/' . $image) }}" alt="During Project Image"
-                            class="img-fluid mb-2" />
-                    @endforeach
-                @else
-                    <p>No images available.</p>
-                @endif
+                <div class="mb-3">
+                    <strong>Report:</strong>{{ $report->where('report_type', 'progress')->first()->report ?? 'No report available' }}
+                </div>
+                <div class="mb-3">
+                    <strong>Challenges:</strong>{{ $report->where('report_type', 'progress')->first()->challenges ?? 'No challenges reported' }}
+                </div>
+                <div class="mb-3">
+                    <strong>Solutions:</strong>{{ $report->where('report_type', 'progress')->first()->solutions ?? 'No solutions provided' }}
+                </div>
+                <div>
+                    <strong>Images: </strong>
+                    @if ($report->where('report_type', 'progress')->first())
+                        @foreach ($report->where('report_type', 'progress')->first()->media as $image)
+                            <img src="{{ $image->getUrl('thumb') }}" alt="No images" class="img-fluid">
+                        @endforeach
+                    @else
+                        <p>No images available.</p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>
@@ -71,30 +72,31 @@
         <h2 class="accordion-header" id="headingThree">
             <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse"
                 data-bs-target="#collapseThree">
-                3. After Project
+                3. Final Report
             </button>
         </h2>
         <div id="collapseThree" class="accordion-collapse collapse">
             <div class="card-body">
-                <h5>Report:</h5>
-                <p>{{ $report->where('report_type', 'after')->first()->report ?? 'No report available' }}
-                </p>
-                <h5>Challenges:</h5>
-                <p>{{ $report->where('report_type', 'after')->first()->challenges ?? 'No challenges reported' }}
-                </p>
-                <h5>Solutions:</h5>
-                <p>{{ $report->where('report_type', 'after')->first()->solutions ?? 'No solutions provided' }}
-                </p>
-                <h5>Images:</h5>
-                @if ($report->where('report_type', 'before')->first())
-                    @foreach ($report->where('report_type', 'before')->first()->media as $image)
-                        <img src="{{ $report->getFirstMediaUrl('images', 'thumb') }}" alt="" class="img-fluid">
-                    @endforeach
-                @else
-                    <p>No images available.</p>
-                @endif
-
-
+                <div class="mb-3">
+                    <strong>Report:</strong>{{ $report->where('report_type', 'final')->first()->report ?? 'No report available' }}
+                </div>
+                <div class="mb-3">
+                    <strong>Challenges:</strong>{{ $report->where('report_type', 'final')->first()->challenges ?? 'No challenges reported' }}
+                </div>
+                <div class="mb-3">
+                    <strong>Solutions:</strong>{{ $report->where('report_type', 'final')->first()->solutions ?? 'No solutions provided' }}
+                </div>
+                <div>
+                    <strong>Images:</strong>
+                    @if ($report->where('report_type', 'final')->first())
+                        @foreach ($report->where('report_type', 'final')->first()->media as $image)
+                            <img src="{{ $report->getFirstMediaUrl('images', 'thumb') }}" alt=""
+                                class="img-fluid">
+                        @endforeach
+                    @else
+                        <p>No images available.</p>
+                    @endif
+                </div>
             </div>
         </div>
     </div>

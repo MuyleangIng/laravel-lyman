@@ -541,7 +541,7 @@ class UserController extends Controller
         // Validate the incoming request data
         $request->validate([
             'cause_id' => 'required|exists:causes,id',
-            'report_type' => 'required|string|in:before,during,after',
+            'report_type' => 'required|string|in:initial,progress,final',
             'report' => 'required|string',
             'images.*' => 'file|mimes:jpg,png,jpeg,gif',
             'challenges' => 'nullable|string',
@@ -578,5 +578,6 @@ class UserController extends Controller
         return redirect()->route('user_cause_report', ['id' => $request->cause_id])
                         ->with('success', ucfirst($request->report_type) . ' project report submitted successfully.');
     }
+
   
 }
