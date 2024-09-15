@@ -23,7 +23,7 @@
                                                 <th>Name</th>
                                                 <th>Goal</th>
                                                 <th>Raised</th>
-                                                <th>Status</th> <!-- Updated column heading -->
+                                                <th>Status</th> 
                                                 <th>Options</th>
                                                 <th>Action</th>
                                             </tr>

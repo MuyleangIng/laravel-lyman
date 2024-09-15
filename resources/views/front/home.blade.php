@@ -98,10 +98,40 @@
                                     <h2>
                                         <a href="{{ route('cause', $item->slug) }}">{{ $item->name }}</a>
                                     </h2>
+                                    <!-- Icons for likes, views, and bookmark -->
+                                    <div class="icons mb_10 d-flex justify-content-between">
+                                        <div class="text-start">
+                                            @auth
+                                                <!-- Heart Icon Toggle (only shown if authenticated) -->
+                                                <span class="like-btn" data-id="{{ $item->id }}">
+                                                    <i class="{{ $item->liked_by_user ? 'fas' : 'far' }} fa-heart"></i>
+                                                    <span class="like-count">{{ $item->likes }}</span> Likes
+                                                </span>
+                                            @else
+                                                <!-- View Icon (shown if not authenticated) -->
+                                                <span>
+                                                    <i class="fas fa-eye"></i> {{ $item->views }} Views
+                                                </span>
+                                            @endauth
+
+                                            <!-- View Icon (always visible) -->
+                                            <span style="margin-left: {{ Auth::check() ? '15px' : '0' }};">
+                                                <i class="fas fa-eye"></i> {{ $item->views }} Views
+                                            </span>
+                                        </div>
+
+                                        @auth
+                                            <!-- Bookmark Icon aligned to the right (only shown if authenticated) -->
+                                            <div class="text-end">
+                                                <span class="bookmark-btn" data-id="{{ $item->id }}">
+                                                    <i class="{{ $item->bookmarked_by_user ? 'fas' : 'far' }} fa-bookmark"></i>
+                                                </span>
+                                            </div>
+                                        @endauth
+                                    </div>
+
                                     <div class="short-des">
-                                        <p>
-                                            {!! nl2br($item->short_description) !!}
-                                        </p>
+                                        <p>{!! nl2br($item->short_description) !!}</p>
                                     </div>
                                     @php
                                         $perc = ($item->raised / $item->goal) * 100;
@@ -137,6 +167,7 @@
                         </div>
                     @endforeach
                 </div>
+
             </div>
         </div>
     @endif
@@ -320,5 +351,68 @@
     @endif
     <script>
         AOS.init();
+        document.addEventListener('DOMContentLoaded', function() {
+            const likeButtons = document.querySelectorAll('.like-btn');
+            const bookmarkButtons = document.querySelectorAll('.bookmark-btn');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            likeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const causeId = this.getAttribute('data-id');
+                    const likeCount = this.querySelector('.like-count');
+                    const icon = this.querySelector('i');
+
+                    // Send AJAX request to toggle like
+                    fetch(`/causes/${causeId}/like`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert(data.error); // Show error message if available
+                            } else {
+                                // Update like count and toggle the heart icon
+                                likeCount.textContent = data.likes;
+                                icon.classList.toggle('fas');
+                                icon.classList.toggle('far');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+
+            bookmarkButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const causeId = this.getAttribute('data-id');
+                    const icon = this.querySelector('i');
+
+                    // Send AJAX request to toggle bookmark
+                    fetch(`/causes/${causeId}/bookmark`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                alert(data.error); // Show error message if available
+                            } else {
+                                // Toggle the bookmark icon
+                                icon.classList.toggle('fas');
+                                icon.classList.toggle('far');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                });
+            });
+        });
     </script>
 @endsection

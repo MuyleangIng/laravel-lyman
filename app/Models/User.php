@@ -76,5 +76,15 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(CauseReport::class);
     }
-        
+
+    public function likedCauses()
+    {
+        return $this->belongsToMany(Cause::class, 'cause_user_likes')->withTimestamps();
+    }
+
+
+    public function bookmarkedCauses()
+    {
+        return $this->belongsToMany(Cause::class, 'cause_user_bookmarks')->withTimestamps();
+    }   
 }

@@ -160,8 +160,8 @@
                         searchable: false,
                         render: function(data, type, full, meta) {
                             return `
-                    <a href="/volunteer/edit/${data}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</a>
-                    <a href="javascript:void(0)" data-url="/volunteer/delete/${data}" class="btn btn-danger btn-sm delete-button"><i class="fas fa-trash"></i> Delete</a>
+                    <a href="/volunteer/edit/${data}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                    <a href="javascript:void(0)" data-url="/volunteer/delete/${data}" class="btn btn-danger btn-sm delete-button"><i class="fas fa-trash"></i></a>
                 `;
                         }
                     }

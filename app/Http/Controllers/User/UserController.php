@@ -169,8 +169,6 @@ class UserController extends Controller
         $partnerships = PartnershipAndCollaborationCategory::all();
         $targetRegions = TargetRegion::all(); 
 
-    
-
         return view('user.cause.create', compact('targetAudiences', 'partnerships', 'targetRegions'));
     }
 
@@ -313,37 +311,80 @@ class UserController extends Controller
 
     public function edit_submit(Request $request, $id)
     {
+        // Validate the form input
         $request->validate([
             'name' => ['required', 'unique:causes,name,'.$id],
-            'slug' => ['required', 'alpha_dash', 'unique:causes,slug,'.$id],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
-            'description' => 'required',
+            'objective' => 'required',
+            'expectations' => 'required',
+            'legal_considerations' => 'nullable',
+            'challenges_and_solution' => 'nullable',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
+            'target_audience.*' => 'exists:target_audience_categories,id',
+            'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
+            'target_regions.*' => 'exists:target_regions,id',
         ]);
-
+    
         $obj = Cause::findOrFail($id);
-
-        if($request->featured_photo != null) {
+    
+        // Handle featured photo update
+        if ($request->featured_photo != null) {
             $request->validate([
                 'featured_photo' => 'image|mimes:jpg,jpeg,png',
             ]);
-            unlink(public_path('uploads/'.$obj->featured_photo));
-
+    
+            // Remove old featured photo
+            if (file_exists(public_path('uploads/'.$obj->featured_photo))) {
+                unlink(public_path('uploads/'.$obj->featured_photo));
+            }
+    
             $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
             $request->featured_photo->move(public_path('uploads'), $final_name);
             $obj->featured_photo = $final_name;
         }
-
+    
+        // Update other fields
         $obj->name = $request->name;
-        $obj->slug = strtolower($request->slug);
         $obj->goal = $request->goal;
         $obj->short_description = $request->short_description;
-        $obj->description = $request->description;
+        $obj->objective = $request->objective;
+        $obj->expectations = $request->expectations;
+        $obj->legal_considerations = $request->legal_considerations;
+        $obj->challenges_and_solution = $request->challenges_and_solution;
+        $obj->start_date = $request->start_date;
+        $obj->end_date = $request->end_date;
         $obj->is_featured = $request->is_featured;
-        $obj->update();
-
-        return redirect()->route('user_cause')->with('success','Cause updated successfully');
+        
+        // Handle supporting documents update
+        if ($request->hasFile('supporting_documents')) {
+            $files = $request->file('supporting_documents');
+            $filePaths = [];
+            foreach ($files as $file) {
+                $fileName = 'supporting_document_' . time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/supporting_documents'), $fileName);
+                $filePaths[] = $fileName;
+            }
+            $obj->supporting_documents = json_encode($filePaths);
+        }
+    
+        $obj->save();
+    
+        // Update target audience categories
+        $obj->targetAudienceCategories()->sync($request->target_audience);
+    
+        // Update partnerships and collaborations
+        $obj->partnershipsAndCollaborations()->sync($request->partnerships_and_collaborations);
+    
+        // Update target regions
+        $obj->targetRegions()->sync($request->target_regions);
+    
+        // Redirect with success message
+        return redirect()->route('user_cause')->with('success', 'Cause updated successfully');
     }
+    
 
     public function delete($id)
     {

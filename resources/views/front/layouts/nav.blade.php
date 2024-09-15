@@ -2,7 +2,7 @@
     <!-- Menu For Mobile Device -->
     <div class="mobile-nav">
         <a href="{{ route('home') }}" class="logo">
-            <img src="{{ asset('uploads/'.$global_setting_data->logo) }}" alt="">
+            <img src="{{ asset('uploads/' . $global_setting_data->logo) }}" alt="">
         </a>
     </div>
 
@@ -11,7 +11,7 @@
         <div class="container">
             <nav class="navbar navbar-expand-md navbar-light">
                 <a class="navbar-brand" href="{{ route('home') }}">
-                    <img src="{{ asset('uploads/'.$global_setting_data->logo) }}" alt="">
+                    <img src="{{ asset('uploads/' . $global_setting_data->logo) }}" alt="">
                 </a>
                 <div class="collapse navbar-collapse mean-menu" id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto">
@@ -31,7 +31,8 @@
                             <a href="{{ route('volunteers') }}" class="nav-link">Volunteers</a>
                         </li>
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="javascript:void;" id="galleryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="javascript:void;" id="galleryDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Gallery
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="galleryDropdown">
@@ -48,6 +49,11 @@
                         <li class="nav-item {{ Request::is('award') ? 'active' : '' }}">
                             <a href="{{ route('award') }}" class="nav-link">Award</a>
                         </li>
+                        @auth
+                            <li class="nav-item {{ Request::is('bookmark') ? 'active' : '' }}">
+                                <a href="{{ route('bookmark') }}" class="nav-link">Bookmark</a>
+                            </li>
+                        @endauth
                         <li class="nav-item {{ Request::is('contact') ? 'active' : '' }}">
                             <a href="{{ route('contact') }}" class="nav-link">Contact</a>
                         </li>

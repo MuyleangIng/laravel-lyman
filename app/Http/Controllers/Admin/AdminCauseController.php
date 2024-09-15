@@ -13,8 +13,10 @@ use App\Models\CauseDonation;
 use App\Models\CausePartnershipAndCollaboration;
 use App\Models\CauseReport;
 use App\Models\CauseTargetAudience;
+use App\Models\CauseTargetRegion;
 use App\Models\PartnershipAndCollaborationCategory;
 use App\Models\TargetAudienceCategory;
+use App\Models\TargetRegion;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -125,43 +127,203 @@ class AdminCauseController extends Controller
 
     public function edit($id)
     {
-        $cause = Cause::findOrFail($id);
-        return view('admin.cause.edit', compact('cause'));
+        $targetAudiences = TargetAudienceCategory::all();
+        $partnerships = PartnershipAndCollaborationCategory::all();
+        $targetRegions = TargetRegion::all();
+        $users = User::all(); 
+        $cause = Cause::with(['targetAudiences', 'partnershipsAndCollaborations', 'targetRegions'])->findOrFail($id);
+    
+        // Fetch selected target audiences, partnerships, and target regions
+        $selectedAudiences = $cause->targetAudiences->pluck('id')->toArray();
+        $selectedPartnerships = $cause->partnershipsAndCollaborations->pluck('id')->toArray();
+        $selectedRegions = $cause->targetRegions->pluck('id')->toArray();  // Add this line
+    
+        // Decode the JSON field 'supporting_documents' to an array if it exists
+        $existingDocuments = $cause->supporting_documents ? json_decode($cause->supporting_documents, true) : [];
+    
+        // Passing the formatBytes function
+        $formatBytes = function($bytes, $precision = 2) {
+            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    
+            $bytes = max($bytes, 0);
+            $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+            $pow = min($pow, count($units) - 1);
+    
+            $bytes /= (1 << (10 * $pow));
+    
+            return round($bytes, $precision) . ' ' . $units[$pow];
+        };
+    
+        return view('admin.cause.edit', compact(
+            'cause',
+            'targetAudiences',
+            'partnerships',
+            'targetRegions',
+            'selectedAudiences',
+            'selectedPartnerships',
+            'selectedRegions',  // Add this line
+            'users',
+            'existingDocuments',
+            'formatBytes'
+        ));
     }
+    
 
     public function edit_submit(Request $request, $id)
     {
+        // Validation rules
         $request->validate([
             'name' => ['required', 'unique:causes,name,'.$id],
-            'slug' => ['required', 'alpha_dash', 'unique:causes,slug,'.$id],
             'goal' => ['required', 'numeric', 'min:1'],
             'short_description' => 'required',
-            'description' => 'required',
+            'objective' => 'required',
+            'expectations' => 'required',
+            'legal_considerations' => 'nullable',
+            'challenges_and_solution' => 'nullable',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
+            'target_audience.*' => 'exists:target_audience_categories,id',
+            'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
+            'target_region.*' => 'exists:target_regions,id',
+            'featured_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        $obj = Cause::findOrFail($id);
-
-        if($request->featured_photo != null) {
-            $request->validate([
-                'featured_photo' => 'image|mimes:jpg,jpeg,png',
-            ]);
-            unlink(public_path('uploads/'.$obj->featured_photo));
-
-            $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
+    
+        // Find the existing cause
+        $cause = Cause::findOrFail($id);
+    
+        // Update cause fields
+        $cause->name = $request->name;
+        $cause->slug = Str::slug($request->name);
+        $cause->goal = $request->goal;
+        $cause->short_description = $request->short_description;
+        $cause->objective = $request->objective;
+        $cause->expectations = $request->expectations;
+        $cause->legal_considerations = $request->legal_considerations;
+        $cause->challenges_and_solution = $request->challenges_and_solution;
+        $cause->start_date = $request->start_date;
+        $cause->end_date = $request->end_date;
+        $cause->is_featured = $request->is_featured;
+    
+        // Handle new featured photo
+        if ($request->hasFile('featured_photo')) {
+            // Delete old photo if it exists
+            if ($cause->featured_photo && file_exists(public_path('uploads/' . $cause->featured_photo))) {
+                unlink(public_path('uploads/' . $cause->featured_photo));
+            }
+    
+            // Save new featured photo
+            $final_name = 'cause_featured_photo_' . time() . '.' . $request->featured_photo->extension();
             $request->featured_photo->move(public_path('uploads'), $final_name);
-            $obj->featured_photo = $final_name;
+            $cause->featured_photo = $final_name;
+        }
+    
+        // Update the cause
+        $cause->save();
+    
+        // Update target audience categories
+        CauseTargetAudience::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('target_audience')) {
+            foreach ($request->target_audience as $audienceId) {
+                $target = new CauseTargetAudience();
+                $target->cause_id = $cause->id;
+                $target->target_audience_category_id = $audienceId;
+                $target->save();
+            }
+        }
+    
+        // Update partnerships and collaborations
+        CausePartnershipAndCollaboration::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('partnerships_and_collaborations')) {
+            foreach ($request->partnerships_and_collaborations as $partnershipId) {
+                $partnership = new CausePartnershipAndCollaboration();
+                $partnership->cause_id = $cause->id;
+                $partnership->partnership_id = $partnershipId;
+                $partnership->save();
+            }
         }
 
-        $obj->name = $request->name;
-        $obj->slug = strtolower($request->slug);
-        $obj->goal = $request->goal;
-        $obj->short_description = $request->short_description;
-        $obj->description = $request->description;
-        $obj->is_featured = $request->is_featured;
-        $obj->update();
-
-        return redirect()->route('admin_cause_index')->with('success','Cause updated successfully');
+        // Update target regions
+        CauseTargetRegion::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('target_region')) {
+            foreach ($request->target_region as $regionId) {
+                $targetRegion = new CauseTargetRegion();
+                $targetRegion->cause_id = $cause->id;
+                $targetRegion->target_region_id = $regionId;
+                $targetRegion->save();
+            }
+        }
+    
+        return redirect()->route('admin_cause_index')->with('success', 'Cause updated successfully');
     }
+
+
+    public function updateDocuments(Request $request, $id)
+    {
+        // Fetch the cause by ID
+        $cause = Cause::findOrFail($id);
+
+        // Validate the incoming request
+        $request->validate([
+            'files.*' => 'required|mimes:pdf,doc,docx,txt,jpg,jpeg,png|max:2048', // Example validation
+        ]);
+
+        // Initialize an array to store file names
+        $filePaths = [];
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                // Store the uploaded file
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/supporting_documents'), $fileName);
+
+                // Add file name to the array
+                $filePaths[] = $fileName;
+            }
+
+            // Append new files to existing documents (if any)
+            $existingDocuments = json_decode($cause->supporting_documents, true) ?? [];
+            $allDocuments = array_merge($existingDocuments, $filePaths);
+
+            // Update the 'supporting_documents' field in the database
+            $cause->supporting_documents = json_encode($allDocuments);
+            $cause->save();
+        }
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Documents updated and saved successfully.');
+    }
+
+
+    public function removeDocument($causeId, $document)
+    {
+        // Fetch the cause by ID
+        $cause = Cause::findOrFail($causeId);
+    
+        // Decode the JSON supporting documents array
+        $documents = json_decode($cause->supporting_documents, true);
+    
+        // Find the document and remove it from the array
+        if (($key = array_search($document, $documents)) !== false) {
+            // Remove the document from the array
+            unset($documents[$key]);
+    
+            // Update the supporting_documents field in the database
+            $cause->supporting_documents = json_encode(array_values($documents));
+            $cause->save();
+    
+            // Optionally delete the file from the storage
+            $documentPath = public_path('uploads/supporting_documents/' . $document);
+            if (file_exists($documentPath)) {
+                unlink($documentPath);
+            }
+    
+            return back()->with('success', 'Document removed successfully.');
+        }
+    
+        return back()->with('error', 'Document not found.');
+    }
+    
 
     public function delete($id)
     {
@@ -361,9 +523,5 @@ class AdminCauseController extends Controller
         $report = CauseReport::with('media')->where('cause_id', $id)->first();
         return view('admin.partials.cause_report', compact('report'));
     }
-
-
-
-    
 
 }

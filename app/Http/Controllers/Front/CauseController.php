@@ -15,6 +15,7 @@ use App\Mail\Websitemail;
 use App\Models\CauseReply;
 use App\Models\User;
 use App\Services\PayWayService;
+use Illuminate\Support\Facades\Session;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -31,21 +32,93 @@ class CauseController extends Controller
 
     public function index(Request $request)
     {
-        $query = $request->input('q');
-
-        // Check if there's a search query
-        if ($query) {
-            $causes = Cause::where('status', 'approve')
-                            ->where('name', 'like', "%$query%")
-                            ->get();
-        } else {
-            // If no search query, retrieve all approved causes
-            $causes = Cause::where('status', 'approve')->get();
+        $user = Auth::user(); // Get the current user
+        
+        // Fetch causes with pagination
+        $causes = Cause::where('status', 'approve')->paginate(8);
+    
+        // Attach liked_by_user and bookmarked_by_user status to each cause
+        foreach ($causes as $cause) {
+            // Check if the cause is liked by the current user
+            $cause->liked_by_user = $user ? $cause->likedByUsers->contains($user->id) : false;
+    
+            // Check if the cause is bookmarked by the current user
+            $cause->bookmarked_by_user = $user ? $cause->bookmarkedByUsers->contains($user->id) : false;
+    
+            // Track the cause views by session
+            if (!$this->hasViewed($cause->id)) {
+                $this->incrementView($cause);
+            }
         }
-
+        
         return view('front.causes', compact('causes'));
     }
+    
+    
 
+    /**
+     * Check if the cause has been viewed in the current session.
+     */
+    private function hasViewed($causeId)
+    {
+        return Session::has("viewed_causes.{$causeId}");
+    }
+
+    /**
+     * Increment the view count for the cause.
+     */
+    private function incrementView($cause)
+    {
+        $cause->increment('views');
+        Session::put("viewed_causes.{$cause->id}", true);
+    }
+
+    public function toggleLike(Request $request, $id)
+    {
+        $user = Auth::user(); // Get the currently authenticated user
+        if (!$user) {
+            // Return a JSON response indicating the user needs to log in
+            return response()->json(['error' => 'You must be logged in to like a cause.'], 401);
+        }
+        $cause = Cause::findOrFail($id); // Find the cause by ID
+
+        // Check if the user has already liked the cause
+        if ($cause->likedByUsers()->where('user_id', $user->id)->exists()) {
+            // If liked, unlike it
+            $cause->likedByUsers()->detach($user->id);
+            $cause->decrement('likes');
+        } else {
+            // Otherwise, like the cause
+            $cause->likedByUsers()->attach($user->id);
+            $cause->increment('likes');
+        }
+
+        // Return the updated number of likes
+        return response()->json(['likes' => $cause->likes]);
+    }
+
+    public function toggleBookmark(Request $request, $id)
+    {
+        $user = Auth::user(); // Get the authenticated user
+        if (!$user) {
+            return response()->json(['error' => 'You must be logged in to bookmark a cause.'], 401);
+        }
+
+        $cause = Cause::findOrFail($id);
+
+        // Check if the cause is already bookmarked by the user
+        if ($cause->bookmarkedByUsers()->where('user_id', $user->id)->exists()) {
+            // If bookmarked, remove the bookmark
+            $cause->bookmarkedByUsers()->detach($user->id);
+        } else {
+            // Otherwise, bookmark the cause
+            $cause->bookmarkedByUsers()->attach($user->id);
+        }
+
+        return response()->json(['bookmarked' => $cause->bookmarkedByUsers()->where('user_id', $user->id)->exists()]);
+    }
+
+    
     public function detail($slug)
     {
         // Fetch the cause based on the slug
@@ -471,7 +544,4 @@ class CauseController extends Controller
             return back()->with('error', 'Invalid update type specified.');
         }
     }
-
-
-
 }

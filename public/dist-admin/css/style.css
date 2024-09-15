@@ -4601,3 +4601,25 @@ body:not(.sidebar-mini) .sidebar-style-2 .sidebar-menu li.active ul.dropdown-men
     left: 0;
   }
 }
+
+.list-group-item {
+  border: none;
+  padding: 10px 15px;
+}
+
+.text-truncate {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.file-info {
+  margin-left: 8px;
+}
+
+.file-size {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-top: 4px;
+}

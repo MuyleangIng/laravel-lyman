@@ -49,5 +49,15 @@ class Cause extends Model
         return $this->hasMany(CauseReport::class);
     }
     
+    public function likedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'cause_user_likes')->withTimestamps();
+    }
+
+
+    public function bookmarkedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'cause_user_bookmarks')->withTimestamps();
+    }
 
 }

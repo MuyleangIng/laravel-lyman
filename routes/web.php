@@ -41,12 +41,15 @@ use App\Http\Controllers\Admin\AdminSubscriberController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Auth\SocialLoginController;
 use App\Http\Controllers\Front\AwardController;
+use App\Http\Controllers\Front\BookmarkController;
 
 require __DIR__.'/auth.php';
 
 /* Front */
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
 Route::get('/award', [AwardController::class, 'award'])->name('award');
+Route::get('/bookmark', [BookmarkController::class, 'bookmark'])->name('bookmark');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact/send-message', [ContactController::class, 'send_message'])->name('contact_send_message');
@@ -80,7 +83,10 @@ Route::post('/event/ticket/free-booking', [EventController::class, 'free_booking
 
 
 Route::get('/causes', [CauseController::class, 'index'])->name('causes');
-Route::get('/cause/{slug}', [CauseController::class, 'detail'])->name('cause');
+Route::get('/causes/{slug}', [CauseController::class, 'index'])->name('cause');
+Route::post('/causes/{id}/like', [CauseController::class, 'toggleLike'])->name('cause.like')->middleware('auth');
+Route::post('/causes/{id}/bookmark', [CauseController::class, 'toggleBookmark'])->name('cause.bookmark')->middleware('auth');
+
 
 Route::post('/cause/send-message', [CauseController::class, 'send_message'])->name('cause_send_message');
 Route::post('/casue/replies', [CauseController::class, 'store'])->name('replies.store');
@@ -123,7 +129,6 @@ Route::middleware('auth', 'verified')->prefix('user')->group(function () {
     Route::post('/cause/create', [UserController::class, 'createCauseSubmit'])->name('user_cause_create_submit');
     Route::get('/user/cause/edit/{id}', [UserController::class, 'edit'])->name('user_cause_edit');
     Route::get('/user/cause/delete/{id}', [UserController::class, 'delete'])->name('user_cause_delete');
-    Route::post('/user/cause/edit/{id}', [UserController::class, 'edit_submit'])->name('user_cause_edit_submit');
     Route::post('/user/cause/edit/{id}', [UserController::class, 'edit_submit'])->name('user_cause_edit_submit');
     Route::get('/user/cause/photo/{id}', [UserController::class, 'photo'])->name('user_cause_photo');
     Route::post('/user/cause/photo/submit', [UserController::class, 'photo_submit'])->name('user_cause_photo_submit');
@@ -292,6 +297,10 @@ Route::middleware('admin')->prefix('admin')->group(function () {
     Route::post('/cause/create/submit', [AdminCauseController::class, 'create_submit'])->name('admin_cause_create_submit');
     Route::get('/cause/edit/{id}', [AdminCauseController::class, 'edit'])->name('admin_cause_edit');
     Route::post('/cause/edit/submit/{id}', [AdminCauseController::class, 'edit_submit'])->name('admin_cause_edit_submit');
+    Route::delete('/causes/{cause}/documents/{document}/delete', [AdminCauseController::class, 'removeDocument'])
+    ->name('admin_cause_remove_document');
+    Route::post('/causes/{id}/documents', [AdminCauseController::class, 'updateDocuments'])->name('admin_cause_update_documents');
+
     Route::delete('/cause/delete/{id}', [AdminCauseController::class, 'delete'])->name('admin_cause_delete');
     // New route for updating cause status
     Route::post('/cause/{id}/status', [AdminCauseController::class, 'updateStatus'])->name('update_cause_status');

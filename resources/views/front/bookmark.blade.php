@@ -7,16 +7,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>Proposal</h2>
+                    <h2>Bookmark</h2>
                     <div class="breadcrumb-container">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('home') }}">Home ></a></li>
-                            <li class="breadcrumb-item active"> Proposal</li>
+                            <li class="breadcrumb-item active">Bookmark</li>
                         </ol>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
@@ -61,9 +60,6 @@
                                     @endauth
                                 </div>
 
-
-
-
                                 <div class="short-des">
                                     <p>{!! nl2br($item->short_description) !!}</p>
                                 </div>
@@ -72,8 +68,8 @@
                                     $perc = ceil($perc);
                                 @endphp
                                 <div class="progress mb_10">
-                                    <div class="progress-bar w-0" role="progressbar" aria-label="Example with label"
-                                        aria-valuenow="{{ $perc }}" aria-valuemin="0" aria-valuemax="100"
+                                    <div class="progress-bar w-0" role="progressbar" aria-valuenow="{{ $perc }}"
+                                        aria-valuemin="0" aria-valuemax="100"
                                         style="animation: progressAnimation{{ $loop->iteration }} 2s linear forwards;">
                                     </div>
                                     <style>
@@ -137,6 +133,8 @@
             @endif
         </div>
     </div>
+
+    <!-- JavaScript for Like Button -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const likeButtons = document.querySelectorAll('.like-btn');
@@ -158,7 +156,6 @@
                             body: JSON.stringify({})
                         })
                         .then(response => {
-                            // Check if the response is HTML (error page) instead of JSON
                             if (response.headers.get('content-type').includes('text/html')) {
                                 throw new Error('Received HTML instead of JSON');
                             }
