@@ -52,6 +52,7 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact/send-message', [ContactController::class, 'send_message'])->name('contact_send_message');
 Route::get('/faqs', [FaqController::class, 'index'])->name('faqs');
 Route::get('/volunteers', [VolunteerController::class, 'index'])->name('volunteers');
+Route::post('/volunteer/upload', [VolunteerController::class, 'uploadCV'])->name('volunteer.upload');
 Route::get('/volunteer/{id}', [VolunteerController::class, 'detail'])->name('volunteer');
 Route::get('/photo-gallery', [PhotoController::class, 'index'])->name('photo_gallery');
 Route::get('/video-gallery', [VideoController::class, 'index'])->name('video_gallery');
