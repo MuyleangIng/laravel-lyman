@@ -50,7 +50,6 @@
                                                 <td>
                                                     <h5>${{ $total_price }}</h5>
                                                 </td>
-                                                <td></td>
                                             </tr>
                                         </tbody>
                                     </table>

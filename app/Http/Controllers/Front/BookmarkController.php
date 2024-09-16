@@ -12,11 +12,16 @@ class BookmarkController extends Controller
 {
     public function bookmark(Request $request)
     {
-        $user = Auth::user();
-        if ($user) {
-            $causes = $user->bookmarkedCauses()->where('status', 'approve')->paginate(8);
+        $user = Auth::user(); // Get the currently authenticated user
+    
+        if (!$user) {
+            // If the user is not authenticated, redirect them or show a message
+            return redirect()->route('login')->with('error', 'You need to be logged in to view your bookmarks.');
         }
-
+    
+        // Fetch only the causes that the user has bookmarked with pagination
+        $causes = $user->bookmarkedCauses()->where('status', 'approve')->paginate(8);
+    
         // Attach liked_by_user and bookmarked_by_user status to each cause
         foreach ($causes as $cause) {
             // Check if the cause is liked by the current user

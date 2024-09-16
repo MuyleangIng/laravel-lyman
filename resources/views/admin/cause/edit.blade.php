@@ -20,21 +20,27 @@
                                     enctype="multipart/form-data">
                                     @csrf
 
-                                    <!-- Existing Photo -->
+                                    <!-- Featured Photo -->
                                     <div class="form-group mb-3">
-                                        <label>Existing Photo</label>
-                                        <div>
-                                            <img src="{{ asset('uploads/' . $cause->featured_photo) }}" alt=""
-                                                class="w_200">
-                                        </div>
-                                    </div>
+                                        <label>Featured Photo *</label>
 
-                                    <!-- Change Photo -->
-                                    <div class="form-group mb-3">
-                                        <label>Change Photo</label>
-                                        <div>
-                                            <input type="file" name="featured_photo">
-                                        </div>
+                                        <!-- Show the existing featured photo if it exists -->
+                                        @if ($cause->featured_photo)
+                                            <div class="mb-3">
+                                                <img id="featuredPhoto"
+                                                    src="{{ asset('uploads/' . $cause->featured_photo) }}"
+                                                    alt="Featured Photo" width="200">
+                                            </div>
+                                        @else
+                                            <div class="mb-3">
+                                                <img id="featuredPhoto" src="" alt="No Photo" width="200"
+                                                    style="display: none;">
+                                            </div>
+                                        @endif
+
+                                        <!-- Input for uploading a new featured photo -->
+                                        <input type="file" name="featured_photo" class="form-control"
+                                            id="featuredPhotoInput" accept="image/*">
                                     </div>
 
                                     <!-- Name and Goal -->
@@ -263,6 +269,8 @@
                                     <div class="form-group mb-3">
                                         <label>Update Supporting Document *</label>
                                         <input type="file" class="form-control mt-2" name="files[]" multiple>
+                                        <small class="form-text text-muted">Upload new documents (e.g., budget plans,
+                                            project reports)</small>
                                     </div>
                                     <button type="submit" class="btn btn-primary">Update Documents</button>
                                 </form>
@@ -280,6 +288,27 @@
         new MultiSelectTag('partnerships');
         new MultiSelectTag('target_audience');
         new MultiSelectTag('target_region');
+
+        document.getElementById('featuredPhotoInput').addEventListener('change', function(event) {
+            const input = event.target;
+            const featuredPhoto = document.getElementById('featuredPhoto');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    // Replace the src of the existing image with the new uploaded image
+                    featuredPhoto.src = e.target.result;
+                    featuredPhoto.style.display = 'block'; // Ensure the image is visible
+                };
+
+                // Read the file as a Data URL
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                // Optionally hide the image if no file is selected
+                featuredPhoto.style.display = 'none';
+            }
+        });
 
         function removeDocument(documentName, causeId) {
             swal({

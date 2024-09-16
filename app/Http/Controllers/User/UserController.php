@@ -301,17 +301,50 @@ class UserController extends Controller
         ]);
     }
 
-
-
     public function edit($id)
     {
-        $cause = Cause::findOrFail($id);
-        return view('user.cause.edit', compact('cause'));
+        $targetAudiences = TargetAudienceCategory::all();
+        $partnerships = PartnershipAndCollaborationCategory::all();
+        $targetRegions = TargetRegion::all(); 
+        $cause = Cause::with(['targetAudiences', 'partnershipsAndCollaborations', 'targetRegions'])->findOrFail($id);
+    
+        $selectedAudiences = $cause->targetAudiences ? $cause->targetAudiences->pluck('id')->toArray() : [];
+        $selectedPartnerships = $cause->partnershipsAndCollaborations ? $cause->partnershipsAndCollaborations->pluck('id')->toArray() : [];
+        $selectedRegions = $cause->targetRegions ? $cause->targetRegions->pluck('id')->toArray() : [];
+
+    
+        // Decode the JSON field 'supporting_documents' to an array if it exists
+        $existingDocuments = $cause->supporting_documents ? json_decode($cause->supporting_documents, true) : [];
+    
+        // Passing the formatBytes function
+        $formatBytes = function($bytes, $precision = 2) {
+            $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    
+            $bytes = max($bytes, 0);
+            $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+            $pow = min($pow, count($units) - 1);
+    
+            $bytes /= (1 << (10 * $pow));
+    
+            return round($bytes, $precision) . ' ' . $units[$pow];
+        };
+    
+        return view('user.cause.edit', compact(
+            'cause',
+            'targetAudiences',
+            'partnerships',
+            'targetRegions',
+            'selectedAudiences',
+            'selectedPartnerships',
+            'selectedRegions',  
+            'existingDocuments',
+            'formatBytes'
+        ));
     }
 
     public function edit_submit(Request $request, $id)
     {
-        // Validate the form input
+        // Validation rules
         $request->validate([
             'name' => ['required', 'unique:causes,name,'.$id],
             'goal' => ['required', 'numeric', 'min:1'],
@@ -325,63 +358,75 @@ class UserController extends Controller
             'supporting_documents.*' => 'file|mimes:pdf,doc,docx,xls,xlsx|max:2048',
             'target_audience.*' => 'exists:target_audience_categories,id',
             'partnerships_and_collaborations.*' => 'exists:partnership_and_collaboration_categories,id',
-            'target_regions.*' => 'exists:target_regions,id',
+            'target_region.*' => 'exists:target_regions,id',
+            'featured_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
     
-        $obj = Cause::findOrFail($id);
+        // Find the existing cause
+        $cause = Cause::findOrFail($id);
     
-        // Handle featured photo update
-        if ($request->featured_photo != null) {
-            $request->validate([
-                'featured_photo' => 'image|mimes:jpg,jpeg,png',
-            ]);
+        // Update cause fields
+        $cause->name = $request->name;
+        $cause->slug = Str::slug($request->name);
+        $cause->goal = $request->goal;
+        $cause->short_description = $request->short_description;
+        $cause->objective = $request->objective;
+        $cause->expectations = $request->expectations;
+        $cause->legal_considerations = $request->legal_considerations;
+        $cause->challenges_and_solution = $request->challenges_and_solution;
+        $cause->start_date = $request->start_date;
+        $cause->end_date = $request->end_date;
+        $cause->is_featured = $request->is_featured;
     
-            // Remove old featured photo
-            if (file_exists(public_path('uploads/'.$obj->featured_photo))) {
-                unlink(public_path('uploads/'.$obj->featured_photo));
+        // Handle new featured photo
+        if ($request->hasFile('featured_photo')) {
+            // Delete old photo if it exists
+            if ($cause->featured_photo && file_exists(public_path('uploads/' . $cause->featured_photo))) {
+                unlink(public_path('uploads/' . $cause->featured_photo));
             }
     
-            $final_name = 'cause_featured_photo_'.time().'.'.$request->featured_photo->extension();
+            // Save new featured photo
+            $final_name = 'cause_featured_photo_' . time() . '.' . $request->featured_photo->extension();
             $request->featured_photo->move(public_path('uploads'), $final_name);
-            $obj->featured_photo = $final_name;
+            $cause->featured_photo = $final_name;
         }
     
-        // Update other fields
-        $obj->name = $request->name;
-        $obj->goal = $request->goal;
-        $obj->short_description = $request->short_description;
-        $obj->objective = $request->objective;
-        $obj->expectations = $request->expectations;
-        $obj->legal_considerations = $request->legal_considerations;
-        $obj->challenges_and_solution = $request->challenges_and_solution;
-        $obj->start_date = $request->start_date;
-        $obj->end_date = $request->end_date;
-        $obj->is_featured = $request->is_featured;
-        
-        // Handle supporting documents update
-        if ($request->hasFile('supporting_documents')) {
-            $files = $request->file('supporting_documents');
-            $filePaths = [];
-            foreach ($files as $file) {
-                $fileName = 'supporting_document_' . time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads/supporting_documents'), $fileName);
-                $filePaths[] = $fileName;
-            }
-            $obj->supporting_documents = json_encode($filePaths);
-        }
-    
-        $obj->save();
+        // Update the cause
+        $cause->save();
     
         // Update target audience categories
-        $obj->targetAudienceCategories()->sync($request->target_audience);
+        CauseTargetAudience::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('target_audience')) {
+            foreach ($request->target_audience as $audienceId) {
+                $target = new CauseTargetAudience();
+                $target->cause_id = $cause->id;
+                $target->target_audience_category_id = $audienceId;
+                $target->save();
+            }
+        }
     
         // Update partnerships and collaborations
-        $obj->partnershipsAndCollaborations()->sync($request->partnerships_and_collaborations);
-    
+        CausePartnershipAndCollaboration::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('partnerships_and_collaborations')) {
+            foreach ($request->partnerships_and_collaborations as $partnershipId) {
+                $partnership = new CausePartnershipAndCollaboration();
+                $partnership->cause_id = $cause->id;
+                $partnership->partnership_id = $partnershipId;
+                $partnership->save();
+            }
+        }
+
         // Update target regions
-        $obj->targetRegions()->sync($request->target_regions);
+        CauseTargetRegion::where('cause_id', $id)->delete(); // Clear previous associations
+        if ($request->has('target_region')) {
+            foreach ($request->target_region as $regionId) {
+                $targetRegion = new CauseTargetRegion();
+                $targetRegion->cause_id = $cause->id;
+                $targetRegion->target_region_id = $regionId;
+                $targetRegion->save();
+            }
+        }
     
-        // Redirect with success message
         return redirect()->route('user_cause')->with('success', 'Cause updated successfully');
     }
     
@@ -512,14 +557,23 @@ class UserController extends Controller
     }
 
 
-    // Method to list all messages
+   // Method to list all messages for the logged-in user
     public function listMessages()
     {
-        $messages = Message::all();
+        // Fetch messages only for the logged-in user or from the chatbot (user_id is null)
+        $messages = Message::where(function($query) {
+                            $query->where('user_id', auth()->user()->id)
+                                ->orWhereNull('user_id');
+                        })
+                        ->orderBy('created_at', 'asc') // Optional: Order by creation time
+                        ->get();
+
         return view('user.message.list', ['messages' => $messages]);
     }
 
-    // Method to store a new message
+
+
+   // Method to store a new message
     public function storeMessage(Request $request)
     {
         // Validate the incoming request data
@@ -554,6 +608,7 @@ class UserController extends Controller
         // Redirect back to the message list with a success message
         return redirect()->route('user_message_list');
     }
+
 
 
     public function report($id)

@@ -23,7 +23,6 @@
                                                 <th>Donor Name</th>
                                                 <th>Cause Name</th>
                                                 <th>Price</th>
-                                                <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -36,10 +35,6 @@
                                                             href="{{ route('cause', $item->cause->slug) }}">{{ $item->cause->name }}</a>
                                                     </td>
                                                     <td>${{ $item->price }}</td>
-                                                    <td style="width:140px;">
-                                                        <a href="{{ route('user_cause_donation_invoice', $item->id) }}"
-                                                            class="btn btn-primary btn-sm">See Invoice</a>
-                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

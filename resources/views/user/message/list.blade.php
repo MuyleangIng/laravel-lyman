@@ -21,8 +21,8 @@
                                         <small class="text-muted d-block">{{ $message->created_at->format('H:i') }}</small>
                                     </div>
                                     <img src="{{ $message->user_id === auth()->user()->id
-                                        ? (Auth::guard('web')->user()->photo != null
-                                            ? asset('uploads/' . Auth::guard('web')->user()->photo)
+                                        ? (auth()->user()->photo != null
+                                            ? asset('uploads/' . auth()->user()->photo)
                                             : asset('uploads/default.png'))
                                         : asset('uploads/chatbot.png') }}"
                                         alt="avatar" class="rounded-circle-custom">
@@ -45,9 +45,7 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
-
     </div>
 @endsection
