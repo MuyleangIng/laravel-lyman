@@ -21,9 +21,12 @@ class VolunteerController extends Controller
 
     public function index()
     {
-        $volunteers = Volunteer::paginate(20);
+        // Fetch only volunteers with the status 'approve'
+        $volunteers = Volunteer::where('status', 'approve')->paginate(20);
+        
         return view('front.volunteers', compact('volunteers'));
     }
+
 
     public function detail($id)
     {

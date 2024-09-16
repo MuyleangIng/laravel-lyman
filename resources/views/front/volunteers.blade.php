@@ -15,12 +15,19 @@
                     <div class="breadcrumb-container text-center mt-2">
                         <!-- Become a volunteer button -->
                         @auth
-                            <a class="btn btn-primary" href="#" role="button" data-toggle="modal">
-                                <i class="fas fa-file"></i> Become Volunteer?
-                            </a>
+                            @php
+                                // Fetch the authenticated user's volunteer data
+                                $volunteer = Auth::user()->volunteer; // Ensure the relationship is defined in the User model
+                            @endphp
+
+                            @if (!$volunteer || (!$volunteer->cv_file && $volunteer->status !== 'approve'))
+                                <!-- If the user has not uploaded a CV or is not approved, show the button -->
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#volunteerModal">
+                                    <i class="fas fa-file"></i> Become Volunteer?
+                                </button>
+                            @endif
                         @endauth
                     </div>
-
                 </div>
             </div>
         </div>
@@ -62,6 +69,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!-- Modal for CV Upload -->
                     <div class="modal fade" id="volunteerModal" tabindex="-1" role="dialog"

@@ -87,4 +87,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->belongsToMany(Cause::class, 'cause_user_bookmarks')->withTimestamps();
     }   
+
+    public function volunteer()
+    {
+        return $this->hasOne(Volunteer::class);
+    }
+
 }
