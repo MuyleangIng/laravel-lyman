@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cause;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -12,7 +13,7 @@ class BookmarkController extends Controller
 {
     public function bookmark(Request $request)
     {
-        $user = Auth::user(); // Get the currently authenticated user
+        $user = User::find(Auth::id()); // Get the currently authenticated user
     
         if (!$user) {
             // If the user is not authenticated, redirect them or show a message
