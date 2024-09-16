@@ -34,6 +34,25 @@
                                             <li><a href="{{ $volunteer->facebook }}"><i class="fab fa-facebook-f"></i></a>
                                             </li>
                                         @endif
+<<<<<<< HEAD
+
+                                        @if ($volunteer->twitter != '')
+                                            <li><a href="{{ $volunteer->twitter }}"><i class="fab fa-twitter"></i></a></li>
+                                        @endif
+
+                                        @if ($volunteer->linkedin != '')
+                                            <li><a href="{{ $volunteer->linkedin }}"><i class="fab fa-linkedin-in"></i></a>
+                                            </li>
+                                        @endif
+
+                                        @if ($volunteer->instagram != '')
+                                            <li><a href="{{ $volunteer->instagram }}"><i class="fab fa-instagram"></i></a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+=======
 
                                         @if ($volunteer->twitter != '')
                                             <li><a href="{{ $volunteer->twitter }}"><i class="fab fa-twitter"></i></a></li>
@@ -58,6 +77,52 @@
                     {{ $volunteers->links() }}
                 </div>
             </div>
+            <!-- Become a volunteer button -->
+            <div class="row pt_50">
+                <div class="col-md-12 text-center">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#volunteerModal">Do you want to become
+                        a volunteer?</button>
+                </div>
+            </div>
+
+            <!-- Modal for CV Upload -->
+            <div class="modal fade" id="volunteerModal" tabindex="-1" role="dialog" aria-labelledby="volunteerModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="volunteerModalLabel">Upload your CV to Become a Volunteer</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- CV upload form -->
+                            <form action="{{ route('volunteer.upload') }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="cv">Upload CV</label>
+                                    <input type="file" name="cv" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Submit</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </form>
+>>>>>>> 2a8d6709440b1963be0f4e1887b32b2548c06b7e
+                        </div>
+                    </div>
+                @endforeach
+                <div class="col-md-12">
+                    {{ $volunteers->links() }}
+                </div>
+            </div>
         </div>
     </div>
+<<<<<<< HEAD
+=======
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+>>>>>>> 2a8d6709440b1963be0f4e1887b32b2548c06b7e
 @endsection
