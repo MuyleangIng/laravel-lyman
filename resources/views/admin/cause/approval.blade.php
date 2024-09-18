@@ -21,55 +21,35 @@
                                                 <th>SL</th>
                                                 <th>Featured Photo</th>
                                                 <th>Name</th>
-                                                <th>Status</th>
+                                                <th>Approve</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($causes as $item)
+                                            @foreach ($causes as $cause)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>
-                                                        <img src="{{ asset('uploads/' . $item->featured_photo) }}"
-                                                            alt="" class="w_150">
+                                                        <img src="{{ asset('uploads/' . $cause->featured_photo) }}" alt="" class="w_150">
                                                     </td>
+                                                    <td>{{ $cause->name }}</td>
                                                     <td>
-                                                        {{ $item->name }}
-                                                    </td>
-                                                    <td>
-                                                        @if ($item->status == 'approve')
-                                                            <span class="badge badge-success">Approved</span>
-                                                        @elseif($item->status == 'reject')
-                                                            <span class="badge badge-danger">Rejected</span>
-                                                        @else
-                                                            <form method="POST"
-                                                                action="{{ route('update_cause_status', $item->id) }}">
+                                                        <div class="outerDivFull">
+                                                            <form action="{{ route('update_cause_status', $cause->id) }}" method="POST" class="status-form">
                                                                 @csrf
-                                                                <button type="submit" class="btn btn-success btn-sm"
-                                                                    name="status" value="approve">Approve</button>
-                                                                <button type="submit"
-                                                                    class="btn btn-danger btn-sm reject-button"
-                                                                    name="status" value="reject">Reject</button>
+                                                                <input type="hidden" name="status" class="status-input" value="{{ $cause->status }}">
+                                                                <div class="switchToggle">
+                                                                    <input type="checkbox" id="switch-{{ $cause->id }}" class="status-checkbox" {{ $cause->status == 'approve' ? 'checked' : '' }}>
+                                                                    <label for="switch-{{ $cause->id }}">Toggle</label>
+                                                                </div>
                                                             </form>
-                                                        @endif
+                                                        </div>
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
-                                                            <a href="{{ route('admin_cause_details', $item->slug) }}"
-                                                                class="btn btn-primary btn-sm">
+                                                            <a href="{{ route('admin_cause_details', $cause->slug) }}" class="btn btn-primary btn-sm">
                                                                 <i class="fa-solid fa-eye"></i> View
                                                             </a>
-                                                            @if ($item->status == 'reject')
-                                                                <form method="POST"
-                                                                    action="{{ route('admin_undo_reject', $item->id) }}"
-                                                                    class="mr-4">
-                                                                    @csrf
-                                                                    <button type="submit"
-                                                                        class="btn btn-warning btn-sm undo-button">
-                                                                        <i class="fa-solid fa-rotate-left"></i> Undo Reject
-                                                                    </button>
-                                                                </form>
-                                                            @endif
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -86,53 +66,13 @@
     </div>
 
     <script>
-        $(document).ready(function() {
-            $('.reject-button').click(function(event) {
-                event.preventDefault();
-                var form = $(this).closest('form');
-                swal({
-                    title: "Are you sure?",
-                    text: "Once rejected, this cause will be marked as rejected and the action cannot be undone!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willReject) => {
-                    if (willReject) {
-                        $('<input>').attr({
-                            type: 'hidden',
-                            name: 'status',
-                            value: 'reject'
-                        }).appendTo(form);
-                        form.submit();
-                    }
-                });
-            });
-
-            $('.approve-button').click(function(event) {
-                event.preventDefault();
-                var form = $(this).closest('form');
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'status',
-                    value: 'approve'
-                }).appendTo(form);
+        // Handle status toggle changes for causes
+        document.querySelectorAll('.status-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const form = this.closest('.status-form');
+                const statusInput = form.querySelector('.status-input');
+                statusInput.value = this.checked ? 'approve' : 'reject';
                 form.submit();
-            });
-
-            $('.undo-button').click(function(event) {
-                event.preventDefault();
-                var form = $(this).closest('form');
-                swal({
-                    title: "Are you sure?",
-                    text: "Are you sure you want to undo the rejection of this cause?",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: false,
-                }).then((willUndo) => {
-                    if (willUndo) {
-                        form.submit();
-                    }
-                });
             });
         });
     </script>

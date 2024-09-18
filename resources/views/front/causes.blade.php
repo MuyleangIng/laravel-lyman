@@ -10,7 +10,7 @@
                     <h2>Proposal</h2>
                     <div class="breadcrumb-container">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home ></a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                             <li class="breadcrumb-item active"> Proposal</li>
                         </ol>
                     </div>

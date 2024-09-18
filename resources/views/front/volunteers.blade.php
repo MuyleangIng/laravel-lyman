@@ -17,11 +17,11 @@
                         @auth
                             @php
                                 // Fetch the authenticated user's volunteer data
-                                $volunteer = Auth::user()->volunteer; // Ensure the relationship is defined in the User model
+                                $volunteer = Auth::user()->volunteer;
                             @endphp
 
                             @if (!$volunteer || (!$volunteer->cv_file && $volunteer->status !== 'approve'))
-                                <!-- If the user has not uploaded a CV or is not approved, show the button -->
+                                <!-- Show the button only if the user is not a volunteer or has no CV and is not approved -->
                                 <button class="btn btn-primary" data-toggle="modal" data-target="#volunteerModal">
                                     <i class="fas fa-file"></i> Become Volunteer?
                                 </button>
@@ -32,6 +32,7 @@
             </div>
         </div>
     </div>
+
     <div class="team pt_70">
         <div class="container">
             <div class="row">
@@ -46,71 +47,58 @@
                                 <div class="designation">{{ $volunteer->profession }}</div>
                                 <div class="social">
                                     <ul>
-                                        @if ($volunteer->facebook != '')
-                                            <li><a href="{{ $volunteer->facebook }}"><i class="fab fa-facebook-f"></i></a>
-                                            </li>
+                                        @if ($volunteer->facebook)
+                                            <li><a href="{{ $volunteer->facebook }}"><i class="fab fa-facebook-f"></i></a></li>
                                         @endif
-
-                                        @if ($volunteer->twitter != '')
+                                        @if ($volunteer->twitter)
                                             <li><a href="{{ $volunteer->twitter }}"><i class="fab fa-twitter"></i></a></li>
                                         @endif
-
-                                        @if ($volunteer->linkedin != '')
-                                            <li><a href="{{ $volunteer->linkedin }}"><i class="fab fa-linkedin-in"></i></a>
-                                            </li>
+                                        @if ($volunteer->linkedin)
+                                            <li><a href="{{ $volunteer->linkedin }}"><i class="fab fa-linkedin-in"></i></a></li>
                                         @endif
-
-                                        @if ($volunteer->instagram != '')
-                                            <li><a href="{{ $volunteer->instagram }}"><i class="fab fa-instagram"></i></a>
-                                            </li>
+                                        @if ($volunteer->instagram)
+                                            <li><a href="{{ $volunteer->instagram }}"><i class="fab fa-instagram"></i></a></li>
                                         @endif
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-                    <!-- Modal for CV Upload -->
-                    <div class="modal fade" id="volunteerModal" tabindex="-1" role="dialog"
-                        aria-labelledby="volunteerModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="volunteerModalLabel">Upload your CV to Become a Volunteer
-                                    </h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- CV upload form -->
-                                    <form action="{{ route('volunteer.upload') }}" method="POST"
-                                        enctype="multipart/form-data">
-                                        @csrf
-                                        <div class="form-group">
-                                            <label for="cv">Upload CV</label>
-                                            <input type="file" name="cv" class="form-control" required>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-success">Submit</button>
-                                            <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">Close</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
                 @endforeach
+
                 <div class="col-md-12">
                     {{ $volunteers->links() }}
                 </div>
             </div>
-            <div class="col-md-12">
-                {{ $volunteers->links() }}
-            </div>
         </div>
     </div>
-    </div>
+
+    <!-- Modal for CV Upload (moved outside of the loop) -->
+    <div class="modal fade" id="volunteerModal" tabindex="-1" role="dialog" aria-labelledby="volunteerModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="volunteerModalLabel">Upload your CV to Become a Volunteer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- CV upload form -->
+                    <form action="{{ route('volunteer.upload') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="form-group">
+                            <label for="cv">Upload CV</label>
+                            <input type="file" name="cv" class="form-control" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

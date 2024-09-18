@@ -40,20 +40,23 @@ class VolunteerController extends Controller
         $request->validate([
             'cv' => 'required|file|mimes:pdf,doc,docx',
         ]);
-
+    
         // Store the uploaded CV file
         $cvPath = $request->file('cv')->store('uploads/cvs');
-        $cvFullPath = storage_path('app/'.$cvPath);
-
+        $cvFullPath = storage_path('app/' . $cvPath);
+    
         // Extract data from the uploaded CV file
         $text = $this->extractTextFromCV($cvFullPath, $request->file('cv')->getClientOriginalExtension());
-
+    
         // Extract specific fields from the CV content using the service
         $phone = $this->cvParsingService->extractSection($text, 'phone');
         // Ensure phone number starts with +855
         $phone = $phone ? '+855' . ltrim($phone, '+') : null;
-
-        // Extract specific fields from the CV content using the service
+    
+        // Retrieve the authenticated user's profile photo
+        $userPhoto = Auth::user()->photo; // Assuming the `photo` field is available in the users table.
+    
+        // Prepare the volunteer data
         $volunteerData = [
             'phone' => $phone,
             'address' => $this->cvParsingService->extractSection($text, 'address'),
@@ -77,8 +80,8 @@ class VolunteerController extends Controller
             'cv_file' => $cvPath,
             'status' => 'pending',
         ];
-
-        // Create or update volunteer record
+    
+        // Create or update the volunteer record
         $volunteer = Volunteer::updateOrCreate(
             ['user_id' => Auth::id()],
             array_merge($volunteerData, [
@@ -86,11 +89,13 @@ class VolunteerController extends Controller
                 'name' => Auth::user()->name,
                 'email' => Auth::user()->email,
                 'date_of_birth' => $volunteerData['date_of_birth'] ? date('Y-m-d', strtotime($volunteerData['date_of_birth'])) : null,
+                'photo' => $userPhoto, // Set the photo from the user's profile
             ])
         );
-
+    
         return redirect()->back()->with('success', 'Your CV has been uploaded successfully. We will review it and contact you.');
     }
+    
 
     /**
      * Extract text from the uploaded CV file.

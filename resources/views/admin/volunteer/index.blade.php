@@ -23,6 +23,8 @@
                                                 <th>Photo</th>
                                                 <th>Name</th>
                                                 <th>Profession</th>
+                                                <th>Approve</th>
+                                                </th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -40,6 +42,25 @@
                                                     <td>
                                                         {{ $volunteer->profession }}
                                                     </td>
+                                                    <td>
+                                                        <div class="outerDivFull">
+                                                            <form
+                                                                action="{{ route('admin_volunteer_update_status', $volunteer->id) }}"
+                                                                method="POST" class="status-form">
+                                                                @csrf
+                                                                <input type="hidden" name="status" class="status-input"
+                                                                    value="{{ $volunteer->status }}">
+                                                                <div class="switchToggle">
+                                                                    <input type="checkbox" id="switch-{{ $volunteer->id }}"
+                                                                        class="status-checkbox"
+                                                                        {{ $volunteer->status == 'approve' ? 'checked' : '' }}>
+                                                                    <label for="switch-{{ $volunteer->id }}">Toggle</label>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </td>
+
+
                                                     <td class="pt_10 pb_10">
                                                         <a href="{{ route('admin_volunteer_edit', $volunteer->id) }}"
                                                             class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
@@ -84,6 +105,16 @@
                         form.submit();
                     }
                 });
+            });
+        });
+
+        // Handle status toggle changes
+        document.querySelectorAll('.status-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const form = this.closest('.status-form');
+                const statusInput = form.querySelector('.status-input');
+                statusInput.value = this.checked ? 'approve' : 'reject';
+                form.submit();
             });
         });
     </script>

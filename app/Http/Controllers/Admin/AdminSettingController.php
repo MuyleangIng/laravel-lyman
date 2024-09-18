@@ -18,48 +18,61 @@ class AdminSettingController extends Controller
     {
         $settings = Setting::where('id',1)->first();
 
+        // Handle logo update
         if($request->logo != null) {
             $request->validate([
                 'logo' => 'image|mimes:jpg,jpeg,png',
             ]);
             
-            if($settings->logo!=null) {
-                unlink(public_path('uploads/'.$settings->logo));
+            if($settings->logo != null) {
+                $logoPath = public_path('uploads/' . $settings->logo);
+                if (file_exists($logoPath)) {
+                    unlink($logoPath); // Delete only if the file exists
+                }
             }
-            
+
             $final_name = 'logo_'.time().'.'.$request->logo->extension();
             $request->logo->move(public_path('uploads'), $final_name);
             $settings->logo = $final_name;
         }
 
+        // Handle favicon update
         if($request->favicon != null) {
             $request->validate([
                 'favicon' => 'image|mimes:jpg,jpeg,png',
             ]);
-            
-            if($settings->favicon!=null) {
-                unlink(public_path('uploads/'.$settings->favicon));
+
+            if($settings->favicon != null) {
+                $faviconPath = public_path('uploads/' . $settings->favicon);
+                if (file_exists($faviconPath)) {
+                    unlink($faviconPath); // Delete only if the file exists
+                }
             }
-            
+
             $final_name = 'favicon_'.time().'.'.$request->favicon->extension();
             $request->favicon->move(public_path('uploads'), $final_name);
             $settings->favicon = $final_name;
         }
 
+        // Handle banner update
         if($request->banner != null) {
             $request->validate([
                 'banner' => 'image|mimes:jpg,jpeg,png',
             ]);
-            
-            if($settings->banner!=null) {
-                unlink(public_path('uploads/'.$settings->banner));
+
+            if($settings->banner != null) {
+                $bannerPath = public_path('uploads/' . $settings->banner);
+                if (file_exists($bannerPath)) {
+                    unlink($bannerPath); // Delete only if the file exists
+                }
             }
-            
+
             $final_name = 'banner_'.time().'.'.$request->banner->extension();
             $request->banner->move(public_path('uploads'), $final_name);
             $settings->banner = $final_name;
         }
 
+        // Update other settings fields
         $settings->top_phone = $request->top_phone;
         $settings->top_email = $request->top_email;
         $settings->cta_heading = $request->cta_heading;
@@ -81,6 +94,7 @@ class AdminSettingController extends Controller
 
         $settings->update();
 
-        return redirect()->back()->with('success','Setting is updated successfully');
+        return redirect()->back()->with('success', 'Setting is updated successfully');
     }
+
 }

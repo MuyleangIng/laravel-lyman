@@ -14,7 +14,7 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-body">
-                            <form action="{{ route('admin_volunteer_edit_submit',$volunteer->id) }}" method="post" enctype="multipart/form-data">
+                            <form action="{{ route('admin_volunteer_edit_submit', $volunteer->id) }}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <div class="form-group mb-3">
                                     <label>Existing Photo</label>
@@ -33,13 +33,13 @@
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label>Name *</label>
-                                            <input type="text" class="form-control" name="name" value="{{ $volunteer->name }}">
+                                            <input type="text" class="form-control" name="name" value="{{ $volunteer->name }}" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label>Profession *</label>
-                                            <input type="text" class="form-control" name="profession" value="{{ $volunteer->profession }}">
+                                            <input type="text" class="form-control" name="profession" value="{{ $volunteer->profession }}" required>
                                         </div>
                                     </div>
                                 </div>
@@ -53,7 +53,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
                                             <label>Email</label>
-                                            <input type="text" class="form-control" name="email" value="{{ $volunteer->email }}">
+                                            <input type="email" class="form-control" name="email" value="{{ $volunteer->email }}">
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group mb-3">
-                                            <label>Linkedin</label>
+                                            <label>LinkedIn</label>
                                             <input type="text" class="form-control" name="linkedin" value="{{ $volunteer->linkedin }}">
                                         </div>
                                     </div>
@@ -99,11 +99,41 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label>GitHub</label>
+                                            <input type="text" class="form-control" name="github" value="{{ $volunteer->github }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label>Languages Spoken</label>
+                                            <input type="text" class="form-control" name="languages_spoken" value="{{ $volunteer->languages_spoken }}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Volunteer Interest</label>
+                                    <textarea name="volunteer_interest" class="form-control h_200">{{ $volunteer->volunteer_interest }}</textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Previous Volunteering Experience</label>
+                                    <textarea name="previous_volunteering_experience" class="form-control h_200">{{ $volunteer->previous_volunteering_experience }}</textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Availability</label>
+                                    <textarea name="availability" class="form-control h_200">{{ $volunteer->availability }}</textarea>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label>Emergency Contact</label>
+                                    <textarea name="emergency_contact" class="form-control h_200">{{ $volunteer->emergency_contact }}</textarea>
+                                </div>
                                 <div class="form-group mb-3">
                                     <label>Detail</label>
-                                    <textarea name="detail" class="form-control h_200" cols="30" rows="10">{{ $volunteer->detail }}</textarea>
+                                    <textarea name="detail" class="form-control h_200">{{ $volunteer->detail }}</textarea>
                                 </div>
-                                
+
                                 <div class="form-group">
                                     <button type="submit" class="btn btn-primary">Update</button>
                                 </div>

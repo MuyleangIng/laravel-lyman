@@ -100,16 +100,24 @@ class AdminPostController extends Controller
 
         $post = Post::findOrFail($id);
 
+       // Handle photo upload
         if($request->photo != null) {
             $request->validate([
                 'photo' => 'image|mimes:jpg,jpeg,png',
             ]);
-            unlink(public_path('uploads/'.$post->photo));
 
+            // Check if the old photo exists and delete it
+            $oldPhotoPath = public_path('uploads/'.$post->photo);
+            if($post->photo && file_exists($oldPhotoPath)) {
+                unlink($oldPhotoPath);
+            }
+
+            // Upload new photo
             $final_name = 'post_'.time().'.'.$request->photo->extension();
             $request->photo->move(public_path('uploads'), $final_name);
             $post->photo = $final_name;
         }
+
 
         $post->post_category_id = $request->post_category_id;
         $post->title = $request->title;

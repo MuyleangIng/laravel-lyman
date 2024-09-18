@@ -58,21 +58,25 @@ class AdminVolunteerController extends Controller
         $request->validate([
             'name' => 'required',
             'profession' => 'required',
+            // Add validation rules for new fields if necessary
         ]);
-
+    
         $volunteer = Volunteer::findOrFail($id);
-
-        if($request->photo != null) {
+    
+        if ($request->hasFile('photo')) {
             $request->validate([
                 'photo' => 'image|mimes:jpg,jpeg,png',
             ]);
-            unlink(public_path('uploads/'.$volunteer->photo));
-
+            // Remove the old photo if it exists
+            if ($volunteer->photo) {
+                unlink(public_path('uploads/'.$volunteer->photo));
+            }
+    
             $final_name = 'volunteer_'.time().'.'.$request->photo->extension();
             $request->photo->move(public_path('uploads'), $final_name);
             $volunteer->photo = $final_name;
         }
-
+    
         $volunteer->name = $request->name;
         $volunteer->profession = $request->profession;
         $volunteer->address = $request->address;
@@ -83,11 +87,18 @@ class AdminVolunteerController extends Controller
         $volunteer->twitter = $request->twitter;
         $volunteer->linkedin = $request->linkedin;
         $volunteer->instagram = $request->instagram;
+        $volunteer->github = $request->github;
+        $volunteer->languages_spoken = $request->languages_spoken;
+        $volunteer->volunteer_interest = $request->volunteer_interest;
+        $volunteer->previous_volunteering_experience = $request->previous_volunteering_experience;
+        $volunteer->availability = $request->availability;
+        $volunteer->emergency_contact = $request->emergency_contact;
         $volunteer->detail = $request->detail;
         $volunteer->update();
-
-        return redirect()->route('admin_volunteer_index')->with('success','Volunteer updated successfully');
+    
+        return redirect()->route('admin_volunteer_index')->with('success', 'Volunteer updated successfully');
     }
+    
 
     public function delete($id)
     {
@@ -96,5 +107,18 @@ class AdminVolunteerController extends Controller
         $volunteer->delete();
 
         return redirect()->back()->with('success','Volunteer deleted successfully');
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:approve,reject',
+        ]);
+
+        $volunteer = Volunteer::findOrFail($id);
+        $volunteer->status = $request->status;
+        $volunteer->save();
+
+        return redirect()->route('admin_volunteer_index')->with('success', 'Volunteer status updated successfully');
     }
 }

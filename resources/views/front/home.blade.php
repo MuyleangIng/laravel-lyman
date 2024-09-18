@@ -107,11 +107,6 @@
                                                     <i class="{{ $item->liked_by_user ? 'fas' : 'far' }} fa-heart"></i>
                                                     <span class="like-count">{{ $item->likes }}</span> Likes
                                                 </span>
-                                            @else
-                                                <!-- View Icon (shown if not authenticated) -->
-                                                <span>
-                                                    <i class="fas fa-eye"></i> {{ $item->views }} Views
-                                                </span>
                                             @endauth
 
                                             <!-- View Icon (always visible) -->
@@ -129,6 +124,7 @@
                                             </div>
                                         @endauth
                                     </div>
+
 
                                     <div class="short-des">
                                         <p>{!! nl2br($item->short_description) !!}</p>

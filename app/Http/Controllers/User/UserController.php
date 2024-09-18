@@ -53,6 +53,7 @@ class UserController extends Controller
     {
         return view('user.profile');
     }
+   
     public function profile_submit(Request $request)
     {
         $request->validate([
@@ -66,11 +67,14 @@ class UserController extends Controller
             $request->validate([
                 'photo' => 'image|mimes:jpg,jpeg,png',
             ]);
-            
-            if(Auth::guard('web')->user()->photo != null) {
+
+            // Check if the user already has a photo and the file exists before attempting to delete
+            if(Auth::guard('web')->user()->photo != null && file_exists(public_path('uploads/'.Auth::guard('web')->user()->photo))) {
+                // Attempt to delete the old photo
                 unlink(public_path('uploads/'.Auth::guard('web')->user()->photo));
             }
 
+            // Save the new photo
             $final_name = time().'.'.$request->photo->extension();
             $request->photo->move(public_path('uploads'), $final_name);
             $user_data->photo = $final_name;
@@ -90,6 +94,7 @@ class UserController extends Controller
 
         return redirect()->back()->with('success','Profile updated successfully');
     }
+
 
     public function tickets()
     {

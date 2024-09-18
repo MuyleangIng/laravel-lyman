@@ -69,6 +69,7 @@ class AdminEventController extends Controller
 
     public function edit_submit(Request $request, $id)
     {
+        // Validate input
         $request->validate([
             'name' => ['required', 'unique:events,name,'.$id],
             'slug' => ['required', 'alpha_dash', 'unique:events,slug,'.$id],
@@ -79,39 +80,50 @@ class AdminEventController extends Controller
             'short_description' => 'required',
             'description' => 'required',
         ]);
-
-        if($request->total_seat != '') {
+    
+        // Validate total_seat if present
+        if ($request->total_seat != '') {
             $request->validate([
                 'total_seat' => ['numeric', 'min:1'],
             ]);
         }
-
-        $obj = Event::findOrFail($id);
-
-        if($request->featured_photo != null) {
+    
+        // Find the event
+        $event = Event::findOrFail($id);
+    
+        // Handle featured photo upload
+        if ($request->hasFile('featured_photo')) {
             $request->validate([
                 'featured_photo' => 'image|mimes:jpg,jpeg,png',
             ]);
-            unlink(public_path('uploads/'.$obj->featured_photo));
-
+    
+            // Check if the old photo exists and delete it
+            $oldPhotoPath = public_path('uploads/'.$event->featured_photo);
+            if (file_exists($oldPhotoPath) && $event->featured_photo) {
+                unlink($oldPhotoPath);
+            }
+    
+            // Upload new photo
             $final_name = 'event_featured_photo_'.time().'.'.$request->featured_photo->extension();
             $request->featured_photo->move(public_path('uploads'), $final_name);
-            $obj->featured_photo = $final_name;
+            $event->featured_photo = $final_name;
         }
-
-        $obj->name = $request->name;
-        $obj->slug = $request->slug;
-        $obj->location = $request->location;
-        $obj->date = $request->date;
-        $obj->time = $request->time;
-        $obj->price = $request->price;
-        $obj->short_description = $request->short_description;
-        $obj->description = $request->description;
-        $obj->total_seat = $request->total_seat;
-        $obj->update();
-
-        return redirect()->back()->with('success','Event updated successfully');
+    
+        // Update event details
+        $event->name = $request->name;
+        $event->slug = $request->slug;
+        $event->location = $request->location;
+        $event->date = $request->date;
+        $event->time = $request->time;
+        $event->price = $request->price;
+        $event->short_description = $request->short_description;
+        $event->description = $request->description;
+        $event->total_seat = $request->total_seat;
+        $event->save();
+    
+        return redirect()->back()->with('success', 'Event updated successfully');
     }
+    
 
     public function delete($id)
     {
