@@ -57,7 +57,7 @@
                     <strong>Images: </strong>
                     @if ($report->where('report_type', 'progress')->first())
                         @foreach ($report->where('report_type', 'progress')->first()->media as $image)
-                            <img src="{{ $image->getUrl('thumb') }}" alt="No images" class="img-fluid">
+                            <img src="{{ $image->getUrl() }}" alt="No images" class="img-fluid">
                         @endforeach
                     @else
                         <p>No images available.</p>

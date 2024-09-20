@@ -207,8 +207,10 @@ return [
          * Supported by S3: CacheControl, Expires, StorageClass,
          * ServerSideEncryption, Metadata, ACL, ContentEncoding
          */
+
         'extra_headers' => [
-            'CacheControl' => 'max-age=604800',
+        'CacheControl' => 'max-age=604800',
+        'visibility' => 'public', // Add this line here to make images public by default
         ],
     ],
 

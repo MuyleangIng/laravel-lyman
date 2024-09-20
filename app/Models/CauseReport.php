@@ -26,10 +26,7 @@ class CauseReport extends Model implements HasMedia
     {
         $this->addMediaConversion('thumb')
             ->width(368)
-            ->height(232)
-            ->sharpen(10)
-            ->quality(60)
-            ->performOnCollections('images');
+            ->height(232);
 
     }
 

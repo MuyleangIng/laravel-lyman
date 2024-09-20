@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cause_reports', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('cause_id')->constrained()->onDelete('cascade');
             $table->enum('report_type', ['initial', 'progress', 'final']); 
             $table->date('report_date'); 

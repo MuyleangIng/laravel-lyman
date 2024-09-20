@@ -503,7 +503,7 @@ class AdminCauseController extends Controller
 
     public function showReport($id)
     {
-        $report = CauseReport::with('media')->where('cause_id', $id)->first();
+        $report = CauseReport::with('media')->where('cause_id', $id)->get();
         return view('admin.partials.cause_report', compact('report'));
     }
 
