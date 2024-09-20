@@ -14,16 +14,14 @@
                             <li class="breadcrumb-item active"> Projects</li>
                         </ol>
                     </div>
-                    <div class="container">
-                        <div class="row height d-flex justify-content-center align-items-center">
-                            <div class="col-md-6 mt-2">
-                                <div class="form">
-                                    <form action="{{ route('causes') }}" method="GET">
-                                        <i class="fa fa-search"></i>
-                                        <input type="text" name="search" class="form-control form-input"
-                                            placeholder="Search for a project..." value="{{ request()->input('search') }}">
-                                    </form>
-                                </div>
+                    <div class="row height d-flex justify-content-center align-items-center">
+                        <div class="col-md-6 mt-2">
+                            <div class="form">
+                                <form action="{{ route('causes') }}" method="GET">
+                                    <i class="fa fa-search"></i>
+                                    <input type="text" name="search" class="form-control form-input"
+                                        placeholder="Search for a project..." value="{{ request()->input('search') }}">
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -170,6 +168,7 @@
             height: 55px;
             text-indent: 33px;
             border-radius: 10px;
+            background-color: white !important; 
         }
     </style>
 
