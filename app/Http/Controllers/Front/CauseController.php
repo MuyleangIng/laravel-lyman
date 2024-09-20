@@ -34,8 +34,15 @@ class CauseController extends Controller
     {
         $user = Auth::user(); // Get the current user
         
-        // Fetch causes with pagination
-        $causes = Cause::where('status', 'approve')->paginate(8);
+        // Get the search query input from the request
+        $searchQuery = $request->input('search');
+    
+        // Fetch causes based on search query and status
+        $causes = Cause::where('status', 'approve')
+                       ->when($searchQuery, function ($query, $searchQuery) {
+                            return $query->where('name', 'LIKE', '%' . $searchQuery . '%');
+                       })
+                       ->paginate(8);
     
         // Attach liked_by_user and bookmarked_by_user status to each cause
         foreach ($causes as $cause) {
@@ -50,9 +57,10 @@ class CauseController extends Controller
                 $this->incrementView($cause);
             }
         }
-        
+    
         return view('front.causes', compact('causes'));
     }
+    
     
     
 

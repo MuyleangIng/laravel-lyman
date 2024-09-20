@@ -73,10 +73,6 @@ class AdminController extends Controller
 }
 
     
-
-    
-
-    
     
     public function edit_profile()
     {
@@ -97,9 +93,12 @@ class AdminController extends Controller
             ]);
             //dd($request->photo->extension());
             
-            if(Auth::guard('admin')->user()->photo != null) {
-                unlink(public_path('uploads/'.Auth::guard('admin')->user()->photo));
-            }
+            if (Auth::guard('admin')->user()->photo != null) {
+                $oldPhotoPath = public_path('uploads/' . Auth::guard('admin')->user()->photo);
+                if (file_exists($oldPhotoPath)) {
+                    unlink($oldPhotoPath);
+                }
+            }            
 
             $final_name = time().'.'.$request->photo->extension();
             $request->photo->move(public_path('uploads'), $final_name);

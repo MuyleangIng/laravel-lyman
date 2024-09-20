@@ -21,7 +21,7 @@ class AdminSettingController extends Controller
         // Handle logo update
         if($request->logo != null) {
             $request->validate([
-                'logo' => 'image|mimes:jpg,jpeg,png',
+                'logo' => 'image|mimes:jpg,jpeg,png,webp',
             ]);
             
             if($settings->logo != null) {
@@ -39,7 +39,7 @@ class AdminSettingController extends Controller
         // Handle favicon update
         if($request->favicon != null) {
             $request->validate([
-                'favicon' => 'image|mimes:jpg,jpeg,png',
+                'favicon' => 'image|mimes:jpg,jpeg,png,webp',
             ]);
 
             if($settings->favicon != null) {
@@ -57,7 +57,7 @@ class AdminSettingController extends Controller
         // Handle banner update
         if($request->banner != null) {
             $request->validate([
-                'banner' => 'image|mimes:jpg,jpeg,png',
+                'banner' => 'image|mimes:jpg,jpeg,png,webp',
             ]);
 
             if($settings->banner != null) {

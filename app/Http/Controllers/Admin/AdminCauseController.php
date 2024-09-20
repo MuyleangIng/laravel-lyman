@@ -31,9 +31,13 @@ class AdminCauseController extends Controller
 
     public function index()
     {
-        $causes = Cause::all();
+        // Fetch only the causes with 'approve' status
+        $causes = Cause::where('status', 'approve')->get();
+
+        // Pass the causes to the view
         return view('admin.cause.index', compact('causes'));
     }
+
 
     public function create()
     {
