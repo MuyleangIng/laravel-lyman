@@ -1,44 +1,43 @@
-# Web4Youth 🌟
+# 🌟 Youth Project Management System 🌟
 
-Welcome to Web4Youth - a platform dedicated to empowering youth and supporting their initiatives for positive change!
+Welcome to the **Youth Project Management System** of the Humanities Academic Program in YRDP! This platform empowers Cambodian youth to submit and showcase their proposals online, enabling their projects to make a positive impact on their communities and society.
 
-## About ℹ️
+## 🚀 Features
 
-Web4Youth is a web application project aimed at connecting youth with opportunities to showcase their ideas, receive support, and make a difference in their communities. Whether you're a young changemaker with a project idea or a donor looking to support youth-led initiatives, Web4Youth provides the platform for collaboration and impact.
+- **Proposal Submission**: Youth can submit their project proposals online.
+- **Showcase Projects**: Display projects that contribute to community development.
+- **Volunteer Opportunities**: Join our team and make a difference by volunteering.
+- **Events**: Participate in various events to enhance soft skills and personal development.
+- **User Dashboard**: A friendly user interface for easy communication with donors.
+- **Admin Dashboard**: Admins can manage the platform efficiently.
 
-## Features 🚀
+## 🌍 Impact
 
-- **Project Showcase:** Youth can submit project proposals covering various areas such as community development, education, entrepreneurship, and more.
-- **Donor Matching:** Matching donors with youth-led initiatives based on interests, values, and desired impact areas.
-- **Secure Payments:** Integration with secure payment gateways to facilitate donations from donors to youth projects.
-- **Feedback and Reviews:** Donors can provide feedback and reviews on supported projects, fostering trust and accountability.
-- **Volunteer Opportunities:** A section for users to explore and sign up for volunteer roles supporting youth initiatives.
-- **And More:** Stay tuned for additional features to empower and support youth-led projects!
+Our platform aims to foster creativity and social responsibility among Cambodian youth, encouraging them to engage in initiatives that benefit their communities.
 
-## Getting Started 🛠️
+## 📚 User Guide
 
-To get started with Web4Youth, follow these steps:
+1. **Create an Account**: Sign up to start submitting your proposals.
+2. **Submit a Proposal**: Fill out the proposal form and submit your project.
+3. **Join Events**: Participate in events to learn and grow your skills.
+4. **Volunteer**: Apply to join our volunteer team to support community projects.
+5. **Contact Donors**: Use the user dashboard to connect with potential donors.
 
-1. Clone the repository: `git clone https://github.com/LymannPhy/youth-app-project.git`
-2. Install dependencies: `npm install`
-3. Start the development server: `npm run dev`
-4. Open your browser and navigate to `http://localhost:3000` to view the application.
+## ⚙️ Admin Features
 
-## Contributing 🤝
+- **Manage Users**: Oversee user registrations and activities.
+- **Review Proposals**: Evaluate submitted proposals for approval.
+- **Organize Events**: Create and manage events for youth participation.
+- **Analytics Dashboard**: Monitor platform performance and user engagement.
 
-We welcome contributions from the community to make Web4Youth even better! Whether it's fixing a bug, adding a new feature, or improving documentation, your contributions are valued. Check out our [Contribution Guidelines](CONTRIBUTING.md) for more information on how to get started.
+## 💬 Get Involved
 
-## Support 🆘
+Join us in making a positive change! Whether you're a youth looking to showcase your ideas or a donor wanting to support impactful projects, we welcome you to our platform.
 
-If you encounter any issues or have questions about Web4Youth, please feel free to [open an issue](https://github.com/your-username/web4youth/issues). We're here to help!
+## 📞 Contact Us
 
-## License 📝
+For any questions or feedback, please reach out to us at [lymannphy9@gmail.com](mailto:lymannphy9@gmail.com).
 
-This project is licensed under the [MIT License](LICENSE).
+---
 
-## Acknowledgements 🙏
-
-We would like to express our gratitude to the open-source community for their invaluable contributions and support in building Web4Youth. Together, we can empower youth and create positive change in the world!
-
-Thank you for choosing Web4Youth! Let's make a difference together. 🌟
-
+Thank you for being part of the Youth Project Management System! Together, we can create a brighter future for Cambodia's youth! 🎉
