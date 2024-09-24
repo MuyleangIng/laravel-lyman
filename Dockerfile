@@ -13,6 +13,8 @@ RUN apk add --no-cache \
     autoconf \
     g++ \
     make \
+    nodejs \
+    npm \
     && docker-php-ext-install pdo pdo_mysql zip gd exif
 
 # Install Redis extension
@@ -26,15 +28,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first to leverage Docker cache
+# Copy composer files and install dependencies
 COPY composer.json composer.lock ./
-
-# Install Laravel dependencies with verbose output and ignoring platform reqs
 RUN composer install --prefer-dist --no-scripts --no-dev --no-autoloader --verbose --ignore-platform-reqs \
     && rm -rf /root/.composer
 
 # Copy the rest of the application code
 COPY . .
+
+# Install NPM dependencies and compile assets
+COPY package.json package-lock.json ./
+RUN npm install && npm run production
 
 # Copy .env.production to .env
 COPY .env.production .env
@@ -48,7 +52,8 @@ ENV APP_ENV=production
 # Run Laravel-specific commands
 RUN php artisan config:cache && \
     php artisan route:cache && \
-    php artisan view:cache
+    php artisan view:cache && \
+    php artisan storage:link
 
 # Copy Nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf
@@ -59,10 +64,17 @@ COPY php.ini /usr/local/etc/php/conf.d/app.ini
 # Copy Supervisor configuration
 COPY supervisord.conf /etc/supervisord.conf
 
-# Create necessary directories and set permissions
-RUN mkdir -p /var/log/supervisor /var/run \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache
+
+# Create necessary directories
+RUN mkdir -p /var/log/supervisor /var/run
+
+# Verify public directory contents
+RUN ls -la /var/www/html/public
 
 # Expose port 80
 EXPOSE 80
